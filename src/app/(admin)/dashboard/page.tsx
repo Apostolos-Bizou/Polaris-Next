@@ -11,6 +11,11 @@ import { HospitalsTable } from "@/components/dashboard/hospitals-table";
 import { GeoDistribution } from "@/components/dashboard/geo-distribution";
 import { FinancialSection } from "@/components/dashboard/financial-section";
 import { CEODashboard } from "@/components/dashboard/ceo-dashboard";
+import CategoryTrend from "@/components/dashboard/category-trend";
+import YearOverYear from "@/components/dashboard/year-over-year";
+import FeesCharges from "@/components/dashboard/fees-charges";
+import PlanPerformance from "@/components/dashboard/plan-performance";
+import CBMSReport from "@/components/dashboard/cbms-report";
 
 export default function DashboardPage() {
   const {
@@ -66,7 +71,7 @@ export default function DashboardPage() {
 
       {!loading && !error && (
         <>
-          <div className="section-divider">📈 BUSINESS STRATEGY</div>
+          <div className="section-divider">📊 BUSINESS STRATEGY</div>
           <KpiGrid kpis={kpis} />
 
           {/* Quarter comparison */}
@@ -91,13 +96,18 @@ export default function DashboardPage() {
           <InOutCharts kpis={kpis} quarterData={quarterData} selectedYear={selectedYear} />
           <MovementCharts kpis={kpis} quarterData={quarterData} selectedYear={selectedYear} />
           <CategoryCharts categories={categories} />
+          <CategoryTrend categories={categories} />
+          <YearOverYear currentYear={selectedYear} />
           <HospitalsTable hospitals={hospitals} />
           <GeoDistribution geoData={geoData} />
+          <FeesCharges costPerMember={kpis?.cost_per_member} />
+          <PlanPerformance totalMembers={kpis?.total_members} />
           <FinancialSection kpis={kpis} quarterData={quarterData} selectedYear={selectedYear} />
           <CEODashboard />
+          <CBMSReport />
 
           <div className="dash-footer">
-            ✦ POLARIS Financial Services • Third Party Healthcare Administrator • Fast • Fair • Flexible
+            ✦ POLARIS Financial Services › Third Party Healthcare Administrator › Fast › Fair › Flexible
           </div>
         </>
       )}
