@@ -1,297 +1,241 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-
-interface DashboardStats {
-  clients: number;
-  offers: number;
-  contracts: number;
-  members: number;
-  pending: number;
-}
-
-interface KPIData {
-  total_members?: number;
-  total_claims?: number;
-  total_fees?: number;
-  total_claims_cost?: number;
-  loss_ratio?: number;
-  avg_claim?: number;
-}
+import { useDashboard } from "@/hooks/use-dashboard";
+import { StatsBar } from "@/components/dashboard/stats-bar";
+import { QuarterSelector } from "@/components/dashboard/quarter-selector";
+import { KpiGrid } from "@/components/dashboard/kpi-grid";
+import { InOutAnalysis } from "@/components/dashboard/inout-analysis";
+import { MemberMovement } from "@/components/dashboard/member-movement";
+import { HospitalsTable } from "@/components/dashboard/hospitals-table";
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [kpis, setKpis] = useState<KPIData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  async function loadDashboardData() {
-    setLoading(true);
-    try {
-      // Parallel API calls through our proxy
-      const [dashRes, kpiRes] = await Promise.all([
-        fetch("/api/proxy/getDashboardKPIs").then((r) => r.json()),
-        fetch("/api/proxy/getClientKPISummary?clientId=ALL").then((r) =>
-          r.json()
-        ),
-      ]);
-
-      // Dashboard stats
-      if (dashRes.summary) {
-        setStats({
-          clients: dashRes.summary.active_clients || 0,
-          offers: dashRes.summary.open_offers || 0,
-          contracts: dashRes.summary.active_contracts || 0,
-          members: dashRes.summary.total_members || 0,
-          pending: dashRes.summary.pending_signatures || 0,
-        });
-      }
-
-      // KPI data
-      if (kpiRes.kpis) {
-        setKpis(kpiRes.kpis);
-      }
-    } catch (err) {
-      console.error("Dashboard load error:", err);
-      setError("Failed to load dashboard data");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const formatNumber = (n: number) =>
-    new Intl.NumberFormat("el-GR").format(n);
-  const formatCurrency = (n: number) =>
-    new Intl.NumberFormat("el-GR", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(n);
-  const formatPercent = (n: number) => `${(n * 100).toFixed(1)}%`;
+  const {
+    loading,
+    error,
+    clients,
+    selectedClient,
+    selectedYear,
+    selectedQuarters,
+    cumulativeMode,
+    compareMode,
+    stats,
+    kpis,
+    quarterData,
+    hospitals,
+    setSelectedClient,
+    setSelectedYear,
+    toggleQuarter,
+    setCumulativeMode,
+    setCompareMode,
+    refresh,
+  } = useDashboard();
 
   return (
-    <div className="dashboard">
-      {/* Header */}
-      <div className="dash-header">
+    <div className="dashboard-page">
+      {/* Page header */}
+      <div className="dash-page-header">
         <div>
-          <h1 className="dash-title">
-            Welcome back, {session?.user?.name || "Admin"}
-          </h1>
-          <p className="dash-subtitle">Polaris Admin Dashboard</p>
+          <h1 className="dash-page-title">🏢 Admin Dashboard</h1>
+          <p className="dash-page-subtitle">
+            Company-wide analytics and insights
+            <span className="client-badge">
+              {selectedClient === "ALL"
+                ? "All Clients"
+                : clients.find((c) => c.client_id === selectedClient)
+                    ?.company_name || selectedClient}
+            </span>
+          </p>
         </div>
-        <button className="dash-refresh" onClick={loadDashboardData}>
-          🔄 Refresh
-        </button>
       </div>
 
       {/* Stats bar */}
-      {loading ? (
+      <StatsBar stats={stats} />
+
+      {/* Quarter selector */}
+      <QuarterSelector
+        clients={clients}
+        selectedClient={selectedClient}
+        selectedYear={selectedYear}
+        selectedQuarters={selectedQuarters}
+        cumulativeMode={cumulativeMode}
+        compareMode={compareMode}
+        onClientChange={setSelectedClient}
+        onYearChange={setSelectedYear}
+        onQuarterToggle={toggleQuarter}
+        onCumulativeToggle={() => setCumulativeMode(!cumulativeMode)}
+        onCompareToggle={() => setCompareMode(!compareMode)}
+        onRefresh={refresh}
+      />
+
+      {/* Loading state */}
+      {loading && (
         <div className="dash-loading">
-          <div className="dash-spinner" />
-          <span>Loading dashboard data...</span>
+          <div className="dash-loading-content">
+            <div className="dash-spinner" />
+            <div className="dash-loading-text">Loading Dashboard Data...</div>
+            <div className="dash-loading-sub">
+              Fetching KPIs and analytics from server
+            </div>
+          </div>
         </div>
-      ) : error ? (
+      )}
+
+      {/* Error state */}
+      {error && !loading && (
         <div className="dash-error">
           <span>⚠️ {error}</span>
-          <button onClick={loadDashboardData}>Retry</button>
+          <button onClick={refresh}>🔄 Retry</button>
         </div>
-      ) : (
+      )}
+
+      {/* Dashboard content */}
+      {!loading && !error && (
         <>
-          {/* Top stats bar */}
-          <div className="stats-bar">
-            <StatCard label="Active Clients" value={stats?.clients} icon="🏢" />
-            <StatCard label="Open Offers" value={stats?.offers} icon="📝" />
-            <StatCard
-              label="Active Contracts"
-              value={stats?.contracts}
-              icon="📋"
-            />
-            <StatCard label="Total Members" value={stats?.members} icon="👥" />
-            <StatCard
-              label="Pending Signatures"
-              value={stats?.pending}
-              icon="✍️"
-            />
+          {/* Section divider */}
+          <div className="section-divider">
+            <span className="divider-icon">📈</span>
+            <span className="divider-text">BUSINESS STRATEGY</span>
           </div>
 
           {/* KPI Cards */}
-          {kpis && (
-            <div className="kpi-grid">
-              <KpiCard
-                title="Total Members"
-                value={formatNumber(kpis.total_members || 0)}
-                icon="👥"
-                color="#3498db"
-              />
-              <KpiCard
-                title="Total Claims"
-                value={formatNumber(kpis.total_claims || 0)}
-                icon="📋"
-                color="#e67e22"
-              />
-              <KpiCard
-                title="Total Fees"
-                value={formatCurrency(kpis.total_fees || 0)}
-                icon="💵"
-                color="#2ecc71"
-              />
-              <KpiCard
-                title="Claims Cost"
-                value={formatCurrency(kpis.total_claims_cost || 0)}
-                icon="💸"
-                color="#e74c3c"
-              />
-              <KpiCard
-                title="Loss Ratio"
-                value={formatPercent(kpis.loss_ratio || 0)}
-                icon="📊"
-                color={
-                  (kpis.loss_ratio || 0) > 0.75 ? "#e74c3c" : "#2ecc71"
-                }
-              />
-              <KpiCard
-                title="Avg Claim"
-                value={formatCurrency(kpis.avg_claim || 0)}
-                icon="📈"
-                color="#9b59b6"
-              />
+          <KpiGrid kpis={kpis} />
+
+          {/* Quarter comparison (if multiple quarters selected) */}
+          {quarterData.length > 1 && (
+            <div className="quarter-compare-section">
+              <h2 className="section-title-polaris">
+                ⚖️ Quarter Comparison:{" "}
+                {quarterData.map((q) => q.quarter).join(" vs ")} {selectedYear}
+              </h2>
+              <div className="quarter-compare-grid">
+                {quarterData.map((qd) => (
+                  <div key={qd.quarter} className="quarter-compare-card">
+                    <div className="quarter-compare-header">{qd.quarter}</div>
+                    <div className="quarter-compare-row">
+                      <span>Members</span>
+                      <strong>
+                        {new Intl.NumberFormat("en-US").format(
+                          qd.kpis.total_members
+                        )}
+                      </strong>
+                    </div>
+                    <div className="quarter-compare-row">
+                      <span>Claims</span>
+                      <strong>
+                        {new Intl.NumberFormat("en-US").format(
+                          qd.kpis.total_claims
+                        )}
+                      </strong>
+                    </div>
+                    <div className="quarter-compare-row">
+                      <span>Cost</span>
+                      <strong>
+                        $
+                        {new Intl.NumberFormat("en-US", {
+                          maximumFractionDigits: 0,
+                        }).format(qd.kpis.total_cost_usd)}
+                      </strong>
+                    </div>
+                    <div className="quarter-compare-row">
+                      <span>Utilization</span>
+                      <strong>
+                        {qd.kpis.total_members > 0
+                          ? (
+                              (qd.kpis.total_claims /
+                                qd.kpis.total_members) *
+                              100
+                            ).toFixed(1)
+                          : 0}
+                        %
+                      </strong>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Module cards - same as main dashboard */}
-          <h2 className="section-heading">Modules</h2>
-          <div className="module-grid">
-            <ModuleCard
-              href="/clients"
-              icon="🏢"
-              title="Clients"
-              desc="Manage client portfolio"
-              color="#3498db"
-            />
-            <ModuleCard
-              href="/offers"
-              icon="📝"
-              title="New Proposal"
-              desc="Create insurance offers"
-              color="#9b59b6"
-            />
-            <ModuleCard
-              href="/offers"
-              icon="📊"
-              title="Comparison Quote"
-              desc="Compare plans side by side"
-              color="#e67e22"
-            />
-            <ModuleCard
-              href="/contracts"
-              icon="📋"
-              title="Contracts"
-              desc="Active contracts & renewals"
-              color="#2ecc71"
-            />
-            <ModuleCard
-              href="/email"
-              icon="📧"
-              title="Email Center"
-              desc="Compose & send emails"
-              color="#e74c3c"
-            />
-            <ModuleCard
-              href="/reports"
-              icon="📄"
-              title="Reports"
-              desc="Generate analytics reports"
-              color="#1abc9c"
-            />
-            <ModuleCard
-              href="/follow-ups"
-              icon="📌"
-              title="Follow-ups"
-              desc="Track pending actions"
-              color="#f39c12"
-            />
-            <ModuleCard
-              href="/renewals"
-              icon="🔄"
-              title="Renewals"
-              desc="Upcoming contract renewals"
-              color="#1B5E20"
-            />
-          </div>
+          {/* Inpatient vs Outpatient */}
+          <InOutAnalysis kpis={kpis} />
+
+          {/* Principal vs Dependent + Member Movement */}
+          <MemberMovement kpis={kpis} />
+
+          {/* Hospitals table */}
+          <HospitalsTable hospitals={hospitals} />
         </>
       )}
 
+      {/* Footer */}
+      <div className="dash-footer">
+        ✦ POLARIS Financial Services • Third Party Healthcare Administrator •
+        Fast • Fair • Flexible
+      </div>
+
       <style jsx>{`
-        .dashboard {
+        .dashboard-page {
           max-width: 1400px;
           margin: 0 auto;
         }
-
-        .dash-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 2rem;
+        .dash-page-header {
+          margin-bottom: 1.5rem;
         }
-
-        .dash-title {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 1.75rem;
+        .dash-page-title {
+          font-family: "Montserrat", sans-serif;
+          font-size: 1.5rem;
           font-weight: 700;
           color: #ffffff;
         }
-
-        .dash-subtitle {
+        .dash-page-subtitle {
           color: rgba(184, 212, 232, 0.7);
           font-size: 0.9rem;
           margin-top: 0.25rem;
-        }
-
-        .dash-refresh {
-          background: rgba(212, 175, 55, 0.15);
-          border: 1px solid rgba(212, 175, 55, 0.3);
-          color: #D4AF37;
-          padding: 0.6rem 1.25rem;
-          border-radius: 10px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          cursor: pointer;
-          transition: all 0.3s;
-          font-family: inherit;
-        }
-
-        .dash-refresh:hover {
-          background: rgba(212, 175, 55, 0.25);
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-        }
-
-        .dash-loading {
           display: flex;
           align-items: center;
-          justify-content: center;
-          gap: 1rem;
-          padding: 4rem;
-          color: rgba(184, 212, 232, 0.7);
+          gap: 0.75rem;
         }
-
+        .client-badge {
+          background: rgba(212, 175, 55, 0.15);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          padding: 0.2rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          color: #d4af37;
+          font-weight: 600;
+        }
+        .dash-loading {
+          display: flex;
+          justify-content: center;
+          padding: 4rem;
+        }
+        .dash-loading-content {
+          text-align: center;
+        }
         .dash-spinner {
-          width: 24px;
-          height: 24px;
+          width: 40px;
+          height: 40px;
           border: 3px solid rgba(212, 175, 55, 0.2);
-          border-top-color: #D4AF37;
+          border-top-color: #d4af37;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
+          margin: 0 auto 1rem;
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .dash-loading-text {
+          font-family: "Montserrat", sans-serif;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #d4af37;
+        }
+        .dash-loading-sub {
+          color: #5a6a7a;
+          font-size: 0.85rem;
+          margin-top: 0.5rem;
+        }
         .dash-error {
           display: flex;
           align-items: center;
@@ -303,7 +247,6 @@ export default function DashboardPage() {
           border-radius: 12px;
           color: #ff6b6b;
         }
-
         .dash-error button {
           background: #e74c3c;
           color: white;
@@ -311,195 +254,86 @@ export default function DashboardPage() {
           padding: 0.5rem 1rem;
           border-radius: 8px;
           cursor: pointer;
-          font-family: inherit;
           font-weight: 600;
+          font-family: inherit;
         }
-
-        /* Stats bar */
-        .stats-bar {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 1rem;
-          margin-bottom: 2rem;
-          padding: 1.25rem;
-          background: linear-gradient(135deg, #0a1628, #1e3a5f);
-          border-radius: 16px;
-          border: 1px solid rgba(212, 175, 55, 0.15);
+        .section-divider {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem 0;
+          margin-bottom: 1rem;
         }
-
-        /* KPI Grid */
-        .kpi-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
-          margin-bottom: 2rem;
+        .divider-icon {
+          font-size: 1.5rem;
         }
-
-        .section-heading {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 1.25rem;
+        .divider-text {
+          font-family: "Montserrat", sans-serif;
+          font-size: 0.85rem;
+          font-weight: 800;
+          letter-spacing: 3px;
+          color: rgba(184, 212, 232, 0.5);
+        }
+        .section-title-polaris {
+          font-family: "Montserrat", sans-serif;
+          font-size: 1.1rem;
           font-weight: 700;
-          color: #D4AF37;
-          margin-bottom: 1.25rem;
-          letter-spacing: 1px;
+          color: #ffffff;
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem;
+          border-bottom: 2px solid rgba(212, 175, 55, 0.3);
         }
-
-        /* Module grid */
-        .module-grid {
+        .quarter-compare-section {
+          margin-bottom: 2rem;
+        }
+        .quarter-compare-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 1.25rem;
+          grid-template-columns: repeat(
+            ${quarterData.length || 1},
+            1fr
+          );
+          gap: 1rem;
         }
-
-        @media (max-width: 1200px) {
-          .stats-bar { grid-template-columns: repeat(3, 1fr); }
-          .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-          .module-grid { grid-template-columns: repeat(3, 1fr); }
+        .quarter-compare-card {
+          background: linear-gradient(145deg, #0d1f2d, #0a1628);
+          border: 1px solid #2d5070;
+          border-radius: 16px;
+          padding: 1.25rem;
         }
-
-        @media (max-width: 768px) {
-          .stats-bar { grid-template-columns: repeat(2, 1fr); }
-          .kpi-grid { grid-template-columns: 1fr; }
-          .module-grid { grid-template-columns: repeat(2, 1fr); }
-          .dash-header { flex-direction: column; gap: 1rem; }
+        .quarter-compare-header {
+          font-family: "Montserrat", sans-serif;
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #d4af37;
+          text-align: center;
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         }
-
-        @media (max-width: 480px) {
-          .module-grid { grid-template-columns: 1fr; }
+        .quarter-compare-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid rgba(45, 80, 112, 0.2);
+          font-size: 0.85rem;
+        }
+        .quarter-compare-row span {
+          color: #7aa0c0;
+        }
+        .quarter-compare-row strong {
+          color: #ffffff;
+          font-weight: 700;
+        }
+        .dash-footer {
+          text-align: center;
+          color: rgba(184, 212, 232, 0.3);
+          font-size: 0.75rem;
+          margin-top: 3rem;
+          padding: 1.5rem;
+          border-top: 1px solid rgba(45, 80, 112, 0.2);
         }
       `}</style>
     </div>
-  );
-}
-
-// ─── Sub-components ──────────────────────────────────────
-
-function StatCard({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value?: number;
-  icon: string;
-}) {
-  return (
-    <div
-      style={{
-        textAlign: "center",
-        padding: "0.5rem",
-      }}
-    >
-      <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#D4AF37", fontFamily: "Montserrat, sans-serif" }}>
-        {value !== undefined ? new Intl.NumberFormat("el-GR").format(value) : "--"}
-      </div>
-      <div style={{ fontSize: "0.75rem", color: "rgba(184, 212, 232, 0.7)", marginTop: "0.25rem" }}>
-        {icon} {label}
-      </div>
-    </div>
-  );
-}
-
-function KpiCard({
-  title,
-  value,
-  icon,
-  color,
-}: {
-  title: string;
-  value: string;
-  icon: string;
-  color: string;
-}) {
-  return (
-    <div
-      style={{
-        background: "linear-gradient(145deg, #0d1f2d, rgba(10, 22, 40, 0.9))",
-        border: `1px solid ${color}33`,
-        borderRadius: "16px",
-        padding: "1.5rem",
-        transition: "all 0.3s ease",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: "0.8rem", color: "rgba(184, 212, 232, 0.7)", textTransform: "uppercase", letterSpacing: "1px" }}>
-          {title}
-        </span>
-        <span style={{ fontSize: "1.5rem" }}>{icon}</span>
-      </div>
-      <div
-        style={{
-          fontSize: "1.75rem",
-          fontWeight: 800,
-          fontFamily: "Montserrat, sans-serif",
-          color: color,
-          marginTop: "0.75rem",
-        }}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function ModuleCard({
-  href,
-  icon,
-  title,
-  desc,
-  color,
-}: {
-  href: string;
-  icon: string;
-  title: string;
-  desc: string;
-  color: string;
-}) {
-  return (
-    <a
-      href={href}
-      style={{
-        background: "linear-gradient(145deg, #0d1f2d, rgba(10, 22, 40, 0.9))",
-        border: `2px solid ${color}44`,
-        borderRadius: "20px",
-        padding: "2rem 1.5rem",
-        textDecoration: "none",
-        textAlign: "center",
-        transition: "all 0.4s ease",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "0.75rem",
-        cursor: "pointer",
-      }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget;
-        el.style.transform = "translateY(-8px)";
-        el.style.borderColor = color;
-        el.style.boxShadow = `0 15px 40px ${color}33`;
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget;
-        el.style.transform = "translateY(0)";
-        el.style.borderColor = `${color}44`;
-        el.style.boxShadow = "none";
-      }}
-    >
-      <span style={{ fontSize: "3rem" }}>{icon}</span>
-      <span
-        style={{
-          fontFamily: "Montserrat, sans-serif",
-          fontWeight: 700,
-          fontSize: "1.1rem",
-          color: "#ffffff",
-          letterSpacing: "1px",
-        }}
-      >
-        {title}
-      </span>
-      <span style={{ fontSize: "0.8rem", color: "rgba(184, 212, 232, 0.6)" }}>
-        {desc}
-      </span>
-    </a>
   );
 }
