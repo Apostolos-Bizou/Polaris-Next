@@ -393,43 +393,44 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
       <style jsx>{`
         .modal-overlay {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background: #0a1628; z-index: 1000;
+          background: #3d5a80; z-index: 1000;
           overflow-y: auto;
         }
         .modal-box {
-          background: #0a1628;
+          background: transparent;
           width: 100%; max-width: 1200px; margin: 0 auto;
           min-height: 100vh;
         }
         .modal-header {
           display: flex; justify-content: space-between; align-items: flex-start;
-          padding: 1.5rem 2.5rem; border-bottom: 2px solid rgba(212,175,55,0.3);
-          position: sticky; top: 0; background: #0a1628; z-index: 10;
+          padding: 1.5rem 2.5rem; border-bottom: 2px solid rgba(212,175,55,0.4);
+          position: sticky; top: 0; background: rgba(61,90,128,0.97); z-index: 10;
+          backdrop-filter: blur(10px);
         }
         .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: #D4AF37; }
-        .modal-sub { color: #7aa0c0; font-size: 0.95rem; margin-top: 0.25rem; }
-        .modal-close { background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.3); color: #EF5350; font-size: 1.5rem; cursor: pointer; padding: 0.4rem 0.8rem; border-radius: 8px; }
-        .modal-close:hover { background: rgba(231,76,60,0.3); }
+        .modal-sub { color: rgba(255,255,255,0.7); font-size: 0.95rem; margin-top: 0.25rem; }
+        .modal-close { background: rgba(231,76,60,0.2); border: 1px solid rgba(231,76,60,0.4); color: #EF5350; font-size: 1.5rem; cursor: pointer; padding: 0.4rem 0.8rem; border-radius: 8px; }
+        .modal-close:hover { background: rgba(231,76,60,0.4); }
         .modal-body { padding: 2rem 2.5rem; }
 
         /* Form Sections */
-        .form-section { margin-bottom: 1.5rem; }
+        .form-section { margin-bottom: 1.5rem; background: rgba(10,22,40,0.85); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(45,80,112,0.3); }
         .section-header {
           display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
           padding-bottom: 0.5rem; border-bottom: 2px solid rgba(212,175,55,0.3);
         }
         .section-icon { font-size: 1.25rem; }
-        .section-header h3 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; color: #ffffff; margin: 0; }
+        .section-header h3 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 700; color: #ffffff; margin: 0; }
 
         /* Client Select */
         .client-select {
           width: 100%; padding: 0.85rem 1rem; font-size: 0.95rem;
-          background: rgba(10,22,40,0.7); border: 2px solid rgba(45,80,112,0.3);
+          background: #0d1f2d; border: 2px solid rgba(45,80,112,0.4);
           border-radius: 10px; color: #ffffff; cursor: pointer; outline: none;
           font-family: inherit;
         }
         .client-select:focus { border-color: #D4AF37; }
-        .client-select option { background: #0a1628; color: #ffffff; }
+        .client-select option { background: #0d1f2d; color: #ffffff; }
 
         /* Tier */
         .tier-section .tier-badge {
@@ -438,11 +439,11 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
         }
         .tier-grid { display: flex; gap: 0.5rem; }
         .tier-btn {
-          flex: 1; padding: 0.85rem 0.5rem; border: 2px solid rgba(45,80,112,0.3);
-          border-radius: 10px; background: rgba(10,22,40,0.5); cursor: pointer;
+          flex: 1; padding: 0.85rem 0.5rem; border: 2px solid rgba(45,80,112,0.4);
+          border-radius: 10px; background: #0d1f2d; cursor: pointer;
           text-align: center; transition: all 0.2s; color: #ffffff; font-family: inherit;
         }
-        .tier-btn.active { background: #1e3a5f; border-color: #D4AF37; }
+        .tier-btn.active { background: #1e3a5f; border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.15); }
         .tier-btn:hover { border-color: rgba(45,80,112,0.5); }
         .tier-label { font-weight: 700; font-size: 1rem; }
         .tier-sub { font-size: 0.75rem; color: #7aa0c0; margin-top: 0.15rem; }
@@ -450,10 +451,10 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
         /* Plans Grid */
         .plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
         .plan-card {
-          border: 2px solid rgba(45,80,112,0.3); border-radius: 12px;
-          overflow: hidden; transition: all 0.3s; background: rgba(10,22,40,0.5);
+          border: 2px solid rgba(45,80,112,0.4); border-radius: 12px;
+          overflow: hidden; transition: all 0.3s; background: #0d1f2d;
         }
-        .plan-card.selected { background: rgba(10,22,40,0.8); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .plan-card.selected { background: #0d1f2d; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .plan-header {
           display: flex; align-items: center; gap: 0.5rem;
           padding: 0.75rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.2);
@@ -476,15 +477,15 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
         .input-group { flex: 1; }
         .input-group label { display: block; font-size: 0.8rem; color: #D4AF37; margin-bottom: 0.35rem; text-transform: uppercase; font-weight: 600; }
         .input-group input {
-          width: 100%; padding: 0.75rem; background: rgba(10,22,40,0.9);
-          border: 2px solid rgba(45,80,112,0.4); border-radius: 8px;
+          width: 100%; padding: 0.75rem; background: #0a1628;
+          border: 2px solid rgba(45,80,112,0.5); border-radius: 8px;
           color: #ffffff; font-size: 1.4rem; text-align: center; outline: none;
           font-family: 'Montserrat', sans-serif; font-weight: 700;
         }
-        .input-group input:focus { border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.15); }
+        .input-group input:focus { border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2); }
 
         /* Dental */
-        .dental-section { padding: 1rem 1.25rem; background: rgba(45,80,112,0.1); border-radius: 12px; border: 1px solid rgba(45,80,112,0.25); }
+        .dental-section { padding: 1.25rem 1.5rem; background: #0d1f2d; border-radius: 16px; border: 1px solid rgba(45,80,112,0.4); }
         .dental-toggle { display: flex; align-items: center; gap: 1rem; cursor: pointer; }
         .dental-toggle input { width: 20px; height: 20px; accent-color: #1e3a5f; cursor: pointer; }
         .dental-info { flex: 1; }
@@ -496,12 +497,13 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
         /* Validity */
         .validity-section {
           display: flex; align-items: center; gap: 0.75rem;
-          padding: 0.75rem 1rem; background: rgba(45,80,112,0.1);
-          border-radius: 10px; color: #ffffff; font-size: 0.9rem;
+          padding: 0.85rem 1.25rem; background: #0d1f2d;
+          border-radius: 12px; color: #ffffff; font-size: 0.9rem;
+          border: 1px solid rgba(45,80,112,0.4);
         }
         .validity-input {
-          width: 60px; padding: 0.5rem; background: rgba(10,22,40,0.7);
-          border: 1px solid rgba(45,80,112,0.3); border-radius: 6px;
+          width: 60px; padding: 0.5rem; background: #0a1628;
+          border: 2px solid rgba(45,80,112,0.5); border-radius: 6px;
           color: #ffffff; font-size: 0.95rem; text-align: center; outline: none;
           font-family: inherit;
         }
@@ -545,8 +547,8 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
 
         /* Notes */
         .notes-input {
-          width: 100%; padding: 0.85rem; background: rgba(10,22,40,0.7);
-          border: 1px solid rgba(45,80,112,0.3); border-radius: 10px;
+          width: 100%; padding: 0.85rem; background: #0a1628;
+          border: 2px solid rgba(45,80,112,0.5); border-radius: 10px;
           color: #ffffff; font-size: 0.9rem; resize: vertical; outline: none;
           font-family: inherit;
         }
