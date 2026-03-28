@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import CreateOfferForm from '@/components/offers/create-offer-form';
 
 // ── Types ────────────────────────────────────────────────────────────
 interface OfferItem {
@@ -78,6 +79,25 @@ export default function OffersPage() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'standard' | 'comparison'>('all');
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+
+  // Client list for the create form
+  const dummyClients = [
+    { client_id: 'CLI-2026-0001', client_name: 'DIANA SHIPPING SERVICES SA', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0005', client_name: 'CENTROFIN', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0015', client_name: 'ASTRA SHIPMANAGEMENT INC', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0018', client_name: 'AIMS ADELE SHIPHOLDING LTD', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0020', client_name: 'ANOSIS MARITIME SA', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0022', client_name: 'CROSSWORLD MARINE SERVICES INC', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0038', client_name: 'EFNAV COMPANY LIMITED', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0040', client_name: 'GOLDEN UNION SHIPPING CO SA', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0045', client_name: 'HEALTHPLUS DIAGNOSTIC CLINIC INC', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0047', client_name: 'OMICRON SHIP MANAGEMENT INC', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0049', client_name: 'KYKLADES MARITIME CORPORATION', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0051', client_name: 'MINOA MARINE LIMITED', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0053', client_name: 'LEADER MARINE', client_type: 'parent', parent_client_id: null },
+    { client_id: 'CLI-2026-0061', client_name: 'IONIC', client_type: 'parent', parent_client_id: null },
+  ];
 
   // ── Stats ────────────────────────────────────────────────────────
   const stats = useMemo(() => {
@@ -132,7 +152,7 @@ export default function OffersPage() {
           <button className="btn-create comparison" onClick={() => alert('Create Comparison Quote - coming soon')}>
             📊 New Comparison
           </button>
-          <button className="btn-create standard" onClick={() => alert('Create Standard Offer - coming soon')}>
+          <button className="btn-create standard" onClick={() => setShowCreate(true)}>
             + New Offer
           </button>
         </div>
@@ -403,6 +423,26 @@ export default function OffersPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Create Offer Form */}
+      {showCreate && (
+        <CreateOfferForm
+          clients={dummyClients}
+          onClose={() => setShowCreate(false)}
+          onSave={(offerData) => {
+            const newOffer: Offer = {
+              offer_id: `OFF-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`,
+              offer_type: 'standard',
+              status: 'draft',
+              created_date: new Date().toISOString().split('T')[0],
+              ...offerData,
+            };
+            setOffers(prev => [newOffer, ...prev]);
+            setShowCreate(false);
+            alert(`✅ Offer ${newOffer.offer_id} saved as Draft!`);
+          }}
+        />
       )}
 
       <style jsx>{`
