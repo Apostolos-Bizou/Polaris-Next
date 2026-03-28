@@ -142,12 +142,12 @@ export function useDashboard() {
       const data = await res.json();
       if (data.summary) {
         setStats({
-          active_clients: data.summary.active_clients || 0,
-          open_offers: data.summary.open_offers || 0,
-          active_contracts: data.summary.active_contracts || 0,
-          total_members: data.summary.total_members || 0,
-          pending_signatures: data.summary.pending_signatures || 0,
-        });
+        active_clients: 0,
+        open_offers: 0,
+        active_contracts: 0,
+        total_members: data.members || data.data?.total_members || 0,
+        pending_signatures: 0,
+      });
       }
     } catch (err) {
       console.error("Failed to load stats:", err);
@@ -317,3 +317,4 @@ export function useDashboard() {
     refresh,
   };
 }
+

@@ -77,15 +77,15 @@ providers.push(
         credentials.password
       );
 
-      if (!result.success || !result.user) return null;
+      if (!result.success || !result.data) return null;
 
       return {
-        id: result.user.id || credentials.username,
-        name: result.user.name || credentials.username,
-        email: result.user.email || `${credentials.username}@polaris.local`,
-        role: (result.user.role as "admin" | "client" | "viewer") || "viewer",
-        clientId: result.user.client_id,
-        clientName: result.user.client_name,
+        id: result.data.client_id || credentials.username,
+        name: result.data.full_name || credentials.username,
+        email: result.data.email || `${credentials.username}@polaris.local`,
+        role: (result.data.role as "admin" | "client" | "viewer") || "viewer",
+        clientId: result.data.client_id,
+        clientName: result.data.full_name,
       };
     },
   })
