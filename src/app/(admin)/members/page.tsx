@@ -358,7 +358,7 @@ export default function MembersPage() {
                     r.members > 0 && (
                       <tr key={i}>
                         <td className="detail-month">{r.month}</td>
-                        <td className="detail-members">{fmt(r.members)}</td>
+                        <td className={`detail-members ${r.change > 0 ? 'up' : r.change < 0 ? 'down' : 'flat'}`}>{fmt(r.members)}</td>
                         <td>
                           <span className={`detail-change ${r.change > 0 ? 'up' : r.change < 0 ? 'down' : ''}`}>
                             {r.change > 0 ? '+' : ''}{r.change}
@@ -504,7 +504,10 @@ export default function MembersPage() {
         .detail-table th { font-size: 0.85rem; color: #7aa0c0; text-align: left; padding: 0.75rem 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.3); font-weight: 600; }
         .detail-table td { padding: 0.65rem 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.1); }
         .detail-month { font-weight: 600; color: #ffffff; }
-        .detail-members { font-weight: 700; color: #ffffff; font-size: 1.05rem; }
+        .detail-members { font-weight: 700; font-size: 1.05rem; }
+        .detail-members.up { color: #4CAF50; }
+        .detail-members.down { color: #e74c3c; }
+        .detail-members.flat { color: #ffffff; }
         .detail-change { display: flex; align-items: center; gap: 0.4rem; }
         .detail-change.up { color: #4CAF50; } .detail-change.down { color: #e74c3c; }
         .dot { font-size: 0.9rem; } .dot.green { color: #4CAF50; } .dot.red { color: #e74c3c; } .dot.yellow { color: #FF9800; }
