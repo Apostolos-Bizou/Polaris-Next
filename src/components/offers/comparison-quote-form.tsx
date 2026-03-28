@@ -346,33 +346,33 @@ export default function ComparisonQuoteForm({ onClose, onSave, clients }: Props)
         }
 
         /* Step 2: Plan cards */
-        .plans-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.6rem; }
+        .plans-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
         .cq-plan-card {
           border: 2px solid rgba(45,80,112,0.4); border-radius: 12px;
           background: #0a1628; transition: all 0.3s; cursor: pointer; overflow: hidden;
         }
         .cq-plan-card.selected { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .cq-plan-top {
-          display: flex; align-items: center; gap: 0.5rem;
-          padding: 1rem 0.75rem;
+          display: flex; align-items: center; gap: 0.4rem;
+          padding: 0.85rem 0.6rem;
         }
         .cq-plan-check {
-          width: 24px; height: 24px; border: 2px solid rgba(45,80,112,0.5);
+          width: 22px; height: 22px; border: 2px solid rgba(45,80,112,0.5);
           border-radius: 6px; display: flex; align-items: center; justify-content: center;
-          font-size: 0.8rem; color: white; flex-shrink: 0;
+          font-size: 0.75rem; color: white; flex-shrink: 0;
         }
-        .cq-plan-icon { font-size: 1.5rem; }
-        .cq-plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.05rem; }
+        .cq-plan-icon { font-size: 1.2rem; }
+        .cq-plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; }
         .cq-plan-info {
-          display: flex; gap: 0.5rem; padding: 0.6rem 0.75rem;
-          border-top: 1px solid rgba(45,80,112,0.2); font-size: 0.8rem;
+          display: flex; gap: 0.4rem; padding: 0.85rem 0.6rem;
+          border-top: 1px solid rgba(45,80,112,0.2);
         }
         .cq-plan-info div { flex: 1; }
-        .cq-plan-info span { color: #5a6a7a; display: block; font-size: 0.7rem; }
-        .cq-plan-info strong { color: #ffffff; font-size: 1rem; }
+        .cq-plan-info span { color: #5a6a7a; display: block; font-size: 0.75rem; margin-bottom: 0.2rem; }
+        .cq-plan-info strong { color: #ffffff; font-size: 1.15rem; font-family: 'Montserrat', sans-serif; }
         .cq-dental-toggle {
           display: flex; align-items: center; gap: 0.4rem;
-          padding: 0.5rem 0.6rem; background: rgba(139,92,246,0.1);
+          padding: 0.6rem 0.6rem; background: rgba(139,92,246,0.1);
           border-top: 1px solid rgba(139,92,246,0.2); cursor: pointer;
           font-size: 0.8rem; color: #a78bfa;
         }
