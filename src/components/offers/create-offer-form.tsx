@@ -167,8 +167,8 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
   const parentClients = clients.filter(c => c.client_type === 'parent').sort((a, b) => a.client_name.localeCompare(b.client_name));
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal-box">
         {/* Header */}
         <div className="modal-header">
           <div>
@@ -393,24 +393,24 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
       <style jsx>{`
         .modal-overlay {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0,0,0,0.75); z-index: 1000;
-          display: flex; align-items: flex-start; justify-content: center;
-          padding: 2rem; overflow-y: auto;
+          background: #0a1628; z-index: 1000;
+          overflow-y: auto;
         }
         .modal-box {
-          background: linear-gradient(145deg, #0d1f2d, #0a1628);
-          border: 1px solid #2d5070; border-radius: 20px;
-          width: 100%; max-width: 900px; margin: 1rem auto;
+          background: #0a1628;
+          width: 100%; max-width: 1200px; margin: 0 auto;
+          min-height: 100vh;
         }
         .modal-header {
           display: flex; justify-content: space-between; align-items: flex-start;
-          padding: 1.5rem 2rem; border-bottom: 1px solid rgba(45,80,112,0.3);
+          padding: 1.5rem 2.5rem; border-bottom: 2px solid rgba(212,175,55,0.3);
+          position: sticky; top: 0; background: #0a1628; z-index: 10;
         }
-        .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 700; color: #D4AF37; }
-        .modal-sub { color: #7aa0c0; font-size: 0.9rem; margin-top: 0.25rem; }
-        .modal-close { background: none; border: none; color: #7aa0c0; font-size: 1.5rem; cursor: pointer; }
-        .modal-close:hover { color: #e74c3c; }
-        .modal-body { padding: 1.5rem 2rem; }
+        .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: #D4AF37; }
+        .modal-sub { color: #7aa0c0; font-size: 0.95rem; margin-top: 0.25rem; }
+        .modal-close { background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.3); color: #EF5350; font-size: 1.5rem; cursor: pointer; padding: 0.4rem 0.8rem; border-radius: 8px; }
+        .modal-close:hover { background: rgba(231,76,60,0.3); }
+        .modal-body { padding: 2rem 2.5rem; }
 
         /* Form Sections */
         .form-section { margin-bottom: 1.5rem; }
@@ -448,7 +448,7 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
         .tier-sub { font-size: 0.75rem; color: #7aa0c0; margin-top: 0.15rem; }
 
         /* Plans Grid */
-        .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+        .plans-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
         .plan-card {
           border: 2px solid rgba(45,80,112,0.3); border-radius: 12px;
           overflow: hidden; transition: all 0.3s; background: rgba(10,22,40,0.5);
@@ -458,8 +458,8 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
           display: flex; align-items: center; gap: 0.5rem;
           padding: 0.75rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.2);
         }
-        .plan-icon { font-size: 1.3rem; }
-        .plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.95rem; color: #ffffff; flex: 1; }
+        .plan-icon { font-size: 1.6rem; }
+        .plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #ffffff; flex: 1; }
         .plan-check { font-size: 1.1rem; color: #5a6a7a; }
         .plan-check.checked { color: #4CAF50; }
         .plan-pricing {
@@ -467,21 +467,21 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
           font-size: 0.8rem; color: #7aa0c0;
         }
         .price-item { display: flex; flex-direction: column; flex: 1; }
-        .price-item span { font-size: 0.7rem; color: #5a6a7a; }
-        .price-item strong { color: #ffffff; font-size: 0.85rem; }
+        .price-item span { font-size: 0.75rem; color: #5a6a7a; }
+        .price-item strong { color: #ffffff; font-size: 1rem; }
         .plan-inputs {
-          display: flex; gap: 0.5rem; padding: 0.75rem 1rem;
+          display: flex; gap: 0.75rem; padding: 1rem 1rem;
           border-top: 1px solid rgba(45,80,112,0.2); background: rgba(212,175,55,0.05);
         }
         .input-group { flex: 1; }
-        .input-group label { display: block; font-size: 0.7rem; color: #7aa0c0; margin-bottom: 0.25rem; text-transform: uppercase; }
+        .input-group label { display: block; font-size: 0.8rem; color: #D4AF37; margin-bottom: 0.35rem; text-transform: uppercase; font-weight: 600; }
         .input-group input {
-          width: 100%; padding: 0.5rem; background: rgba(10,22,40,0.7);
-          border: 1px solid rgba(45,80,112,0.3); border-radius: 6px;
-          color: #ffffff; font-size: 0.95rem; text-align: center; outline: none;
-          font-family: inherit;
+          width: 100%; padding: 0.75rem; background: rgba(10,22,40,0.9);
+          border: 2px solid rgba(45,80,112,0.4); border-radius: 8px;
+          color: #ffffff; font-size: 1.4rem; text-align: center; outline: none;
+          font-family: 'Montserrat', sans-serif; font-weight: 700;
         }
-        .input-group input:focus { border-color: #D4AF37; }
+        .input-group input:focus { border-color: #D4AF37; box-shadow: 0 0 0 3px rgba(212,175,55,0.15); }
 
         /* Dental */
         .dental-section { padding: 1rem 1.25rem; background: rgba(45,80,112,0.1); border-radius: 12px; border: 1px solid rgba(45,80,112,0.25); }
@@ -535,13 +535,13 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
           background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; text-align: right;
         }
         .cost-label { font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; margin-bottom: 0.4rem; }
-        .cost-value { font-size: 1.6rem; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+        .cost-value { font-size: 2rem; font-weight: 700; font-family: 'Montserrat', sans-serif; }
         .grand-total {
-          background: #D4AF37; color: #1e3a5f; padding: 1rem 1.25rem;
-          border-radius: 8px; display: flex; justify-content: space-between; align-items: center;
+          background: #D4AF37; color: #1e3a5f; padding: 1.25rem 1.5rem;
+          border-radius: 10px; display: flex; justify-content: space-between; align-items: center;
         }
-        .grand-total span:first-child { font-size: 1.1rem; font-weight: 600; }
-        .grand-value { font-size: 2rem; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+        .grand-total span:first-child { font-size: 1.2rem; font-weight: 700; }
+        .grand-value { font-size: 2.5rem; font-weight: 800; font-family: 'Montserrat', sans-serif; }
 
         /* Notes */
         .notes-input {
@@ -565,17 +565,22 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
         .action-btn.doc { background: #1e3a5f; color: white; }
         .action-btn.save { background: #28a745; color: white; }
 
-        @media (max-width: 768px) {
-          .plans-grid { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 1024px) {
+          .plans-grid { grid-template-columns: repeat(3, 1fr); }
           .tier-grid { flex-wrap: wrap; }
           .cost-grid { grid-template-columns: 1fr; }
           .action-grid { grid-template-columns: repeat(2, 1fr); }
-          .modal-body { padding: 1rem; }
-          .grand-value { font-size: 1.5rem; }
+        }
+        @media (max-width: 768px) {
+          .plans-grid { grid-template-columns: repeat(2, 1fr); }
+          .modal-body { padding: 1.5rem; }
+          .modal-header { padding: 1.25rem 1.5rem; }
+          .grand-value { font-size: 1.8rem; }
         }
         @media (max-width: 480px) {
           .plans-grid { grid-template-columns: 1fr; }
           .action-grid { grid-template-columns: 1fr; }
+          .modal-body { padding: 1rem; }
         }
       `}</style>
     </div>
