@@ -276,6 +276,7 @@ export default function MembersPage() {
       {activeTab === 'tracker' && (
         <div className="tracker-fullscreen">
           <div className="tracker-toolbar">
+            <button className="tracker-back" onClick={() => setActiveTab('overview')}>✕ Close Tracker</button>
             <div className="search-box"><span>🔍</span><input placeholder="Search entity..." value={trackerSearch} onChange={(e) => setTrackerSearch(e.target.value)} />{trackerSearch && <button onClick={() => setTrackerSearch('')}>✕</button>}</div>
             <select className="parent-filter" value={trackerGroup} onChange={(e) => setTrackerGroup(e.target.value)}>
               <option value="all">All Groups</option>
@@ -433,8 +434,10 @@ export default function MembersPage() {
         .ratio-text { font-size: 0.7rem; color: #5a6a7a; }
 
         /* ═══ TRACKER TAB - FULL SCREEN ═══ */
-        .tracker-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a1628; z-index: 900; display: flex; flex-direction: column; }
+        .tracker-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a1628; z-index: 9999; display: flex; flex-direction: column; }
         .tracker-toolbar { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; padding: 0.75rem 1.25rem; background: #0d1f2d; border-bottom: 2px solid rgba(212,175,55,0.3); flex-shrink: 0; }
+        .tracker-back { background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.4); color: #EF5350; padding: 0.5rem 1rem; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; white-space: nowrap; }
+        .tracker-back:hover { background: rgba(231,76,60,0.3); }
         .tracker-legend { display: flex; gap: 1rem; font-size: 0.85rem; margin-left: auto; }
         .legend-up { color: #4CAF50; } .legend-down { color: #e74c3c; } .legend-neutral { color: #FF9800; }
         .tracker-scroll { flex: 1; overflow: auto; }
