@@ -24,7 +24,7 @@ export function CategoryAnalysis({ categories }: CategoryAnalysisProps) {
   if (!categories.length) return null;
 
   const totalCases = categories.reduce((a, c) => a + (c.cases || 0), 0);
-  const totalCost = categories.reduce((a, c) => a + (c.cost || 0), 0);
+  const totalCost = categories.reduce((a, c) => a + (c.cost_usd || c.cost_usd || c.cost || 0), 0);
 
   return (
     <div className="section-polaris">
@@ -144,3 +144,5 @@ export function CategoryAnalysis({ categories }: CategoryAnalysisProps) {
     </div>
   );
 }
+
+

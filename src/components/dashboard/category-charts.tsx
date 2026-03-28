@@ -50,7 +50,7 @@ export function CategoryCharts({ categories }: CategoryChartsProps) {
   const costBarData = {
     labels: categories.map((c) => c.category),
     datasets: [{
-      data: categories.map((c) => c.cost || 0),
+      data: categories.map((c) => c.cost_usd || c.cost_usd || c.cost || 0),
       backgroundColor: categories.map((_, i) => COLORS[i % COLORS.length] + "CC"),
       borderColor: categories.map((_, i) => COLORS[i % COLORS.length]),
       borderWidth: 1,
@@ -130,3 +130,5 @@ export function CategoryCharts({ categories }: CategoryChartsProps) {
     </div>
   );
 }
+
+
