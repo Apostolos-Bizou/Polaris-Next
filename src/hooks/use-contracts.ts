@@ -356,19 +356,51 @@ export function useContracts() {
     return list;
   }, [allContracts, filters, activeTab]);
 
-  // ── Unique clients for filter dropdown ───────────────────────────────
-  const clientOptions = useMemo(() => {
-    const parents = allContracts
-      .filter(c => c.client_type === "parent")
-      .map(c => ({ id: c.client_id, name: c.client_name }));
-
-    // Deduplicate
+  // ── Client options for filter dropdown (Groups + Individual hierarchy) ──
+  const clientGroups = useMemo(() => {
+    // Deduplicate by client_id
     const seen = new Set<string>();
-    return parents.filter(p => {
-      if (seen.has(p.id)) return false;
-      seen.add(p.id);
+    const unique = allContracts.filter(c => {
+      if (seen.has(c.client_id)) return false;
+      seen.add(c.client_id);
       return true;
-    }).sort((a, b) => a.name.localeCompare(b.name));
+    });
+
+    const parents = unique
+      .filter(c => c.client_type === "parent")
+      .sort((a, b) => a.client_name.localeCompare(b.client_name));
+
+    const subsidiaries = unique
+      .filter(c => c.client_type === "subsidiary");
+
+    // Groups: parents with subsidiaries
+    const groups = parents
+      .filter(p => subsidiaries.some(s => s.parent_client_id === p.client_id))
+      .map(p => {
+        const subs = subsidiaries.filter(s => s.parent_client_id === p.client_id);
+        return { id: p.client_id, name: p.client_name, entityCount: subs.length + 1 };
+      });
+
+    // Organized individual list (parent → └ subsidiaries)
+    const organized: Array<{ id: string; name: string; isChild: boolean }> = [];
+    parents.forEach(p => {
+      organized.push({ id: p.client_id, name: p.client_name, isChild: false });
+      subsidiaries
+        .filter(s => s.parent_client_id === p.client_id)
+        .sort((a, b) => a.client_name.localeCompare(b.client_name))
+        .forEach(s => {
+          organized.push({ id: s.client_id, name: s.client_name, isChild: true });
+        });
+    });
+
+    // Add orphan subsidiaries
+    const usedIds = new Set(organized.map(o => o.id));
+    subsidiaries
+      .filter(s => !usedIds.has(s.client_id))
+      .sort((a, b) => a.client_name.localeCompare(b.client_name))
+      .forEach(s => organized.push({ id: s.client_id, name: s.client_name, isChild: true }));
+
+    return { groups, organized };
   }, [allContracts]);
 
   // ── Filter update helpers ────────────────────────────────────────────
@@ -398,7 +430,7 @@ export function useContracts() {
     filteredContracts,
     activeTab,
     filters,
-    clientOptions,
+    clientGroups,
     resultSummary,
     setActiveTab,
     updateFilter,

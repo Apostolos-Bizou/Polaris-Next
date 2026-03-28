@@ -9,7 +9,7 @@ export default function ContractsPage() {
   const router = useRouter();
   const {
     loading, error, stats, filteredContracts, activeTab, filters,
-    clientOptions, resultSummary,
+    clientGroups, resultSummary,
     setActiveTab, updateFilter, clearFilters, refresh,
     getStatusClass, formatContractDate, getDaysUntilExpiry,
   } = useContracts();
@@ -138,11 +138,26 @@ export default function ContractsPage() {
             onChange={e => updateFilter("client", e.target.value)}
           >
             <option value="">All Clients</option>
-            {clientOptions.map(c => (
-              <option key={c.id} value={`GROUP:${c.id}`}>
-                🏢 {c.name}
-              </option>
-            ))}
+
+            {/* Groups (Parent + Subsidiaries) */}
+            {clientGroups.groups.length > 0 && (
+              <optgroup label="🏢 Groups (Parent + Subsidiaries)">
+                {clientGroups.groups.map(g => (
+                  <option key={`GROUP:${g.id}`} value={`GROUP:${g.id}`}>
+                    🏢 {g.name} ({g.entityCount} entities)
+                  </option>
+                ))}
+              </optgroup>
+            )}
+
+            {/* Individual clients with hierarchy */}
+            <optgroup label="👤 All Clients">
+              {clientGroups.organized.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.isChild ? "└ " : "🏢 "}{c.name}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 
