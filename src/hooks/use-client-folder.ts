@@ -173,16 +173,37 @@ export function useClientFolder(clientId: string) {
     setError("");
 
     try {
-      // In production: fetch from API
-      // const res = await fetch(`/api/proxy/getClientDetails?clientId=${clientId}`);
-      // For now: use dummy data
+      // Fetch all clients from API
+      const res = await fetch("/api/proxy/getClients");
+      const data = await res.json();
+      const allClients = data.data || data.clients || [];
 
-      const clientData = CLIENTS_DB[clientId];
-      if (!clientData) {
+      // Find this client
+      const found = allClients.find(
+        (c: any) => c.client_id === clientId || c.id === clientId
+      );
+
+      if (!found) {
         setError("Client not found");
         setLoading(false);
         return;
       }
+
+      // Map API data to ClientInfo
+      const clientData: ClientInfo = {
+        client_id: found.client_id || found.id || clientId,
+        client_name: found.client_name || found.name || "Unknown",
+        client_type: (found.client_type || "").toLowerCase(),
+        parent_client_id: found.parent_client_id || "",
+        total_members: found.total_members || found.member_count || 0,
+        status: found.status || "active",
+        country: found.country || "Greece",
+        contact_name: found.contact_name || "",
+        contact_email: found.contact_email || "",
+        contract_start: found.contract_start || "",
+        contract_end: found.contract_end || "",
+        plan_type: found.plan_type || "",
+      };
 
       setClient(clientData);
 
@@ -201,9 +222,22 @@ export function useClientFolder(clientId: string) {
 
       // Find subsidiaries if parent
       if (clientData.client_type === "parent") {
-        const subs = Object.values(CLIENTS_DB).filter(
-          c => c.parent_client_id === clientId
-        );
+        const subs = allClients
+          .filter((c: any) => c.parent_client_id === clientId)
+          .map((c: any) => ({
+            client_id: c.client_id || c.id || "",
+            client_name: c.client_name || c.name || "",
+            client_type: (c.client_type || "").toLowerCase(),
+            parent_client_id: c.parent_client_id || "",
+            total_members: c.total_members || c.member_count || 0,
+            status: c.status || "active",
+            country: c.country || "Greece",
+            contact_name: c.contact_name || "",
+            contact_email: c.contact_email || "",
+            contract_start: c.contract_start || "",
+            contract_end: c.contract_end || "",
+            plan_type: c.plan_type || "",
+          }));
         setSubsidiaries(subs);
       } else {
         setSubsidiaries([]);
