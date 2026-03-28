@@ -411,65 +411,65 @@ export default function OffersPage() {
         /* Header */
         .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
         .page-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 700; color: #ffffff; }
-        .page-subtitle { color: #7a8f7a; font-size: 0.9rem; margin-top: 0.25rem; }
+        .page-subtitle { color: #7aa0c0; font-size: 0.9rem; margin-top: 0.25rem; }
         .header-actions { display: flex; gap: 0.75rem; }
         .btn-create {
           border: none; padding: 0.75rem 1.25rem; border-radius: 12px;
           font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem;
           cursor: pointer; transition: all 0.3s;
         }
-        .btn-create.standard { background: linear-gradient(135deg, #2E7D32, #4CAF50); color: white; }
+        .btn-create.standard { background: linear-gradient(135deg, #1e3a5f, #2d5070); color: white; }
         .btn-create.comparison { background: linear-gradient(135deg, #6d28d9, #8b5cf6); color: white; }
         .btn-create:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
 
         /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card {
-          background: linear-gradient(145deg, rgba(20,40,20,0.9), rgba(10,26,10,0.95));
-          border: 1px solid rgba(46,125,50,0.25); border-radius: 16px; padding: 1.25rem;
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25); border-radius: 16px; padding: 1.25rem;
           text-align: center; cursor: pointer; transition: all 0.3s;
         }
-        .stat-card:hover { transform: translateY(-3px); border-color: rgba(46,125,50,0.5); }
+        .stat-card:hover { transform: translateY(-3px); border-color: rgba(45,80,112,0.5); }
         .stat-card.draft { border-left: 4px solid #90A4AE; }
         .stat-card.sent { border-left: 4px solid #42A5F5; }
         .stat-card.accepted { border-left: 4px solid #66BB6A; }
         .stat-card.rejected { border-left: 4px solid #EF5350; }
         .stat-icon { font-size: 1.5rem; margin-bottom: 0.25rem; }
-        .stat-value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 700; color: #e8f5e9; }
-        .stat-label { font-size: 0.85rem; color: #7a8f7a; }
+        .stat-value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 700; color: #ffffff; }
+        .stat-label { font-size: 0.85rem; color: #7aa0c0; }
         .stat-sub { font-size: 0.8rem; color: #D4AF37; margin-top: 0.25rem; font-weight: 600; }
 
         /* Toolbar */
         .toolbar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
         .search-box {
           flex: 1; min-width: 250px; display: flex; align-items: center;
-          background: rgba(10,26,10,0.7); border: 1px solid rgba(46,125,50,0.3);
+          background: rgba(10,22,40,0.7); border: 1px solid rgba(45,80,112,0.3);
           border-radius: 12px; overflow: hidden;
         }
         .search-icon { padding: 0 0.75rem; }
-        .search-input { flex: 1; background: transparent; border: none; color: #e8f5e9; padding: 0.75rem 0.5rem; font-size: 0.9rem; outline: none; }
-        .search-input::placeholder { color: #5a6f5a; }
-        .search-clear { background: none; border: none; color: #7a8f7a; padding: 0 0.75rem; cursor: pointer; }
+        .search-input { flex: 1; background: transparent; border: none; color: #ffffff; padding: 0.75rem 0.5rem; font-size: 0.9rem; outline: none; }
+        .search-input::placeholder { color: #5a6a7a; }
+        .search-clear { background: none; border: none; color: #7aa0c0; padding: 0 0.75rem; cursor: pointer; }
         .filter-group { display: flex; gap: 0.25rem; }
         .filter-btn {
-          background: rgba(10,26,10,0.7); border: 1px solid rgba(46,125,50,0.2);
-          color: #7a8f7a; padding: 0.5rem 0.75rem; border-radius: 8px;
+          background: rgba(10,22,40,0.7); border: 1px solid rgba(45,80,112,0.2);
+          color: #7aa0c0; padding: 0.5rem 0.75rem; border-radius: 8px;
           font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-family: inherit;
         }
-        .filter-btn.active { background: rgba(46,125,50,0.2); border-color: rgba(46,125,50,0.5); color: #4CAF50; font-weight: 600; }
+        .filter-btn.active { background: rgba(45,80,112,0.2); border-color: rgba(45,80,112,0.5); color: #4CAF50; font-weight: 600; }
         .clear-filter {
           background: rgba(239,83,80,0.1); border: 1px solid rgba(239,83,80,0.3);
           color: #EF5350; padding: 0.4rem 0.75rem; border-radius: 8px;
           font-size: 0.8rem; cursor: pointer; font-family: inherit;
         }
 
-        .results-count { color: #5a6f5a; font-size: 0.85rem; margin-bottom: 0.75rem; }
+        .results-count { color: #5a6a7a; font-size: 0.85rem; margin-bottom: 0.75rem; }
         .filter-tag { background: rgba(212,175,55,0.15); color: #D4AF37; padding: 0.15rem 0.5rem; border-radius: 6px; margin-left: 0.5rem; font-size: 0.8rem; text-transform: capitalize; }
 
         /* Table */
         .table-container {
-          background: linear-gradient(145deg, rgba(20,40,20,0.9), rgba(10,26,10,0.95));
-          border: 1px solid rgba(46,125,50,0.25); border-radius: 16px; overflow: hidden;
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25); border-radius: 16px; overflow: hidden;
         }
         .table-scroll { overflow-x: auto; }
         .offers-table { width: 100%; border-collapse: collapse; }
@@ -479,33 +479,33 @@ export default function OffersPage() {
           border-bottom: 2px solid rgba(212,175,55,0.2); white-space: nowrap;
           text-transform: uppercase; letter-spacing: 1px;
         }
-        .offers-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(46,125,50,0.1); font-size: 0.9rem; color: #b8c9b8; }
+        .offers-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.1); font-size: 0.9rem; color: rgba(184,212,232,0.7); }
         .offer-row { transition: background 0.2s; }
-        .offer-row:hover td { background: rgba(46,125,50,0.06); }
+        .offer-row:hover td { background: rgba(45,80,112,0.06); }
 
         .offer-id { font-family: monospace; color: #D4AF37; font-weight: 600; font-size: 0.85rem; }
         .client-cell { min-width: 200px; }
-        .client-name { color: #e8f5e9; font-weight: 600; }
-        .contact-name { font-size: 0.75rem; color: #5a6f5a; margin-top: 0.1rem; }
+        .client-name { color: #ffffff; font-weight: 600; }
+        .contact-name { font-size: 0.75rem; color: #5a6a7a; margin-top: 0.1rem; }
         .type-badge { padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
         .type-badge.standard { background: rgba(33,150,243,0.15); color: #42A5F5; }
         .type-badge.comparison { background: rgba(139,92,246,0.15); color: #a78bfa; }
         .members-cell { white-space: nowrap; }
-        .members-total { font-weight: 700; color: #e8f5e9; }
-        .members-detail { font-size: 0.7rem; color: #5a6f5a; }
+        .members-total { font-weight: 700; color: #ffffff; }
+        .members-detail { font-size: 0.7rem; color: #5a6a7a; }
         .amount-cell { font-weight: 600; color: #4CAF50; white-space: nowrap; }
         .dental-badge { padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.8rem; }
         .dental-badge.yes { background: rgba(76,175,80,0.1); color: #4CAF50; }
-        .dental-badge.no { color: #5a6f5a; }
+        .dental-badge.no { color: #5a6a7a; }
         .status-badge { padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
-        .date-cell { white-space: nowrap; font-size: 0.85rem; color: #7a8f7a; }
+        .date-cell { white-space: nowrap; font-size: 0.85rem; color: #7aa0c0; }
         .action-group { display: flex; gap: 0.25rem; }
         .action-btn {
-          background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.2);
+          background: rgba(45,80,112,0.1); border: 1px solid rgba(45,80,112,0.2);
           border-radius: 8px; padding: 0.35rem 0.5rem; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
         }
-        .action-btn:hover { background: rgba(46,125,50,0.25); border-color: rgba(46,125,50,0.5); }
-        .empty-row { text-align: center; color: #5a6f5a; padding: 3rem 1rem !important; }
+        .action-btn:hover { background: rgba(45,80,112,0.25); border-color: rgba(45,80,112,0.5); }
+        .empty-row { text-align: center; color: #5a6a7a; padding: 3rem 1rem !important; }
 
         /* Modal */
         .modal-overlay {
@@ -515,45 +515,45 @@ export default function OffersPage() {
         }
         .modal-box {
           background: linear-gradient(145deg, #0d1f0d, #0a1a0a);
-          border: 1px solid rgba(46,125,50,0.3); border-radius: 20px;
+          border: 1px solid rgba(45,80,112,0.3); border-radius: 20px;
           width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto;
         }
         .modal-header {
           display: flex; justify-content: space-between; align-items: flex-start;
-          padding: 1.5rem; border-bottom: 1px solid rgba(46,125,50,0.2);
+          padding: 1.5rem; border-bottom: 1px solid rgba(45,80,112,0.2);
         }
         .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #D4AF37; }
-        .modal-subtitle { color: #b8c9b8; font-size: 0.9rem; margin-top: 0.25rem; }
-        .modal-close { background: none; border: none; color: #7a8f7a; font-size: 1.5rem; cursor: pointer; }
+        .modal-subtitle { color: rgba(184,212,232,0.7); font-size: 0.9rem; margin-top: 0.25rem; }
+        .modal-close { background: none; border: none; color: #7aa0c0; font-size: 1.5rem; cursor: pointer; }
         .modal-close:hover { color: #e74c3c; }
         .modal-body { padding: 1.5rem; }
 
         .detail-row { display: flex; gap: 1.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
         .detail-item { flex: 1; min-width: 150px; }
-        .detail-label { font-size: 0.8rem; color: #5a6f5a; margin-bottom: 0.25rem; display: block; }
-        .detail-value { color: #e8f5e9; font-size: 0.95rem; }
+        .detail-label { font-size: 0.8rem; color: #5a6a7a; margin-bottom: 0.25rem; display: block; }
+        .detail-value { color: #ffffff; font-size: 0.95rem; }
         .detail-section-title {
           font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700;
-          color: #e8f5e9; margin: 1.5rem 0 1rem; padding-bottom: 0.5rem;
-          border-bottom: 1px solid rgba(46,125,50,0.2);
+          color: #ffffff; margin: 1.5rem 0 1rem; padding-bottom: 0.5rem;
+          border-bottom: 1px solid rgba(45,80,112,0.2);
         }
 
         .financial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
         .fin-card {
-          background: rgba(10,26,10,0.5); border: 1px solid rgba(46,125,50,0.15);
+          background: rgba(10,22,40,0.5); border: 1px solid rgba(45,80,112,0.15);
           border-radius: 12px; padding: 1rem; text-align: center;
         }
         .fin-card.total { border-color: rgba(212,175,55,0.3); background: rgba(212,175,55,0.08); grid-column: 1 / -1; }
-        .fin-label { font-size: 0.8rem; color: #7a8f7a; }
-        .fin-value { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #e8f5e9; margin: 0.25rem 0; }
+        .fin-label { font-size: 0.8rem; color: #7aa0c0; }
+        .fin-value { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #ffffff; margin: 0.25rem 0; }
         .fin-value.gold { color: #D4AF37; font-size: 1.6rem; }
-        .fin-sub { font-size: 0.75rem; color: #5a6f5a; }
+        .fin-sub { font-size: 0.75rem; color: #5a6a7a; }
 
         .items-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
-        .items-table th { font-size: 0.75rem; color: #7a8f7a; text-align: left; padding: 0.5rem; border-bottom: 1px solid rgba(46,125,50,0.2); }
-        .items-table td { font-size: 0.85rem; color: #b8c9b8; padding: 0.5rem; border-bottom: 1px solid rgba(46,125,50,0.1); }
+        .items-table th { font-size: 0.75rem; color: #7aa0c0; text-align: left; padding: 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.2); }
+        .items-table td { font-size: 0.85rem; color: rgba(184,212,232,0.7); padding: 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.1); }
 
-        .modal-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(46,125,50,0.2); }
+        .modal-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(45,80,112,0.2); }
         .modal-btn {
           padding: 0.6rem 1rem; border-radius: 10px; border: none;
           font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;

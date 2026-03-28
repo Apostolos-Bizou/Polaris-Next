@@ -431,59 +431,59 @@ export default function ClientsPage() {
         /* Header */
         .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
         .page-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 700; color: #ffffff; }
-        .page-subtitle { color: #7a8f7a; font-size: 0.9rem; margin-top: 0.25rem; }
+        .page-subtitle { color: #7aa0c0; font-size: 0.9rem; margin-top: 0.25rem; }
         .add-btn {
-          background: linear-gradient(135deg, #2E7D32, #4CAF50);
+          background: linear-gradient(135deg, #1e3a5f, #2d5070);
           color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 12px;
           font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;
           cursor: pointer; transition: all 0.3s;
         }
-        .add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46,125,50,0.4); }
+        .add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(45,80,112,0.4); }
 
         /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card {
-          background: linear-gradient(145deg, rgba(20,40,20,0.9), rgba(10,26,10,0.95));
-          border: 1px solid rgba(46,125,50,0.25); border-radius: 16px; padding: 1.25rem;
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25); border-radius: 16px; padding: 1.25rem;
           text-align: center; transition: all 0.3s;
         }
-        .stat-card:hover { transform: translateY(-3px); border-color: rgba(46,125,50,0.5); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .stat-card:hover { transform: translateY(-3px); border-color: rgba(45,80,112,0.5); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
         .stat-card.gold { border-color: rgba(212,175,55,0.3); }
-        .stat-card.green { border-color: rgba(76,175,80,0.3); }
+        .stat-card.green { border-color: rgba(45,80,112,0.3); }
         .stat-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
-        .stat-value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 700; color: #e8f5e9; }
-        .stat-label { font-size: 0.85rem; color: #7a8f7a; margin-top: 0.25rem; }
+        .stat-value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 700; color: #ffffff; }
+        .stat-label { font-size: 0.85rem; color: #7aa0c0; margin-top: 0.25rem; }
 
         /* Toolbar */
         .toolbar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
         .search-box {
           flex: 1; min-width: 250px; position: relative; display: flex; align-items: center;
-          background: rgba(10,26,10,0.7); border: 1px solid rgba(46,125,50,0.3);
+          background: rgba(10,22,40,0.7); border: 1px solid rgba(45,80,112,0.3);
           border-radius: 12px; overflow: hidden;
         }
         .search-icon { padding: 0 0.75rem; font-size: 1rem; }
         .search-input {
-          flex: 1; background: transparent; border: none; color: #e8f5e9;
+          flex: 1; background: transparent; border: none; color: #ffffff;
           padding: 0.75rem 0.5rem; font-size: 0.9rem; outline: none;
         }
-        .search-input::placeholder { color: #5a6f5a; }
+        .search-input::placeholder { color: #5a6a7a; }
         .search-clear {
-          background: none; border: none; color: #7a8f7a; padding: 0 0.75rem;
+          background: none; border: none; color: #7aa0c0; padding: 0 0.75rem;
           cursor: pointer; font-size: 1rem;
         }
         .search-clear:hover { color: #e74c3c; }
         .filter-group, .view-group { display: flex; gap: 0.25rem; }
         .filter-btn, .view-btn {
-          background: rgba(10,26,10,0.7); border: 1px solid rgba(46,125,50,0.2);
-          color: #7a8f7a; padding: 0.5rem 0.75rem; border-radius: 8px;
+          background: rgba(10,22,40,0.7); border: 1px solid rgba(45,80,112,0.2);
+          color: #7aa0c0; padding: 0.5rem 0.75rem; border-radius: 8px;
           font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
           font-family: inherit;
         }
         .filter-btn.active, .view-btn.active {
-          background: rgba(46,125,50,0.2); border-color: rgba(46,125,50,0.5);
+          background: rgba(45,80,112,0.2); border-color: rgba(45,80,112,0.5);
           color: #4CAF50; font-weight: 600;
         }
-        .filter-btn:hover, .view-btn:hover { border-color: rgba(46,125,50,0.4); color: #b8c9b8; }
+        .filter-btn:hover, .view-btn:hover { border-color: rgba(45,80,112,0.4); color: rgba(184,212,232,0.7); }
         .expand-btn {
           background: none; border: 1px solid rgba(212,175,55,0.2);
           color: #D4AF37; padding: 0.5rem 0.75rem; border-radius: 8px;
@@ -492,7 +492,7 @@ export default function ClientsPage() {
         .expand-btn:hover { border-color: rgba(212,175,55,0.5); }
 
         /* Results count */
-        .results-count { color: #5a6f5a; font-size: 0.85rem; margin-bottom: 0.75rem; }
+        .results-count { color: #5a6a7a; font-size: 0.85rem; margin-bottom: 0.75rem; }
         .search-tag {
           background: rgba(212,175,55,0.15); color: #D4AF37;
           padding: 0.15rem 0.5rem; border-radius: 6px; margin-left: 0.5rem;
@@ -501,8 +501,8 @@ export default function ClientsPage() {
 
         /* Table */
         .table-container {
-          background: linear-gradient(145deg, rgba(20,40,20,0.9), rgba(10,26,10,0.95));
-          border: 1px solid rgba(46,125,50,0.25); border-radius: 16px;
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25); border-radius: 16px;
           overflow: hidden;
         }
         .table-scroll { overflow-x: auto; }
@@ -514,17 +514,17 @@ export default function ClientsPage() {
           white-space: nowrap; text-transform: uppercase; letter-spacing: 1px;
         }
         .client-table td {
-          padding: 0.75rem 1rem; border-bottom: 1px solid rgba(46,125,50,0.1);
-          font-size: 0.9rem; color: #b8c9b8; vertical-align: middle;
+          padding: 0.75rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.1);
+          font-size: 0.9rem; color: rgba(184,212,232,0.7); vertical-align: middle;
         }
 
         /* Row types */
         .client-row { transition: background 0.2s; }
-        .client-row:hover td { background: rgba(46,125,50,0.06); }
-        .parent-row td { background: rgba(20,40,20,0.3); }
-        .parent-row:hover td { background: rgba(46,125,50,0.12); }
-        .child-row td { background: rgba(10,20,10,0.2); }
-        .child-row:hover td { background: rgba(46,125,50,0.08); }
+        .client-row:hover td { background: rgba(45,80,112,0.06); }
+        .parent-row td { background: rgba(13,31,45,0.3); }
+        .parent-row:hover td { background: rgba(45,80,112,0.12); }
+        .child-row td { background: rgba(10,22,40,0.2); }
+        .child-row:hover td { background: rgba(45,80,112,0.08); }
 
         /* Expand */
         .expand-cell { text-align: center; width: 40px; }
@@ -533,19 +533,19 @@ export default function ClientsPage() {
           cursor: pointer; font-size: 0.85rem; padding: 0.25rem;
         }
         .toggle-btn:hover { color: #FFD700; }
-        .child-indent { color: rgba(46,125,50,0.4); font-size: 0.9rem; }
+        .child-indent { color: rgba(45,80,112,0.4); font-size: 0.9rem; }
 
         /* Name cell */
         .name-cell { min-width: 250px; }
         .client-name-row { display: flex; align-items: center; gap: 0.5rem; }
-        .client-name { color: #e8f5e9; font-weight: 500; }
+        .client-name { color: #ffffff; font-weight: 500; }
         .parent-name { font-weight: 700; color: #ffffff; }
         .child-count {
-          font-size: 0.7rem; color: #7a8f7a;
-          background: rgba(46,125,50,0.15); padding: 0.1rem 0.4rem;
+          font-size: 0.7rem; color: #7aa0c0;
+          background: rgba(45,80,112,0.15); padding: 0.1rem 0.4rem;
           border-radius: 6px;
         }
-        .client-id { font-size: 0.75rem; color: #5a6f5a; margin-top: 0.15rem; font-family: monospace; }
+        .client-id { font-size: 0.75rem; color: #5a6a7a; margin-top: 0.15rem; font-family: monospace; }
 
         /* Badges */
         .type-badge {
@@ -558,7 +558,7 @@ export default function ClientsPage() {
           padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.75rem;
           font-weight: 700; letter-spacing: 0.5px;
         }
-        .plan-badge.no-plan { color: #5a6f5a; background: none; }
+        .plan-badge.no-plan { color: #5a6a7a; background: none; }
         .status-badge {
           padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
         }
@@ -569,24 +569,24 @@ export default function ClientsPage() {
         /* Members */
         .members-cell { white-space: nowrap; }
         .member-total { font-weight: 700; color: #D4AF37; font-size: 1rem; }
-        .member-label { font-size: 0.75rem; color: #7a8f7a; margin-left: 0.25rem; }
+        .member-label { font-size: 0.75rem; color: #7aa0c0; margin-left: 0.25rem; }
 
         /* Contact */
         .contact-cell { min-width: 160px; }
-        .contact-name { color: #b8c9b8; font-size: 0.85rem; }
-        .contact-email { color: #5a6f5a; font-size: 0.75rem; margin-top: 0.1rem; }
-        .no-data { color: #3a4f3a; }
+        .contact-name { color: rgba(184,212,232,0.7); font-size: 0.85rem; }
+        .contact-email { color: #5a6a7a; font-size: 0.75rem; margin-top: 0.1rem; }
+        .no-data { color: #3a4a5a; }
 
         /* Actions */
         .action-btn {
-          background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.2);
+          background: rgba(45,80,112,0.1); border: 1px solid rgba(45,80,112,0.2);
           border-radius: 8px; padding: 0.35rem 0.5rem; cursor: pointer;
           font-size: 1rem; transition: all 0.2s;
         }
-        .action-btn:hover { background: rgba(46,125,50,0.25); border-color: rgba(46,125,50,0.5); }
+        .action-btn:hover { background: rgba(45,80,112,0.25); border-color: rgba(45,80,112,0.5); }
 
         /* Empty */
-        .empty-row { text-align: center; color: #5a6f5a; padding: 3rem 1rem !important; font-size: 1rem; }
+        .empty-row { text-align: center; color: #5a6a7a; padding: 3rem 1rem !important; font-size: 1rem; }
 
         /* Responsive */
         @media (max-width: 1024px) {

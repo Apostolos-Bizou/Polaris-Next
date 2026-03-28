@@ -111,19 +111,19 @@ export default function CategoryTrend({ categories, periods }: Props) {
       legend: {
         display: true,
         position: 'top' as const,
-        labels: { color: '#b8c9b8', font: { size: 14, weight: 'bold' as const }, padding: 20 },
+        labels: { color: 'rgba(184,212,232,0.7)', font: { size: 14, weight: 'bold' as const }, padding: 20 },
       },
       tooltip: {
-        backgroundColor: 'rgba(10, 26, 10, 0.95)',
+        backgroundColor: 'rgba(10,22,40,0.95)',
         titleColor: '#D4AF37',
-        bodyColor: '#e8f5e9',
-        borderColor: 'rgba(46, 125, 50, 0.3)',
+        bodyColor: '#ffffff',
+        borderColor: 'rgba(45,80,112,0.3)',
         borderWidth: 1,
       },
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: '#b8c9b8' } },
-      y: { grid: { color: 'rgba(30,58,30,0.3)' }, ticks: { color: '#7a8f7a' } },
+      x: { grid: { display: false }, ticks: { color: 'rgba(184,212,232,0.7)' } },
+      y: { grid: { color: 'rgba(45,80,112,0.3)' }, ticks: { color: '#7aa0c0' } },
     },
     interaction: {
       mode: 'index' as const,
@@ -159,8 +159,8 @@ export default function CategoryTrend({ categories, periods }: Props) {
 
       <style jsx>{`
         .trend-card {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.5rem;
           grid-column: 1 / -1;
@@ -172,7 +172,7 @@ export default function CategoryTrend({ categories, periods }: Props) {
           font-family: 'Montserrat', sans-serif;
           font-size: 1.05rem;
           font-weight: 600;
-          color: #e8f5e9;
+          color: #ffffff;
         }
         .cat-stats-grid {
           display: grid;
@@ -190,7 +190,7 @@ export default function CategoryTrend({ categories, periods }: Props) {
         }
         .cat-stat-label {
           font-size: 0.85rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
         }
         .chart-container {
           height: 300px;

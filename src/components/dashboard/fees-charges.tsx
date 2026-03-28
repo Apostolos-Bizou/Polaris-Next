@@ -69,10 +69,10 @@ export default function FeesCharges({
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: 'rgba(10, 26, 10, 0.95)',
+        backgroundColor: 'rgba(10,22,40,0.95)',
         titleColor: '#D4AF37',
-        bodyColor: '#e8f5e9',
-        borderColor: 'rgba(46, 125, 50, 0.3)',
+        bodyColor: '#ffffff',
+        borderColor: 'rgba(45,80,112,0.3)',
         borderWidth: 1,
         callbacks: {
           label: (ctx: any) => `$${ctx.parsed.y.toFixed(2)}`,
@@ -82,11 +82,11 @@ export default function FeesCharges({
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: '#b8c9b8', font: { weight: 'bold' as const, size: 10 } },
+        ticks: { color: 'rgba(184,212,232,0.7)', font: { weight: 'bold' as const, size: 10 } },
       },
       y: {
-        grid: { color: 'rgba(30,58,30,0.3)' },
-        ticks: { color: '#7a8f7a', callback: (v: any) => '$' + Number(v).toFixed(0) },
+        grid: { color: 'rgba(45,80,112,0.3)' },
+        ticks: { color: '#7aa0c0', callback: (v: any) => '$' + Number(v).toFixed(0) },
       },
     },
   };
@@ -133,7 +133,7 @@ export default function FeesCharges({
           font-family: 'Montserrat', sans-serif;
           font-size: 1.3rem;
           font-weight: 700;
-          color: #e8f5e9;
+          color: #ffffff;
           margin-bottom: 1.5rem;
         }
         .fees-stats-grid {
@@ -143,8 +143,8 @@ export default function FeesCharges({
           margin-bottom: 1.5rem;
         }
         .stat-mini {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.25rem;
           text-align: center;
@@ -152,7 +152,7 @@ export default function FeesCharges({
         }
         .stat-mini:hover {
           transform: translateY(-3px);
-          border-color: rgba(46, 125, 50, 0.5);
+          border-color: rgba(45,80,112,0.5);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
         .stat-mini-icon {
@@ -163,21 +163,21 @@ export default function FeesCharges({
           font-family: 'Montserrat', sans-serif;
           font-size: 2rem;
           font-weight: 700;
-          color: #e8f5e9;
+          color: #ffffff;
         }
         .stat-mini-label {
           font-size: 0.85rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
           margin-top: 0.25rem;
         }
         .stat-mini-sub {
           font-size: 0.8rem;
-          color: #5a6f5a;
+          color: #5a6a7a;
           margin-top: 0.15rem;
         }
         .chart-card {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.5rem;
         }
@@ -191,7 +191,7 @@ export default function FeesCharges({
           font-family: 'Montserrat', sans-serif;
           font-size: 1.05rem;
           font-weight: 600;
-          color: #e8f5e9;
+          color: #ffffff;
         }
         .chart-badge {
           background: rgba(212, 175, 55, 0.15);

@@ -73,13 +73,13 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
       legend: {
         display: true,
         position: 'bottom' as const,
-        labels: { color: '#b8c9b8', font: { size: 14, weight: 'bold' as const }, padding: 20 },
+        labels: { color: 'rgba(184,212,232,0.7)', font: { size: 14, weight: 'bold' as const }, padding: 20 },
       },
       tooltip: {
-        backgroundColor: 'rgba(10, 26, 10, 0.95)',
+        backgroundColor: 'rgba(10,22,40,0.95)',
         titleColor: '#D4AF37',
-        bodyColor: '#e8f5e9',
-        borderColor: 'rgba(46, 125, 50, 0.3)',
+        bodyColor: '#ffffff',
+        borderColor: 'rgba(45,80,112,0.3)',
         borderWidth: 1,
         callbacks: {
           label: (ctx: any) => {
@@ -116,9 +116,9 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: 'rgba(10, 26, 10, 0.95)',
+        backgroundColor: 'rgba(10,22,40,0.95)',
         titleColor: '#D4AF37',
-        bodyColor: '#e8f5e9',
+        bodyColor: '#ffffff',
         callbacks: {
           label: (ctx: any) => `$${ctx.parsed.x.toFixed(0)}K`,
         },
@@ -126,8 +126,8 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
     },
     scales: {
       x: {
-        grid: { color: 'rgba(30,58,30,0.3)' },
-        ticks: { color: '#7a8f7a', callback: (v: any) => '$' + v + 'K' },
+        grid: { color: 'rgba(45,80,112,0.3)' },
+        ticks: { color: '#7aa0c0', callback: (v: any) => '$' + v + 'K' },
       },
       y: {
         grid: { display: false },
@@ -180,7 +180,7 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
           font-family: 'Montserrat', sans-serif;
           font-size: 1.3rem;
           font-weight: 700;
-          color: #e8f5e9;
+          color: #ffffff;
           margin-bottom: 1.5rem;
         }
         .plan-stats-grid {
@@ -190,8 +190,8 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
           margin-bottom: 1.5rem;
         }
         .stat-mini {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.25rem;
           text-align: center;
@@ -199,7 +199,7 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
         }
         .stat-mini:hover {
           transform: translateY(-3px);
-          border-color: rgba(46, 125, 50, 0.5);
+          border-color: rgba(45,80,112,0.5);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
         .stat-mini-icon {
@@ -210,11 +210,11 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
           font-family: 'Montserrat', sans-serif;
           font-size: 2rem;
           font-weight: 700;
-          color: #e8f5e9;
+          color: #ffffff;
         }
         .stat-mini-label {
           font-size: 0.85rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
           margin-top: 0.25rem;
         }
         .chart-grid {
@@ -223,8 +223,8 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
           gap: 1.5rem;
         }
         .chart-card {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.5rem;
         }
@@ -238,7 +238,7 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
           font-family: 'Montserrat', sans-serif;
           font-size: 1.05rem;
           font-weight: 600;
-          color: #e8f5e9;
+          color: #ffffff;
         }
         .chart-badge {
           background: rgba(212, 175, 55, 0.15);

@@ -282,7 +282,7 @@ export default function CBMSReport() {
           font-family: 'Montserrat', sans-serif;
           font-size: 1.3rem;
           font-weight: 700;
-          color: #e8f5e9;
+          color: #ffffff;
           margin-bottom: 1.5rem;
         }
         .cbms-stats-grid {
@@ -291,8 +291,8 @@ export default function CBMSReport() {
           gap: 1rem;
         }
         .cbms-stat-card {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.25rem;
           text-align: center;
@@ -300,16 +300,16 @@ export default function CBMSReport() {
         }
         .cbms-stat-card:hover {
           transform: translateY(-3px);
-          border-color: rgba(46, 125, 50, 0.5);
+          border-color: rgba(45,80,112,0.5);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
         .cbms-stat-card.highlight-gold {
           border-color: rgba(212, 175, 55, 0.4);
-          background: linear-gradient(145deg, rgba(212, 175, 55, 0.1), rgba(10, 26, 10, 0.95));
+          background: linear-gradient(145deg, rgba(212, 175, 55, 0.1), rgba(10,22,40,0.95));
         }
         .cbms-stat-card.highlight-green {
           border-color: rgba(76, 175, 80, 0.4);
-          background: linear-gradient(145deg, rgba(76, 175, 80, 0.1), rgba(10, 26, 10, 0.95));
+          background: linear-gradient(145deg, rgba(76, 175, 80, 0.1), rgba(10,22,40,0.95));
         }
         .cbms-stat-icon {
           font-size: 1.8rem;
@@ -319,12 +319,12 @@ export default function CBMSReport() {
           font-family: 'Montserrat', sans-serif;
           font-size: 1.4rem;
           font-weight: 700;
-          color: #e8f5e9;
+          color: #ffffff;
           word-break: break-word;
         }
         .cbms-stat-label {
           font-size: 0.85rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
           margin-top: 0.25rem;
         }
         .cbms-chart-grid {
@@ -333,8 +333,8 @@ export default function CBMSReport() {
           gap: 1.5rem;
         }
         .cbms-chart-card {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.5rem;
         }
@@ -342,7 +342,7 @@ export default function CBMSReport() {
           font-family: 'Montserrat', sans-serif;
           font-size: 1.1rem;
           font-weight: 600;
-          color: #e8f5e9;
+          color: #ffffff;
           margin-bottom: 1.25rem;
         }
         .cbms-detail-grid {
@@ -355,9 +355,9 @@ export default function CBMSReport() {
           justify-content: space-between;
           align-items: center;
           padding: 0.75rem 1rem;
-          background: rgba(10, 26, 10, 0.5);
+          background: rgba(10,22,40,0.5);
           border-radius: 10px;
-          border: 1px solid rgba(46, 125, 50, 0.15);
+          border: 1px solid rgba(45,80,112,0.15);
         }
         .cbms-detail-item.highlight {
           border-color: rgba(212, 175, 55, 0.3);
@@ -365,19 +365,19 @@ export default function CBMSReport() {
         }
         .cbms-detail-label {
           font-size: 0.85rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
         }
         .cbms-detail-value {
           font-family: 'Montserrat', sans-serif;
           font-weight: 600;
-          color: #e8f5e9;
+          color: #ffffff;
           font-size: 0.95rem;
         }
         .cbms-detail-value.gold {
           color: #D4AF37;
         }
         .cbms-total-banner {
-          background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(46, 125, 50, 0.15));
+          background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(45,80,112,0.15));
           border: 2px solid rgba(212, 175, 55, 0.3);
           border-radius: 20px;
           padding: 2rem;
@@ -396,17 +396,17 @@ export default function CBMSReport() {
           font-family: 'Montserrat', sans-serif;
           font-size: 2.5rem;
           font-weight: 800;
-          color: #e8f5e9;
+          color: #ffffff;
           text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
         .cbms-total-subtext {
           font-size: 0.9rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
           margin-top: 0.5rem;
         }
         .table-container {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.5rem;
         }
@@ -417,11 +417,11 @@ export default function CBMSReport() {
           margin-bottom: 1rem;
         }
         .table-search {
-          background: rgba(10, 26, 10, 0.7);
-          border: 1px solid rgba(46, 125, 50, 0.3);
+          background: rgba(10,22,40,0.7);
+          border: 1px solid rgba(45,80,112,0.3);
           border-radius: 8px;
           padding: 0.5rem 1rem;
-          color: #e8f5e9;
+          color: #ffffff;
           font-size: 0.9rem;
           width: 200px;
           outline: none;
@@ -448,9 +448,9 @@ export default function CBMSReport() {
         }
         .data-table td {
           font-size: 0.9rem;
-          color: #b8c9b8;
+          color: rgba(184,212,232,0.7);
           padding: 0.75rem;
-          border-bottom: 1px solid rgba(46, 125, 50, 0.1);
+          border-bottom: 1px solid rgba(45,80,112,0.1);
         }
         .data-table tr:hover td {
           background: rgba(46, 125, 50, 0.08);
@@ -468,8 +468,8 @@ export default function CBMSReport() {
           border-radius: 50%;
           font-size: 0.8rem;
           font-weight: 700;
-          background: rgba(46, 125, 50, 0.2);
-          color: #b8c9b8;
+          background: rgba(45,80,112,0.2);
+          color: rgba(184,212,232,0.7);
         }
         .rank-badge.gold {
           background: #FFD700;

@@ -68,20 +68,20 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
 
   const fmtChange = (val: string | null) => val !== null ? ((parseFloat(val) > 0 ? '+' : '') + val + '%') : 'N/A';
   const changeColor = (val: string | null) => {
-    if (val === null) return '#b8c9b8';
+    if (val === null) return 'rgba(184,212,232,0.7)';
     const v = parseFloat(val);
-    return v > 0 ? '#4CAF50' : v < 0 ? '#e74c3c' : '#b8c9b8';
+    return v > 0 ? '#4CAF50' : v < 0 ? '#e74c3c' : 'rgba(184,212,232,0.7)';
   };
 
   const darkChartOpts = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: true, position: 'top' as const, labels: { color: '#b8c9b8', font: { size: 14, weight: 'bold' as const }, padding: 20 } },
+      legend: { display: true, position: 'top' as const, labels: { color: 'rgba(184,212,232,0.7)', font: { size: 14, weight: 'bold' as const }, padding: 20 } },
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: '#b8c9b8' } },
-      y: { grid: { color: 'rgba(30,58,30,0.3)' }, ticks: { color: '#7a8f7a' } },
+      x: { grid: { display: false }, ticks: { color: 'rgba(184,212,232,0.7)' } },
+      y: { grid: { color: 'rgba(45,80,112,0.3)' }, ticks: { color: '#7aa0c0' } },
     },
   };
 
@@ -107,12 +107,12 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
       {
         label: `${prevYear} Claims`,
         data: [q2024.Q1.claims, q2024.Q2.claims, q2024.Q3.claims, q2024.Q4.claims],
-        borderColor: '#7a8f7a',
+        borderColor: '#7aa0c0',
         backgroundColor: 'rgba(122,143,122,0.1)',
         borderWidth: 2,
         tension: 0.4,
         pointRadius: 5,
-        pointBackgroundColor: '#7a8f7a',
+        pointBackgroundColor: '#7aa0c0',
         fill: false,
       },
       {
@@ -157,11 +157,11 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: true, position: 'top' as const, labels: { color: '#b8c9b8', font: { size: 12, weight: 'bold' as const }, padding: 15 } },
+      legend: { display: true, position: 'top' as const, labels: { color: 'rgba(184,212,232,0.7)', font: { size: 12, weight: 'bold' as const }, padding: 15 } },
     },
     scales: {
-      x: { grid: { display: false }, ticks: { color: '#b8c9b8' } },
-      y: { position: 'left' as const, grid: { color: 'rgba(30,58,30,0.3)' }, ticks: { color: '#D4AF37' }, title: { display: true, text: 'Claims', color: '#D4AF37' } },
+      x: { grid: { display: false }, ticks: { color: 'rgba(184,212,232,0.7)' } },
+      y: { position: 'left' as const, grid: { color: 'rgba(45,80,112,0.3)' }, ticks: { color: '#D4AF37' }, title: { display: true, text: 'Claims', color: '#D4AF37' } },
       y1: { position: 'right' as const, grid: { display: false }, ticks: { color: '#4CAF50', callback: (v: any) => '$' + Number(v).toLocaleString() }, title: { display: true, text: 'Cost (USD)', color: '#4CAF50' } },
     },
   };
@@ -187,9 +187,9 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
               <div className="stat-mini-label">{currentYear} YTD</div>
               <div className="stat-mini-value" style={{ color: '#D4AF37' }}>{fmt(d2025.claims)}</div>
             </div>
-            <div className="stat-mini" style={{ borderLeft: '4px solid #7a8f7a' }}>
+            <div className="stat-mini" style={{ borderLeft: '4px solid #7aa0c0' }}>
               <div className="stat-mini-label">{prevYear}</div>
-              <div className="stat-mini-value" style={{ color: '#7a8f7a' }}>{has2024 ? fmt(d2024.claims) : 'No Data'}</div>
+              <div className="stat-mini-value" style={{ color: '#7aa0c0' }}>{has2024 ? fmt(d2024.claims) : 'No Data'}</div>
             </div>
           </div>
           <div className="chart-container">
@@ -207,9 +207,9 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
               <div className="stat-mini-label">{currentYear} YTD</div>
               <div className="stat-mini-value" style={{ color: '#4CAF50' }}>${fmt(Math.round(d2025.cost))}</div>
             </div>
-            <div className="stat-mini" style={{ borderLeft: '4px solid #7a8f7a' }}>
+            <div className="stat-mini" style={{ borderLeft: '4px solid #7aa0c0' }}>
               <div className="stat-mini-label">{prevYear}</div>
-              <div className="stat-mini-value" style={{ color: '#7a8f7a' }}>{has2024 ? '$' + fmt(Math.round(d2024.cost)) : 'No Data'}</div>
+              <div className="stat-mini-value" style={{ color: '#7aa0c0' }}>{has2024 ? '$' + fmt(Math.round(d2024.cost)) : 'No Data'}</div>
             </div>
           </div>
           <div className="chart-container">
@@ -245,7 +245,7 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
           font-family: 'Montserrat', sans-serif;
           font-size: 1.3rem;
           font-weight: 700;
-          color: #e8f5e9;
+          color: #ffffff;
           margin-bottom: 1.5rem;
         }
         .chart-grid {
@@ -254,8 +254,8 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
           gap: 1.5rem;
         }
         .chart-card {
-          background: linear-gradient(145deg, rgba(20, 40, 20, 0.9), rgba(10, 26, 10, 0.95));
-          border: 1px solid rgba(46, 125, 50, 0.25);
+          background: linear-gradient(145deg, rgba(13,31,45,0.9), rgba(10,22,40,0.95));
+          border: 1px solid rgba(45,80,112,0.25);
           border-radius: 16px;
           padding: 1.5rem;
         }
@@ -272,7 +272,7 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
           font-family: 'Montserrat', sans-serif;
           font-size: 1.05rem;
           font-weight: 600;
-          color: #e8f5e9;
+          color: #ffffff;
         }
         .chart-badge {
           background: rgba(212, 175, 55, 0.15);
@@ -293,7 +293,7 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
         }
         .stat-mini-label {
           font-size: 0.9rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
         }
         .stat-mini-value {
           font-size: 1.6rem;
@@ -320,7 +320,7 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
         }
         .summary-label {
           font-size: 0.95rem;
-          color: #7a8f7a;
+          color: #7aa0c0;
         }
         .summary-value {
           font-size: 1.8rem;
