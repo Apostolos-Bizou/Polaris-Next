@@ -55,6 +55,11 @@ export interface HospitalData {
   avg_claim: number;
 }
 
+export interface GeoData {
+  regions?: Array<{ name: string; claims: number; cost: number }>;
+  topCities?: Array<{ name: string; claims: number }>;
+}
+
 export interface QuarterData {
   quarter: string;
   kpis: KPIData;
@@ -121,6 +126,7 @@ export function useDashboard() {
   const [quarterData, setQuarterData] = useState<QuarterData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [hospitals, setHospitals] = useState<HospitalData[]>([]);
+  const [geoData, setGeoData] = useState<GeoData>({});
 
   // ── Load clients list ──────────────────────────────
   const loadClients = useCallback(async () => {
@@ -142,12 +148,12 @@ export function useDashboard() {
       const data = await res.json();
       if (data.summary) {
         setStats({
-        active_clients: 0,
-        open_offers: 0,
-        active_contracts: 0,
-        total_members: data.members || data.data?.total_members || 0,
-        pending_signatures: 0,
-      });
+          active_clients: data.summary.active_clients || 0,
+          open_offers: data.summary.open_offers || 0,
+          active_contracts: data.summary.active_contracts || 0,
+          total_members: data.summary.total_members || 0,
+          pending_signatures: data.summary.pending_signatures || 0,
+        });
       }
     } catch (err) {
       console.error("Failed to load stats:", err);
@@ -232,17 +238,21 @@ export function useDashboard() {
       selectedClient === "ALL" ? "" : selectedClient.replace("GROUP:", "");
 
     try {
-      const [catRes, hospRes] = await Promise.all([
+      const [catRes, hospRes, geoRes] = await Promise.all([
         fetch(
           `/api/proxy/getCategoriesBreakdown${clientId ? `?clientId=${clientId}` : ""}`
         ).then((r) => r.json()),
         fetch(
           `/api/proxy/getHospitalsData${clientId ? `?clientId=${clientId}` : ""}`
         ).then((r) => r.json()),
+        fetch(
+          `/api/proxy/getGeographicData${clientId ? `?clientId=${clientId}` : ""}`
+        ).then((r) => r.json()),
       ]);
 
       if (catRes.data) setCategories(catRes.data);
       if (hospRes.data) setHospitals(hospRes.data);
+      if (geoRes.data) setGeoData(geoRes.data);
     } catch (err) {
       console.error("Failed to load breakdowns:", err);
     }
@@ -306,6 +316,7 @@ export function useDashboard() {
     kpis,
     quarterData,
     categories,
+    geoData,
     hospitals,
 
     // Actions
@@ -317,4 +328,3 @@ export function useDashboard() {
     refresh,
   };
 }
-
