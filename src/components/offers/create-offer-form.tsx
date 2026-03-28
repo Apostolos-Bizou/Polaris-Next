@@ -164,7 +164,20 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
   };
 
   // ── Organize clients for dropdown ────────────────────────────────
-  const parentClients = clients.filter(c => c.client_type === 'parent').sort((a, b) => a.client_name.localeCompare(b.client_name));
+  // Organize clients hierarchically for dropdown
+  const organizedClients = useMemo(() => {
+    const parents = clients.filter(c => c.client_type === 'parent').sort((a, b) => a.client_name.localeCompare(b.client_name));
+    const result: { client_id: string; client_name: string; isChild: boolean; parentName?: string }[] = [];
+    parents.forEach(p => {
+      const subs = clients.filter(c => c.parent_client_id === p.client_id).sort((a, b) => a.client_name.localeCompare(b.client_name));
+      result.push({ client_id: p.client_id, client_name: p.client_name, isChild: false });
+      subs.forEach(s => result.push({ client_id: s.client_id, client_name: s.client_name, isChild: true, parentName: p.client_name }));
+    });
+    // Add any orphans
+    const usedIds = new Set(result.map(r => r.client_id));
+    clients.filter(c => !usedIds.has(c.client_id)).forEach(c => result.push({ client_id: c.client_id, client_name: c.client_name, isChild: false }));
+    return result;
+  }, [clients]);
 
   return (
     <div className="modal-overlay">
@@ -191,9 +204,9 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
               className="client-select"
             >
               <option value="">-- Select a client --</option>
-              {parentClients.map(c => (
+              {organizedClients.map(c => (
                 <option key={c.client_id} value={c.client_id}>
-                  🏢 {c.client_name}
+                  {c.isChild ? '    └─ ' : '🏢 '}{c.client_name}
                 </option>
               ))}
             </select>
@@ -456,20 +469,20 @@ export default function CreateOfferForm({ onClose, onSave, clients }: Props) {
         }
         .plan-card.selected { background: #0d1f2d; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .plan-header {
-          display: flex; align-items: center; gap: 0.5rem;
-          padding: 0.75rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.2);
+          display: flex; align-items: center; gap: 0.6rem;
+          padding: 1rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.2);
         }
-        .plan-icon { font-size: 1.6rem; }
-        .plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #ffffff; flex: 1; }
+        .plan-icon { font-size: 1.8rem; }
+        .plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.2rem; color: #ffffff; flex: 1; }
         .plan-check { font-size: 1.1rem; color: #5a6a7a; }
         .plan-check.checked { color: #4CAF50; }
         .plan-pricing {
-          display: flex; gap: 0.5rem; padding: 0.5rem 1rem;
-          font-size: 0.8rem; color: #7aa0c0;
+          display: flex; gap: 0.5rem; padding: 0.75rem 1rem;
+          font-size: 0.85rem; color: #7aa0c0;
         }
         .price-item { display: flex; flex-direction: column; flex: 1; }
-        .price-item span { font-size: 0.75rem; color: #5a6a7a; }
-        .price-item strong { color: #ffffff; font-size: 1rem; }
+        .price-item span { font-size: 0.8rem; color: #5a6a7a; }
+        .price-item strong { color: #ffffff; font-size: 1.15rem; }
         .plan-inputs {
           display: flex; gap: 0.75rem; padding: 1rem 1rem;
           border-top: 1px solid rgba(45,80,112,0.2); background: rgba(212,175,55,0.05);

@@ -85,7 +85,19 @@ export default function ComparisonQuoteForm({ onClose, onSave, clients }: Props)
   }, [sortedSelected, principals, dependents, tierIndex, dentalByPlan, totalMembers]);
 
   // Parent clients for dropdown
-  const parentClients = clients.filter(c => c.client_type === 'parent').sort((a, b) => a.client_name.localeCompare(b.client_name));
+  // Organize clients hierarchically for dropdown
+  const organizedClients = useMemo(() => {
+    const parents = clients.filter(c => c.client_type === 'parent').sort((a, b) => a.client_name.localeCompare(b.client_name));
+    const result: { client_id: string; client_name: string; isChild: boolean }[] = [];
+    parents.forEach(p => {
+      const subs = clients.filter(c => c.parent_client_id === p.client_id).sort((a, b) => a.client_name.localeCompare(b.client_name));
+      result.push({ client_id: p.client_id, client_name: p.client_name, isChild: false });
+      subs.forEach(s => result.push({ client_id: s.client_id, client_name: s.client_name, isChild: true }));
+    });
+    const usedIds = new Set(result.map(r => r.client_id));
+    clients.filter(c => !usedIds.has(c.client_id)).forEach(c => result.push({ client_id: c.client_id, client_name: c.client_name, isChild: false }));
+    return result;
+  }, [clients]);
   const selectedClient = clients.find(c => c.client_id === selectedClientId);
 
   // Save
@@ -144,8 +156,8 @@ export default function ComparisonQuoteForm({ onClose, onSave, clients }: Props)
                 <label>Client Name</label>
                 <select value={selectedClientId} onChange={(e) => setSelectedClientId(e.target.value)} className="field-select">
                   <option value="">-- Select Client --</option>
-                  {parentClients.map(c => (
-                    <option key={c.client_id} value={c.client_id}>🏢 {c.client_name}</option>
+                  {organizedClients.map(c => (
+                    <option key={c.client_id} value={c.client_id}>{c.isChild ? '    └─ ' : '🏢 '}{c.client_name}</option>
                   ))}
                 </select>
               </div>
@@ -341,23 +353,23 @@ export default function ComparisonQuoteForm({ onClose, onSave, clients }: Props)
         }
         .cq-plan-card.selected { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .cq-plan-top {
-          display: flex; align-items: center; gap: 0.4rem;
-          padding: 0.75rem 0.6rem;
+          display: flex; align-items: center; gap: 0.5rem;
+          padding: 1rem 0.75rem;
         }
         .cq-plan-check {
-          width: 22px; height: 22px; border: 2px solid rgba(45,80,112,0.5);
+          width: 24px; height: 24px; border: 2px solid rgba(45,80,112,0.5);
           border-radius: 6px; display: flex; align-items: center; justify-content: center;
-          font-size: 0.75rem; color: white; flex-shrink: 0;
+          font-size: 0.8rem; color: white; flex-shrink: 0;
         }
-        .cq-plan-icon { font-size: 1.2rem; }
-        .cq-plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; }
+        .cq-plan-icon { font-size: 1.5rem; }
+        .cq-plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.05rem; }
         .cq-plan-info {
-          display: flex; gap: 0.4rem; padding: 0.4rem 0.6rem;
-          border-top: 1px solid rgba(45,80,112,0.2); font-size: 0.75rem;
+          display: flex; gap: 0.5rem; padding: 0.6rem 0.75rem;
+          border-top: 1px solid rgba(45,80,112,0.2); font-size: 0.8rem;
         }
         .cq-plan-info div { flex: 1; }
-        .cq-plan-info span { color: #5a6a7a; display: block; font-size: 0.65rem; }
-        .cq-plan-info strong { color: #ffffff; font-size: 0.85rem; }
+        .cq-plan-info span { color: #5a6a7a; display: block; font-size: 0.7rem; }
+        .cq-plan-info strong { color: #ffffff; font-size: 1rem; }
         .cq-dental-toggle {
           display: flex; align-items: center; gap: 0.4rem;
           padding: 0.5rem 0.6rem; background: rgba(139,92,246,0.1);
