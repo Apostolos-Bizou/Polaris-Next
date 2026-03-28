@@ -44,7 +44,7 @@ export default function FeesCharges({
         ],
         backgroundColor: [
           'rgba(76, 175, 80, 0.85)',
-          'rgba(212, 175, 55, 0.85)',
+          'rgba(255,179,0,0.9)',
           'rgba(33, 150, 243, 0.85)',
           'rgba(0, 188, 212, 0.85)',
           'rgba(244, 67, 54, 0.85)',

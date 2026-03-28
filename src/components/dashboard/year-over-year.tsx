@@ -89,7 +89,7 @@ export default function YearOverYear({ yearOverYear, currentYear = 2025 }: Props
     labels: ['Q1', 'Q2', 'Q3', 'Q4'],
     datasets: [
       { label: `${prevYear}`, data: [q2024.Q1.claims, q2024.Q2.claims, q2024.Q3.claims, q2024.Q4.claims], backgroundColor: 'rgba(122,143,122,0.7)', borderRadius: 4 },
-      { label: `${currentYear}`, data: [q2025.Q1.claims, q2025.Q2.claims, q2025.Q3.claims, q2025.Q4.claims], backgroundColor: 'rgba(212,175,55,0.8)', borderRadius: 4 },
+      { label: `${currentYear}`, data: [q2025.Q1.claims, q2025.Q2.claims, q2025.Q3.claims, q2025.Q4.claims], backgroundColor: 'rgba(255,179,0,0.9)', borderRadius: 4 },
     ],
   };
 

@@ -54,7 +54,7 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
       {
         data: [goldM, platM, silverM],
         backgroundColor: [
-          'rgba(255, 193, 7, 0.85)',
+          'rgba(255,179,0,0.9)',
           'rgba(189, 189, 189, 0.85)',
           'rgba(158, 158, 158, 0.7)',
         ],
@@ -98,7 +98,7 @@ export default function PlanPerformance({ planBreakdown, totalMembers = 0 }: Pro
       {
         data: [goldCost, platCost, silverCost],
         backgroundColor: [
-          'rgba(255, 193, 7, 0.85)',
+          'rgba(255,179,0,0.9)',
           'rgba(189, 189, 189, 0.85)',
           'rgba(158, 158, 158, 0.7)',
         ],
