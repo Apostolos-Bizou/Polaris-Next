@@ -493,7 +493,7 @@ export default function MembersPage() {
         .entity-row .row-num { text-align: center; font-weight: 600; color: #7aa0c0; }
 
         /* ═══ DETAIL MODAL ═══ */
-        .detail-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        .detail-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10002; display: flex; align-items: center; justify-content: center; padding: 2rem; }
         .detail-box { background: linear-gradient(145deg, #0d1f2d, #0a1628); border: 1px solid rgba(45,80,112,0.4); border-radius: 20px; width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto; }
         .detail-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; border-bottom: 2px solid rgba(212,175,55,0.3); }
         .detail-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #D4AF37; }
