@@ -1,0 +1,266 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Quarter Selector — Navy/Gold Theme
+   Matches admin-dashboard.html styling
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.qs-container {
+  background: rgba(13, 27, 42, 0.6);
+  border: 1px solid rgba(45, 80, 112, 0.3);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Row 1: Client + Refresh ──────────────────────────── */
+.qs-client-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(45, 80, 112, 0.2);
+  flex-wrap: wrap;
+}
+
+.qs-label {
+  color: #7aa0c0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Client Dropdown — the main selector ──────────────── */
+.qs-client-select {
+  flex: 1;
+  min-width: 220px;
+  max-width: 420px;
+  padding: 0.55rem 0.75rem;
+  background: rgba(10, 22, 40, 0.8);
+  border: 2px solid rgba(45, 80, 112, 0.4);
+  border-radius: 10px;
+  color: #e0e8f0;
+  font-family: "Montserrat", "Open Sans", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23D4AF37' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.qs-client-select:hover {
+  border-color: var(--polaris-green, #2E7D32);
+}
+
+.qs-client-select:focus {
+  outline: none;
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+/* Optgroup styling */
+.qs-client-select optgroup {
+  background: #0a1628;
+  color: #D4AF37;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 4px 0;
+}
+
+.qs-client-select option {
+  background: #0d1b2a;
+  color: #e0e8f0;
+  padding: 6px 8px;
+  font-weight: 500;
+}
+
+.qs-client-select option:checked {
+  background: rgba(212, 175, 55, 0.2);
+  color: #D4AF37;
+}
+
+/* ── Refresh Button ───────────────────────────────────── */
+.qs-refresh-btn {
+  padding: 0.55rem 1.25rem;
+  background: linear-gradient(135deg, #1e3a5f, #2d5a87);
+  border: 2px solid #D4AF37;
+  border-radius: 10px;
+  color: #D4AF37;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.qs-refresh-btn:hover {
+  background: linear-gradient(135deg, #2d5a87, #3a7bc8);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ── Row 2: Quarter buttons + Year + Modes ────────────── */
+.qs-quarter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.qs-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.qs-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ── Quarter Buttons ──────────────────────────────────── */
+.qs-buttons {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.qs-btn {
+  padding: 0.45rem 1rem;
+  background: rgba(10, 22, 40, 0.6);
+  border: 1px solid rgba(45, 80, 112, 0.4);
+  border-radius: 8px;
+  color: #7aa0c0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qs-btn:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  color: #D4AF37;
+}
+
+.qs-btn.active {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1));
+  border-color: #D4AF37;
+  color: #D4AF37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+}
+
+/* ── Year Select ──────────────────────────────────────── */
+.qs-year-select {
+  padding: 0.45rem 0.6rem;
+  background: rgba(10, 22, 40, 0.6);
+  border: 1px solid rgba(45, 80, 112, 0.4);
+  border-radius: 8px;
+  color: #e0e8f0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.qs-year-select:focus {
+  outline: none;
+  border-color: #D4AF37;
+}
+
+/* ── Mode Buttons ─────────────────────────────────────── */
+.qs-mode-btn {
+  padding: 0.45rem 0.85rem;
+  background: rgba(10, 22, 40, 0.5);
+  border: 1px solid rgba(45, 80, 112, 0.3);
+  border-radius: 8px;
+  color: #7aa0c0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.qs-mode-btn:hover {
+  border-color: rgba(45, 80, 112, 0.6);
+}
+
+.qs-mode-btn.active-green {
+  background: rgba(46, 125, 50, 0.2);
+  border-color: #4CAF50;
+  color: #4CAF50;
+}
+
+.qs-mode-btn.active-gold {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #D4AF37;
+  color: #D4AF37;
+}
+
+/* ── Period Badge ─────────────────────────────────────── */
+.qs-badge {
+  padding: 0.35rem 0.75rem;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+  color: #D4AF37;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .qs-container {
+    padding: 0.75rem;
+  }
+
+  .qs-client-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qs-client-select {
+    max-width: none;
+    width: 100%;
+  }
+
+  .qs-quarter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qs-left,
+  .qs-right {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .qs-client-select {
+    font-size: 0.75rem;
+  }
+
+  .qs-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .qs-mode-btn {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.6rem;
+  }
+}
