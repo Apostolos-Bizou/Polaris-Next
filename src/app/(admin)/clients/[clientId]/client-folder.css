@@ -1,0 +1,247 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   CLIENT FOLDER — Navy/Gold Theme
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.cf-page { max-width: 1400px; margin: 0 auto; }
+
+/* ── Loading / Error ──────────────────────────────────── */
+.cf-loading { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 4rem; color: #D4AF37; font-weight: 600; }
+.cf-spinner { width: 35px; height: 35px; border: 3px solid rgba(212,175,55,0.2); border-top-color: #D4AF37; border-radius: 50%; animation: cfspin 0.8s linear infinite; }
+@keyframes cfspin { to { transform: rotate(360deg); } }
+.cf-error { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 3rem; color: #ff6b6b; }
+.cf-error button { background: rgba(45,80,112,0.3); color: #b8d4e8; border: 1px solid rgba(45,80,112,0.5); padding: 0.6rem 1.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; }
+
+/* ── Back Button ──────────────────────────────────────── */
+.cf-back {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 1.25rem; margin-bottom: 1rem;
+  background: rgba(45,80,112,0.2); border: 1px solid rgba(45,80,112,0.4);
+  border-radius: 10px; color: #7aa0c0; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.cf-back:hover { background: rgba(45,80,112,0.35); color: #D4AF37; border-color: rgba(212,175,55,0.4); }
+
+/* ── Header ───────────────────────────────────────────── */
+.cf-header {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;
+  background: linear-gradient(145deg, rgba(15,35,60,0.8), rgba(5,15,30,0.9));
+  border: 2px solid rgba(212,175,55,0.2); border-radius: 18px;
+  padding: 1.5rem 2rem; margin-bottom: 1.5rem;
+}
+.cf-header-info { display: flex; align-items: center; gap: 1.25rem; }
+.cf-avatar {
+  width: 65px; height: 65px; border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a5f, #2d5a87);
+  border: 3px solid #D4AF37; display: flex; align-items: center; justify-content: center;
+  font-family: "Montserrat", sans-serif; font-size: 1.4rem; font-weight: 800; color: #D4AF37;
+}
+.cf-name {
+  font-family: "Montserrat", sans-serif; font-size: 1.5rem; font-weight: 700; color: #ffffff;
+}
+.cf-name span { color: #D4AF37; font-weight: 400; font-size: 1.1rem; }
+.cf-meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.35rem; }
+.cf-meta span { color: #7aa0c0; font-size: 0.8rem; }
+.cf-meta strong { color: #e0e8f0; }
+.cf-expiry-warn { color: #f39c12 !important; font-weight: 700; }
+
+.cf-header-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.cf-btn {
+  padding: 0.55rem 1rem; border-radius: 10px; border: 1px solid rgba(45,80,112,0.5);
+  font-family: "Montserrat", sans-serif; font-size: 0.75rem; font-weight: 700;
+  cursor: pointer; transition: all 0.3s; white-space: nowrap;
+}
+.cf-btn.secondary { background: rgba(45,80,112,0.3); color: #b8d4e8; }
+.cf-btn.secondary.gold { background: rgba(212,175,55,0.2); border-color: #D4AF37; color: #D4AF37; }
+.cf-btn.primary { background: linear-gradient(135deg, #1e3a5f, #2d5a87); color: #D4AF37; border: 2px solid #D4AF37; }
+.cf-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+
+/* ── Quick Stats ──────────────────────────────────────── */
+.cf-quick-stats {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem;
+}
+.cf-stat {
+  background: rgba(13,27,42,0.8); border: 1px solid rgba(45,80,112,0.3);
+  border-radius: 14px; padding: 1.25rem; text-align: center; transition: all 0.3s;
+}
+.cf-stat:hover { transform: translateY(-2px); border-color: rgba(45,80,112,0.5); }
+.cf-stat-icon { font-size: 1.75rem; margin-bottom: 0.4rem; }
+.cf-stat-value {
+  font-family: "Montserrat", sans-serif; font-size: 1.6rem; font-weight: 800; color: #ffffff;
+}
+.cf-stat-label { color: #7aa0c0; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.25rem; }
+
+/* ── Analytics Grid ───────────────────────────────────── */
+.cf-analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+.cf-section {
+  background: rgba(13,27,42,0.6); border: 1px solid rgba(45,80,112,0.3);
+  border-radius: 14px; padding: 1.25rem; transition: all 0.3s;
+}
+.cf-section:hover { border-color: rgba(45,80,112,0.45); }
+.cf-section.full-width { grid-column: span 2; }
+
+.cf-section-header {
+  font-family: "Montserrat", sans-serif; font-size: 1rem; font-weight: 700;
+  color: #D4AF37; margin-bottom: 1rem; padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(212,175,55,0.15);
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+}
+
+/* ── Bars (In/Out, Principal/Dependent) ───────────────── */
+.cf-bars { display: flex; flex-direction: column; gap: 0.75rem; }
+.cf-bar-row { display: flex; align-items: center; gap: 0.75rem; }
+.cf-bar-label { width: 80px; color: #7aa0c0; font-size: 0.8rem; font-weight: 600; }
+.cf-bar-track { flex: 1; height: 22px; background: rgba(10,22,40,0.6); border-radius: 11px; overflow: hidden; }
+.cf-bar-fill { height: 100%; border-radius: 11px; transition: width 0.8s ease; }
+.cf-bar-fill.inpatient { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+.cf-bar-fill.outpatient { background: linear-gradient(90deg, #3498db, #2980b9); }
+.cf-bar-fill.principal { background: linear-gradient(90deg, #27ae60, #229954); }
+.cf-bar-fill.dependent { background: linear-gradient(90deg, #f39c12, #e67e22); }
+.cf-bar-value { width: 140px; text-align: right; color: #e0e8f0; font-size: 0.8rem; font-weight: 600; }
+
+/* ── Financial Grid ───────────────────────────────────── */
+.cf-fin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+.cf-fin-item { background: rgba(10,22,40,0.5); border-radius: 10px; padding: 1rem; text-align: center; }
+.cf-fin-item.green { border-left: 4px solid #27ae60; }
+.cf-fin-item.blue { border-left: 4px solid #3498db; }
+.cf-fin-item.orange { border-left: 4px solid #f39c12; }
+.cf-fin-item.red { border-left: 4px solid #e74c3c; }
+.cf-fin-value { font-family: "Montserrat", sans-serif; font-size: 1.4rem; font-weight: 800; color: #ffffff; }
+.cf-fin-label { color: #7aa0c0; font-size: 0.75rem; margin-top: 0.25rem; }
+
+/* ── Category Grid ────────────────────────────────────── */
+.cf-category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.cf-cat-item { background: rgba(10,22,40,0.5); border-radius: 10px; padding: 0.75rem; text-align: center; }
+.cf-cat-value { font-family: "Montserrat", sans-serif; font-size: 1.3rem; font-weight: 800; color: #ffffff; }
+.cf-cat-label { color: #7aa0c0; font-size: 0.75rem; font-weight: 600; }
+.cf-cat-cost { color: #D4AF37; font-size: 0.75rem; font-weight: 600; margin-top: 0.15rem; }
+
+/* ── Provider List ────────────────────────────────────── */
+.cf-provider-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.cf-provider-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.6rem; background: rgba(10,22,40,0.4); border-radius: 8px;
+}
+.cf-provider-rank { color: #D4AF37; font-weight: 800; font-size: 0.85rem; width: 28px; }
+.cf-provider-info { flex: 1; }
+.cf-provider-name { color: #e0e8f0; font-weight: 600; font-size: 0.85rem; display: block; }
+.cf-provider-country { color: #7aa0c0; font-size: 0.7rem; }
+.cf-provider-claims { color: #7aa0c0; font-size: 0.8rem; }
+.cf-provider-cost { color: #D4AF37; font-weight: 700; font-size: 0.85rem; }
+
+/* ── Fees ──────────────────────────────────────────────── */
+.cf-fees { display: flex; flex-direction: column; }
+.cf-fee-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(45,80,112,0.15); }
+.cf-fee-row:last-child { border-bottom: none; }
+.cf-fee-row span:first-child { color: #7aa0c0; font-size: 0.85rem; }
+.cf-fee-row span:last-child { font-weight: 700; font-size: 0.9rem; }
+.cf-fee-row.total { border-top: 2px solid rgba(212,175,55,0.3); margin-top: 0.5rem; padding-top: 0.75rem; }
+.cf-fee-row.total span:first-child { color: #D4AF37; font-weight: 700; }
+
+/* ── Cyprus Tax View ──────────────────────────────────── */
+.cf-cyprus { background: linear-gradient(145deg, rgba(15,35,60,0.8), rgba(5,15,30,0.9)) !important; border-color: rgba(212,175,55,0.3) !important; }
+.cf-cyprus-badge { background: rgba(212,175,55,0.2); padding: 0.4rem 0.8rem; border-radius: 10px; color: #D4AF37; font-size: 0.8rem; font-weight: 600; }
+
+.cf-cyprus-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
+.cf-cyprus-card { background: rgba(0,0,0,0.3); border-radius: 18px; padding: 1.5rem; text-align: center; }
+.cf-cyprus-card.blue-border { border-left: 5px solid #3498db; }
+.cf-cyprus-card.red-border { border-left: 5px solid #e74c3c; }
+.cf-cyprus-card.green-border { border-left: 5px solid #27ae60; }
+.cf-cyprus-card.gold-border { border-left: 5px solid #D4AF37; }
+.cf-cyprus-icon { font-size: 1.75rem; margin-bottom: 0.4rem; }
+.cf-cyprus-value { font-family: "Montserrat", sans-serif; font-size: 2rem; font-weight: 800; }
+.cf-cyprus-value.blue { color: #3498db; }
+.cf-cyprus-value.red { color: #e74c3c; }
+.cf-cyprus-value.green { color: #27ae60; }
+.cf-cyprus-value.gold { color: #D4AF37; }
+.cf-cyprus-label { color: rgba(255,255,255,0.7); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.25rem; }
+
+.cf-cyprus-ratios { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.cf-cyprus-ratios > div { background: rgba(0,0,0,0.25); border-radius: 14px; padding: 1.25rem; text-align: center; }
+.cf-ratio-value { font-family: "Montserrat", sans-serif; font-size: 1.8rem; font-weight: 800; }
+.cf-ratio-value.green { color: #27ae60; }
+.cf-ratio-value.gold { color: #D4AF37; }
+.cf-ratio-value.blue { color: #3498db; }
+.cf-ratio-value.purple { color: #9b59b6; }
+.cf-ratio-value.orange { color: #f39c12; }
+.cf-ratio-label { color: rgba(255,255,255,0.6); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.15rem; }
+.cf-ratio-target { color: rgba(255,255,255,0.35); font-size: 0.75rem; margin-top: 0.15rem; }
+
+/* CFO Note */
+.cf-cfo-note { background: linear-gradient(145deg, rgba(52,152,219,0.1), rgba(52,152,219,0.05)); border: 1px solid rgba(52,152,219,0.3); border-radius: 14px; padding: 1.25rem; }
+.cf-cfo-title { color: #3498db; font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
+.cf-cfo-text { color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.6; }
+
+/* ── Subsidiaries Grid ────────────────────────────────── */
+.cf-subs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; }
+.cf-sub-card {
+  background: rgba(10,22,40,0.5); border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 12px; padding: 1rem; cursor: pointer; text-align: left;
+  transition: all 0.3s; font-family: inherit;
+}
+.cf-sub-card:hover { border-color: #D4AF37; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+.cf-sub-name { color: #D4AF37; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.25rem; }
+.cf-sub-members { color: #e0e8f0; font-size: 0.8rem; }
+.cf-sub-plan { color: #7aa0c0; font-size: 0.75rem; margin-top: 0.2rem; }
+
+/* ── Contracts List ───────────────────────────────────── */
+.cf-contracts-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.cf-contract-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.65rem 0.75rem; background: rgba(10,22,40,0.4); border-radius: 8px;
+}
+.cf-contract-id { font-family: monospace; color: rgba(255,255,255,0.5); font-size: 0.8rem; width: 150px; }
+.cf-contract-type { color: #5dade2; font-weight: 600; font-size: 0.85rem; width: 60px; }
+.cf-contract-status { padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+.cf-contract-status.active { background: rgba(39,174,96,0.3); color: #2ecc71; }
+.cf-contract-status.signed { background: rgba(46,204,113,0.25); color: #58d68d; }
+.cf-contract-status.sent { background: rgba(52,152,219,0.25); color: #5dade2; }
+.cf-contract-status.draft { background: rgba(100,100,100,0.3); color: #aaa; }
+.cf-contract-status.expired { background: rgba(231,76,60,0.25); color: #ec7063; }
+
+/* ── Contact ──────────────────────────────────────────── */
+.cf-contact { display: flex; flex-direction: column; }
+.cf-contact-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(45,80,112,0.15); }
+.cf-contact-row:last-child { border-bottom: none; }
+.cf-contact-row span { color: #7aa0c0; font-size: 0.85rem; }
+.cf-contact-row strong { color: #e0e8f0; font-size: 0.85rem; }
+
+/* ── Report Grid ──────────────────────────────────────── */
+.cf-report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.cf-report-card { background: rgba(10,22,40,0.4); border-radius: 12px; padding: 1rem; text-align: center; }
+.cf-report-icon { font-size: 1.5rem; margin-bottom: 0.35rem; }
+.cf-report-title { color: #7aa0c0; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
+.cf-report-value { color: #ffffff; font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 1.1rem; margin: 0.25rem 0; }
+.cf-report-note { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+
+.cf-empty { text-align: center; padding: 2rem; color: rgba(255,255,255,0.5); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .cf-quick-stats { grid-template-columns: repeat(3, 1fr); }
+  .cf-cyprus-kpis { grid-template-columns: repeat(2, 1fr); }
+  .cf-cyprus-ratios { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .cf-analytics-grid { grid-template-columns: 1fr; }
+  .cf-section.full-width { grid-column: span 1; }
+  .cf-quick-stats { grid-template-columns: repeat(2, 1fr); }
+  .cf-header { flex-direction: column; text-align: center; }
+  .cf-header-info { flex-direction: column; }
+  .cf-header-actions { justify-content: center; }
+  .cf-cyprus-kpis { grid-template-columns: 1fr 1fr; }
+  .cf-cyprus-ratios { grid-template-columns: repeat(2, 1fr); }
+  .cf-report-grid { grid-template-columns: 1fr; }
+  .cf-bar-value { width: auto; font-size: 0.7rem; }
+}
+
+@media (max-width: 480px) {
+  .cf-quick-stats { grid-template-columns: 1fr 1fr; }
+  .cf-category-grid { grid-template-columns: repeat(2, 1fr); }
+  .cf-fin-grid { grid-template-columns: 1fr; }
+  .cf-cyprus-kpis { grid-template-columns: 1fr; }
+  .cf-cyprus-ratios { grid-template-columns: 1fr 1fr; }
+}

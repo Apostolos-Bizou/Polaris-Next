@@ -388,7 +388,7 @@ export default function ClientsPage() {
                     {/* Client Name */}
                     <td className="name-cell">
                       <div className="client-name-row">
-                        <span className={`client-name ${isParent ? 'parent-name' : ''} ${client.isChild ? 'sub-name' : ''}`}>
+                        <span className={`client-name ${isParent ? 'parent-name' : ''} ${client.isChild ? 'sub-name' : ''}`} onClick={() => window.location.href = `/clients/${client.client_id}`} style={{cursor:"pointer"}}>
                           {client.client_name}
                         </span>
                         {isParent && childCount > 0 && (
@@ -451,7 +451,7 @@ export default function ClientsPage() {
                     <td>
                       <button
                         className="action-btn"
-                        onClick={() => alert(`Open client folder: ${client.client_id}`)}
+                        onClick={() => window.location.href = `/clients/${client.client_id}`}
                         title="View client folder"
                       >
                         📂
