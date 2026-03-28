@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import CreateOfferForm from '@/components/offers/create-offer-form';
+import ComparisonQuoteForm from '@/components/offers/comparison-quote-form';
 
 // ── Types ────────────────────────────────────────────────────────────
 interface OfferItem {
@@ -80,6 +81,7 @@ export default function OffersPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
 
   // Client list for the create form
   const dummyClients = [
@@ -149,7 +151,7 @@ export default function OffersPage() {
           <p className="page-subtitle">Create, track and manage proposals & comparison quotes</p>
         </div>
         <div className="header-actions">
-          <button className="btn-create comparison" onClick={() => alert('Create Comparison Quote - coming soon')}>
+          <button className="btn-create comparison" onClick={() => setShowComparison(true)}>
             📊 New Comparison
           </button>
           <button className="btn-create standard" onClick={() => setShowCreate(true)}>
@@ -441,6 +443,25 @@ export default function OffersPage() {
             setOffers(prev => [newOffer, ...prev]);
             setShowCreate(false);
             alert(`✅ Offer ${newOffer.offer_id} saved as Draft!`);
+          }}
+        />
+      )}
+
+      {showComparison && (
+        <ComparisonQuoteForm
+          clients={dummyClients}
+          onClose={() => setShowComparison(false)}
+          onSave={(offerData) => {
+            const newOffer: Offer = {
+              offer_id: `CQ-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0')}`,
+              offer_type: 'comparison',
+              status: 'draft',
+              created_date: new Date().toISOString().split('T')[0],
+              ...offerData,
+            };
+            setOffers(prev => [newOffer, ...prev]);
+            setShowComparison(false);
+            alert(`✅ Comparison Quote ${newOffer.offer_id} saved as Draft!`);
           }}
         />
       )}
