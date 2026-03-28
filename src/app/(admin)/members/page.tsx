@@ -272,9 +272,9 @@ export default function MembersPage() {
         </>
       )}
 
-      {/* ═══════ TAB 2: MEMBER TRACKER ═══════ */}
+      {/* ═══════ TAB 2: MEMBER TRACKER (FULL SCREEN) ═══════ */}
       {activeTab === 'tracker' && (
-        <>
+        <div className="tracker-fullscreen">
           <div className="tracker-toolbar">
             <div className="search-box"><span>🔍</span><input placeholder="Search entity..." value={trackerSearch} onChange={(e) => setTrackerSearch(e.target.value)} />{trackerSearch && <button onClick={() => setTrackerSearch('')}>✕</button>}</div>
             <select className="parent-filter" value={trackerGroup} onChange={(e) => setTrackerGroup(e.target.value)}>
@@ -282,70 +282,60 @@ export default function MembersPage() {
               {Object.entries(PARENT_NAMES).map(([id, name]) => (<option key={id} value={id}>{name}</option>))}
             </select>
             <div className="tracker-legend">
-              <span className="legend-item up">● Increase</span>
-              <span className="legend-item down">● Decrease</span>
-              <span className="legend-item neutral">● No change</span>
+              <span className="legend-up">● Increase</span>
+              <span className="legend-down">● Decrease</span>
+              <span className="legend-neutral">● No change</span>
             </div>
           </div>
 
-          <div className="tracker-grid-container">
-            <div className="tracker-grid-scroll">
-              <table className="tracker-table">
-                <thead>
-                  <tr>
-                    <th className="sticky-col entity-header">#</th>
-                    <th className="sticky-col name-header">Entity</th>
-                    {MONTHS.map(m => <th key={m} className="month-header">{m}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* SYNOLO Row */}
-                  <tr className="synolo-row">
-                    <td className="sticky-col synolo-num">Σ</td>
-                    <td className="sticky-col synolo-name">SYNOLO</td>
-                    {SYNOLO_ROW.map((r, i) => (
-                      <td key={i} className="tracker-cell synolo-cell">
-                        <div className="cell-members">{fmt(r.members)}</div>
-                        {i > 0 && <div className={`cell-change ${r.change > 0 ? 'up' : r.change < 0 ? 'down' : ''}`}>
-                          {r.change > 0 ? '+' : ''}{fmt(r.change)}
-                        </div>}
-                        {i > 0 && <div className={`cell-pct ${r.pctChange > 0 ? 'up' : r.pctChange < 0 ? 'down' : ''}`}>
-                          {r.pctChange > 0 ? '+' : ''}{r.pctChange}%
-                        </div>}
+          <div className="tracker-scroll">
+            <table className="tracker-table">
+              <thead>
+                <tr>
+                  <th className="sticky-num">#</th>
+                  <th className="sticky-name">Εταιρεία</th>
+                  {MONTHS.map(m => <th key={m} className="month-th">{m}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {/* SYNOLO Row - sticky */}
+                <tr className="synolo-row">
+                  <td className="sticky-num synolo-cell">Σ</td>
+                  <td className="sticky-name synolo-cell synolo-name-cell">ΣΥΝΟΛΟ ✓</td>
+                  {SYNOLO_ROW.map((r, i) => (
+                    <td key={i} className="synolo-cell data-cell">
+                      <div className="cell-val">{fmt(r.members)}</div>
+                      {i > 0 && <div className={`cell-chg ${r.change > 0 ? 'up' : r.change < 0 ? 'down' : 'flat'}`}>{r.change > 0 ? '+' : ''}{fmt(r.change)} <span className="dot">●</span></div>}
+                      {i > 0 && <div className={`cell-pct ${r.pctChange > 0 ? 'up' : r.pctChange < 0 ? 'down' : 'flat'}`}>{r.pctChange > 0 ? '+' : ''}{r.pctChange}%</div>}
+                    </td>
+                  ))}
+                </tr>
+
+                {/* Entity Rows */}
+                {filteredTimeline.map((entity, idx) => (
+                  <tr key={entity.client_id} className={`entity-row ${idx % 2 === 0 ? 'row-even' : 'row-odd'}`} onClick={() => setDetailEntity(entity)}>
+                    <td className="sticky-num">{idx + 1}</td>
+                    <td className="sticky-name entity-name-td">
+                      <div className="ent-name">{entity.client_name}</div>
+                      <div className="ent-group">{PARENT_NAMES[entity.parent_client_id || ''] || ''}</div>
+                    </td>
+                    {entity.monthly.map((r, i) => (
+                      <td key={i} className={`data-cell ${r.members === 0 ? 'zero-cell' : ''}`}>
+                        {r.members > 0 ? (
+                          <>
+                            <div className="cell-val">{fmt(r.members)}</div>
+                            {i > 0 && <div className={`cell-chg ${r.change > 0 ? 'up' : r.change < 0 ? 'down' : 'flat'}`}>{r.change > 0 ? '+' : ''}{r.change} <span className="dot">●</span></div>}
+                            {i > 0 && <div className={`cell-pct ${r.pctChange > 0 ? 'up' : r.pctChange < 0 ? 'down' : 'flat'}`}>{r.pctChange > 0 ? '+' : ''}{r.pctChange}%</div>}
+                          </>
+                        ) : <span className="cell-empty">—</span>}
                       </td>
                     ))}
                   </tr>
-
-                  {/* Entity Rows */}
-                  {filteredTimeline.map((entity, idx) => (
-                    <tr key={entity.client_id} className="entity-row" onClick={() => setDetailEntity(entity)}>
-                      <td className="sticky-col row-num">{idx + 1}</td>
-                      <td className="sticky-col entity-name-cell">
-                        <div className="tracker-entity-name">{entity.client_name}</div>
-                        <div className="tracker-entity-group">{PARENT_NAMES[entity.parent_client_id || ''] || ''}</div>
-                      </td>
-                      {entity.monthly.map((r, i) => (
-                        <td key={i} className={`tracker-cell ${r.members === 0 ? 'empty-cell' : ''}`}>
-                          {r.members > 0 && (
-                            <>
-                              <div className="cell-members">{fmt(r.members)}</div>
-                              {i > 0 && r.change !== 0 && (
-                                <div className={`cell-change ${r.change > 0 ? 'up' : 'down'}`}>
-                                  {r.change > 0 ? '+' : ''}{r.change}
-                                </div>
-                              )}
-                            </>
-                          )}
-                          {r.members === 0 && <span className="cell-dash">—</span>}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </>
+        </div>
       )}
 
       {/* ═══════ DETAIL MODAL ═══════ */}
@@ -442,37 +432,62 @@ export default function MembersPage() {
         .ratio-fill.prin { background: #3498db; } .ratio-fill.dep { background: #9b59b6; }
         .ratio-text { font-size: 0.7rem; color: #5a6a7a; }
 
-        /* ═══ TRACKER TAB ═══ */
-        .tracker-legend { display: flex; gap: 1rem; font-size: 0.8rem; }
-        .legend-item { color: #7aa0c0; } .legend-item.up { color: #4CAF50; } .legend-item.down { color: #e74c3c; } .legend-item.neutral { color: #FF9800; }
-        .tracker-grid-container { background: linear-gradient(145deg, #0d1f2d, #0a1628); border: 1px solid rgba(45,80,112,0.25); border-radius: 16px; overflow: hidden; }
-        .tracker-grid-scroll { overflow-x: auto; max-height: 75vh; overflow-y: auto; }
+        /* ═══ TRACKER TAB - FULL SCREEN ═══ */
+        .tracker-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a1628; z-index: 900; display: flex; flex-direction: column; }
+        .tracker-toolbar { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; padding: 0.75rem 1.25rem; background: #0d1f2d; border-bottom: 2px solid rgba(212,175,55,0.3); flex-shrink: 0; }
+        .tracker-legend { display: flex; gap: 1rem; font-size: 0.85rem; margin-left: auto; }
+        .legend-up { color: #4CAF50; } .legend-down { color: #e74c3c; } .legend-neutral { color: #FF9800; }
+        .tracker-scroll { flex: 1; overflow: auto; }
 
         .tracker-table { width: max-content; min-width: 100%; border-collapse: collapse; }
-        .tracker-table th { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600; color: #D4AF37; padding: 0.75rem 0.5rem; border-bottom: 2px solid rgba(212,175,55,0.2); text-align: center; white-space: nowrap; position: sticky; top: 0; background: #0d1f2d; z-index: 5; }
-        .sticky-col { position: sticky; background: #0d1f2d; z-index: 6; }
-        .entity-header { left: 0; width: 40px; } .name-header { left: 40px; min-width: 200px; text-align: left !important; }
-        .month-header { min-width: 90px; }
 
-        .tracker-table td { padding: 0.4rem 0.35rem; border-bottom: 1px solid rgba(45,80,112,0.08); font-size: 0.8rem; text-align: center; }
-        .entity-row { cursor: pointer; transition: background 0.2s; }
-        .entity-row:hover td { background: rgba(45,80,112,0.08); }
-        .entity-name-cell { left: 40px; min-width: 200px; text-align: left !important; }
-        .tracker-entity-name { color: #ffffff; font-weight: 600; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
-        .tracker-entity-group { font-size: 0.65rem; color: #5a6a7a; }
+        /* Header */
+        .tracker-table thead tr { position: sticky; top: 0; z-index: 20; }
+        .tracker-table th { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 700; padding: 0.85rem 0.75rem; text-align: center; white-space: nowrap; background: #1e3a5f; color: #ffffff; border-bottom: 3px solid #D4AF37; }
+        .month-th { min-width: 120px; }
 
-        .tracker-cell { vertical-align: middle; }
-        .empty-cell { opacity: 0.3; }
-        .cell-members { font-weight: 700; color: #ffffff; font-size: 0.85rem; }
-        .cell-change { font-size: 0.7rem; margin-top: 0.1rem; }
-        .cell-change.up { color: #4CAF50; } .cell-change.down { color: #e74c3c; }
-        .cell-pct { font-size: 0.65rem; } .cell-pct.up { color: #4CAF50; } .cell-pct.down { color: #e74c3c; }
-        .cell-dash { color: #2d3748; }
+        /* Sticky columns */
+        .sticky-num { position: sticky; left: 0; z-index: 15; width: 45px; text-align: center; background: inherit; }
+        .sticky-name { position: sticky; left: 45px; z-index: 15; min-width: 220px; text-align: left !important; background: inherit; }
 
-        .synolo-row td { background: rgba(212,175,55,0.08) !important; border-bottom: 2px solid rgba(212,175,55,0.3); }
-        .synolo-num { color: #D4AF37; font-weight: 700; font-size: 1rem; left: 0; }
-        .synolo-name { color: #D4AF37; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.95rem; left: 40px; text-align: left !important; }
-        .synolo-cell .cell-members { color: #D4AF37; font-size: 0.95rem; }
+        /* Header sticky cols */
+        .tracker-table thead .sticky-num, .tracker-table thead .sticky-name { z-index: 25; background: #1e3a5f; }
+
+        /* Data cells */
+        .data-cell { padding: 0.5rem 0.6rem; text-align: center; vertical-align: middle; min-width: 120px; border-right: 1px solid rgba(45,80,112,0.1); }
+        .cell-val { font-size: 1.1rem; font-weight: 700; color: #ffffff; font-family: 'Montserrat', sans-serif; }
+        .cell-chg { font-size: 0.85rem; margin-top: 0.15rem; font-weight: 600; }
+        .cell-chg.up { color: #4CAF50; } .cell-chg.down { color: #e74c3c; } .cell-chg.flat { color: #607D8B; }
+        .cell-pct { font-size: 0.8rem; margin-top: 0.1rem; font-weight: 500; }
+        .cell-pct.up { color: #4CAF50; } .cell-pct.down { color: #e74c3c; } .cell-pct.flat { color: #607D8B; }
+        .dot { font-size: 0.7rem; }
+        .cell-empty { color: #2d3748; }
+        .zero-cell { opacity: 0.3; }
+
+        /* SYNOLO row - green background, sticky below header */
+        .synolo-row { position: sticky; top: 44px; z-index: 18; }
+        .synolo-cell { background: #2E7D32 !important; border-bottom: 3px solid #1B5E20; }
+        .synolo-cell .cell-val { color: #ffffff; font-size: 1.25rem; }
+        .synolo-cell .cell-chg { color: rgba(255,255,255,0.9); }
+        .synolo-cell .cell-pct { color: rgba(255,255,255,0.8); }
+        .synolo-name-cell { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #ffffff; }
+        .synolo-row .sticky-num { background: #2E7D32 !important; color: #ffffff; font-size: 1.1rem; font-weight: 700; }
+        .synolo-row .sticky-name { background: #2E7D32 !important; }
+
+        /* Entity rows - alternating colors */
+        .entity-row { cursor: pointer; transition: background 0.15s; }
+        .row-even td { background: #0a1628; }
+        .row-odd td { background: #0d1f2d; }
+        .row-even .sticky-num, .row-even .sticky-name { background: #0a1628; }
+        .row-odd .sticky-num, .row-odd .sticky-name { background: #0d1f2d; }
+        .entity-row:hover td { background: rgba(45,80,112,0.15) !important; }
+        .entity-row:hover .sticky-num, .entity-row:hover .sticky-name { background: rgba(45,80,112,0.15) !important; }
+
+        .entity-row td { padding: 0.6rem 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.12); font-size: 0.9rem; }
+        .entity-name-td { text-align: left !important; padding-left: 0.75rem !important; }
+        .ent-name { color: #ffffff; font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
+        .ent-group { font-size: 0.7rem; color: #5a6a7a; }
+        .entity-row .row-num { text-align: center; font-weight: 600; color: #7aa0c0; }
 
         /* ═══ DETAIL MODAL ═══ */
         .detail-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
