@@ -4,9 +4,9 @@ import { useDashboard } from "@/hooks/use-dashboard";
 import { StatsBar } from "@/components/dashboard/stats-bar";
 import { QuarterSelector } from "@/components/dashboard/quarter-selector";
 import { KpiGrid } from "@/components/dashboard/kpi-grid";
-import { InOutAnalysis } from "@/components/dashboard/inout-analysis";
-import { MemberMovement } from "@/components/dashboard/member-movement";
-import { CategoryAnalysis } from "@/components/dashboard/category-analysis";
+import { InOutCharts } from "@/components/dashboard/inout-charts";
+import { MovementCharts } from "@/components/dashboard/movement-charts";
+import { CategoryCharts } from "@/components/dashboard/category-charts";
 import { HospitalsTable } from "@/components/dashboard/hospitals-table";
 import { GeoDistribution } from "@/components/dashboard/geo-distribution";
 import { FinancialSection } from "@/components/dashboard/financial-section";
@@ -23,7 +23,6 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-page">
-      {/* Page header */}
       <div className="dash-page-header">
         <div>
           <h1 className="dash-page-title">🏢 Admin Dashboard</h1>
@@ -67,13 +66,12 @@ export default function DashboardPage() {
 
       {!loading && !error && (
         <>
-          {/* BUSINESS STRATEGY */}
           <div className="section-divider">📈 BUSINESS STRATEGY</div>
           <KpiGrid kpis={kpis} />
 
           {/* Quarter comparison */}
           {quarterData.length > 1 && (
-            <div className="quarter-compare-section">
+            <div style={{ marginBottom: "2rem" }}>
               <h2 className="stitle">⚖️ Quarter Comparison: {quarterData.map(q => q.quarter).join(" vs ")} {selectedYear}</h2>
               <div style={{ display: "grid", gridTemplateColumns: `repeat(${quarterData.length}, 1fr)`, gap: "1rem" }}>
                 {quarterData.map(qd => (
@@ -89,15 +87,15 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <InOutAnalysis kpis={kpis} />
-          <MemberMovement kpis={kpis} />
-          <CategoryAnalysis categories={categories} />
+          {/* Chart.js sections */}
+          <InOutCharts kpis={kpis} quarterData={quarterData} selectedYear={selectedYear} />
+          <MovementCharts kpis={kpis} quarterData={quarterData} selectedYear={selectedYear} />
+          <CategoryCharts categories={categories} />
           <HospitalsTable hospitals={hospitals} />
           <GeoDistribution geoData={geoData} />
           <FinancialSection kpis={kpis} quarterData={quarterData} selectedYear={selectedYear} />
           <CEODashboard />
 
-          {/* Footer */}
           <div className="dash-footer">
             ✦ POLARIS Financial Services • Third Party Healthcare Administrator • Fast • Fair • Flexible
           </div>
@@ -119,7 +117,6 @@ export default function DashboardPage() {
         .dash-error button { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: inherit; }
         .section-divider { text-align: center; padding: 0.75rem 0; margin-bottom: 1rem; font-family: "Montserrat", sans-serif; font-size: 0.85rem; font-weight: 800; letter-spacing: 3px; color: rgba(184,212,232,0.5); }
         .stitle { font-family: "Montserrat", sans-serif; font-size: 1.1rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(212,175,55,0.3); }
-        .quarter-compare-section { margin-bottom: 2rem; }
         .qcard { background: linear-gradient(145deg,#0d1f2d,#0a1628); border: 1px solid #2d5070; border-radius: 16px; padding: 1.25rem; }
         .qcard-header { font-family: "Montserrat", sans-serif; font-size: 1.25rem; font-weight: 800; color: #d4af37; text-align: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.2); }
         .qcard-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(45,80,112,0.2); font-size: 0.85rem; }
