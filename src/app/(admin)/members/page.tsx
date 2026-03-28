@@ -434,7 +434,7 @@ export default function MembersPage() {
         .ratio-text { font-size: 0.7rem; color: #5a6a7a; }
 
         /* ═══ TRACKER TAB - FULL SCREEN ═══ */
-        .tracker-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a1628; z-index: 9999; display: flex; flex-direction: column; }
+        .tracker-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a1628; z-index: 10001; display: flex; flex-direction: column; }
         .tracker-toolbar { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; padding: 0.75rem 1.25rem; background: #0d1f2d; border-bottom: 2px solid rgba(212,175,55,0.3); flex-shrink: 0; }
         .tracker-back { background: rgba(231,76,60,0.15); border: 1px solid rgba(231,76,60,0.4); color: #EF5350; padding: 0.5rem 1rem; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; white-space: nowrap; }
         .tracker-back:hover { background: rgba(231,76,60,0.3); }
