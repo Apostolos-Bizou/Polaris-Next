@@ -345,31 +345,35 @@ export default function ComparisonQuoteForm({ onClose, onSave, clients }: Props)
           padding: 0.3rem 0.85rem; border-radius: 15px; font-size: 0.85rem; font-weight: 600;
         }
 
-        /* Step 2: Plan cards */
-        .plans-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
+        /* Step 2: Plan cards - 2 rows */
+        .plans-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
         .cq-plan-card {
-          border: 2px solid rgba(45,80,112,0.4); border-radius: 12px;
+          border: 2px solid rgba(45,80,112,0.4); border-radius: 14px;
           background: #0a1628; transition: all 0.3s; cursor: pointer; overflow: hidden;
         }
-        .cq-plan-card.selected { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .cq-plan-card.selected { box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 8px 25px rgba(0,0,0,0.4); }
         .cq-plan-top {
-          display: flex; align-items: center; gap: 0.4rem;
-          padding: 0.85rem 0.6rem;
+          display: flex; align-items: center; gap: 0.6rem;
+          padding: 1rem 1rem;
         }
         .cq-plan-check {
-          width: 22px; height: 22px; border: 2px solid rgba(45,80,112,0.5);
+          width: 24px; height: 24px; border: 2px solid rgba(45,80,112,0.5);
           border-radius: 6px; display: flex; align-items: center; justify-content: center;
-          font-size: 0.75rem; color: white; flex-shrink: 0;
+          font-size: 0.8rem; color: white; flex-shrink: 0; transition: all 0.2s;
         }
-        .cq-plan-icon { font-size: 1.2rem; }
-        .cq-plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; }
+        .cq-plan-icon { font-size: 1.5rem; }
+        .cq-plan-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; }
         .cq-plan-info {
-          display: flex; gap: 0.4rem; padding: 0.85rem 0.6rem;
-          border-top: 1px solid rgba(45,80,112,0.2);
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+          padding: 0; border-top: 1px solid rgba(45,80,112,0.2);
         }
-        .cq-plan-info div { flex: 1; }
-        .cq-plan-info span { color: #5a6a7a; display: block; font-size: 0.75rem; margin-bottom: 0.2rem; }
-        .cq-plan-info strong { color: #ffffff; font-size: 1.15rem; font-family: 'Montserrat', sans-serif; }
+        .cq-plan-info div {
+          text-align: center; padding: 0.75rem 0.5rem;
+          border-right: 1px solid rgba(45,80,112,0.1);
+        }
+        .cq-plan-info div:last-child { border-right: none; }
+        .cq-plan-info span { color: #5a6a7a; display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem; }
+        .cq-plan-info strong { color: #ffffff; font-size: 1.05rem; font-family: 'Montserrat', sans-serif; font-weight: 700; }
         .cq-dental-toggle {
           display: flex; align-items: center; gap: 0.4rem;
           padding: 0.6rem 0.6rem; background: rgba(139,92,246,0.1);
@@ -428,16 +432,16 @@ export default function ComparisonQuoteForm({ onClose, onSave, clients }: Props)
         .cq-btn.doc { background: linear-gradient(135deg, #1e3a5f, #2d5a87); color: white; }
         .cq-btn.save { background: linear-gradient(135deg, #28a745, #20c997); color: white; }
 
-        @media (max-width: 1200px) { .plans-row { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 1200px) { .plans-row { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
           .step1-grid { grid-template-columns: 1fr; }
-          .plans-row { grid-template-columns: repeat(3, 1fr); }
+          .plans-row { grid-template-columns: repeat(2, 1fr); }
           .cq-actions { grid-template-columns: repeat(2, 1fr); }
           .cq-body { padding: 1.5rem; }
           .cq-header { padding: 1rem 1.5rem; }
         }
         @media (max-width: 480px) {
-          .plans-row { grid-template-columns: repeat(2, 1fr); }
+          .plans-row { grid-template-columns: 1fr; }
           .cq-actions { grid-template-columns: 1fr; }
         }
       `}</style>
