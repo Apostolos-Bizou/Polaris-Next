@@ -336,6 +336,7 @@ export default function ClientsPage() {
           <table className="client-table">
             <thead>
               <tr>
+                <th style={{ width: '45px' }}>#</th>
                 <th style={{ width: '40px' }}></th>
                 <th>Client Name</th>
                 <th>Type</th>
@@ -347,7 +348,7 @@ export default function ClientsPage() {
               </tr>
             </thead>
             <tbody>
-              {organized.filter(c => shouldShowRow(c)).map(client => {
+              {organized.filter(c => shouldShowRow(c)).map((client, idx) => {
                 const isParent = client.client_type === 'parent' && viewMode === 'hierarchy';
                 const isExpanded = expandedParents.has(client.client_id);
                 const childCount = (client as any).childCount || 0;
@@ -360,6 +361,9 @@ export default function ClientsPage() {
                     key={client.client_id}
                     className={`client-row ${client.isChild ? 'child-row' : ''} ${isParent ? 'parent-row' : ''}`}
                   >
+                    {/* Row number */}
+                    <td className="row-num">{idx + 1}</td>
+
                     {/* Expand toggle */}
                     <td className="expand-cell">
                       {isParent && childCount > 0 ? (
@@ -449,7 +453,7 @@ export default function ClientsPage() {
 
               {organized.filter(c => shouldShowRow(c)).length === 0 && (
                 <tr>
-                  <td colSpan={8} className="empty-row">
+                  <td colSpan={9} className="empty-row">
                     {searchTerm ? `No clients found matching "${searchTerm}"` : 'No clients found'}
                   </td>
                 </tr>
@@ -562,6 +566,7 @@ export default function ClientsPage() {
 
         /* Expand */
         .expand-cell { text-align: center; width: 40px; }
+        .row-num { text-align: center; font-size: 0.8rem; color: #5a6a7a; font-weight: 600; width: 45px; }
         .toggle-btn {
           background: none; border: none; color: #D4AF37;
           cursor: pointer; font-size: 0.85rem; padding: 0.25rem;
