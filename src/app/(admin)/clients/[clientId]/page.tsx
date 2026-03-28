@@ -28,9 +28,40 @@ export default function ClientFolderPage() {
 
   if (loading) {
     return (
-      <div className="cf-loading">
-        <div className="cf-spinner" />
-        <span>Loading client portfolio...</span>
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        background: "linear-gradient(145deg, #1a2d42, #0d1b2a)",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        zIndex: 99999,
+      }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{
+            fontSize: "2rem", color: "#D4AF37", fontWeight: 800,
+            fontFamily: "Montserrat, sans-serif", letterSpacing: "4px",
+            marginBottom: "1.5rem",
+          }}>
+            ✦ POLARIS
+          </div>
+          <div style={{
+            width: 50, height: 50, margin: "0 auto 1.25rem",
+            border: "3px solid rgba(212,175,55,0.2)",
+            borderTopColor: "#D4AF37", borderRadius: "50%",
+            animation: "polspin 0.8s linear infinite",
+          }} />
+          <div style={{
+            color: "#D4AF37", fontSize: "1rem", fontWeight: 700,
+            fontFamily: "Montserrat, sans-serif",
+          }}>
+            Loading Portfolio...
+          </div>
+          <div style={{
+            color: "#5a7a9a", fontSize: "0.85rem", marginTop: "0.5rem",
+          }}>
+            Fetching client data
+          </div>
+        </div>
+        <style>{`@keyframes polspin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }

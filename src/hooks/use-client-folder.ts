@@ -153,6 +153,22 @@ function generateProviders(): ProviderData[] {
   ];
 }
 
+// ── Client cache (shared across hook instances) ─────────────────────
+let _clientsCache: any[] | null = null;
+let _clientsCacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function getCachedClients(): Promise<any[]> {
+  if (_clientsCache && Date.now() - _clientsCacheTime < CACHE_TTL) {
+    return _clientsCache;
+  }
+  const res = await fetch("/api/proxy/getClients");
+  const data = await res.json();
+  _clientsCache = data.data || data.clients || [];
+  _clientsCacheTime = Date.now();
+  return _clientsCache;
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // MAIN HOOK
 // ═══════════════════════════════════════════════════════════════════════
@@ -173,10 +189,8 @@ export function useClientFolder(clientId: string) {
     setError("");
 
     try {
-      // Fetch all clients from API
-      const res = await fetch("/api/proxy/getClients");
-      const data = await res.json();
-      const allClients = data.data || data.clients || [];
+      // Use cached clients (5 min TTL)
+      const allClients = await getCachedClients();
 
       // Find this client
       const found = allClients.find(
