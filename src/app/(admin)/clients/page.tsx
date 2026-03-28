@@ -338,7 +338,17 @@ export default function ClientsPage() {
               <tr>
                 <th style={{ width: '45px' }}>#</th>
                 <th style={{ width: '40px' }}></th>
-                <th>Client Name</th>
+                <th>
+                  <div className="th-with-actions">
+                    Client Name
+                    {viewMode === 'hierarchy' && (
+                      <div className="th-buttons">
+                        <button className="th-expand-btn" onClick={expandAll} title="Expand All">▼ All</button>
+                        <button className="th-expand-btn" onClick={collapseAll} title="Collapse All">▶ All</button>
+                      </div>
+                    )}
+                  </div>
+                </th>
                 <th>Type</th>
                 <th>Plan</th>
                 <th>Members</th>
@@ -378,7 +388,7 @@ export default function ClientsPage() {
                     {/* Client Name */}
                     <td className="name-cell">
                       <div className="client-name-row">
-                        <span className={`client-name ${isParent ? 'parent-name' : ''}`}>
+                        <span className={`client-name ${isParent ? 'parent-name' : ''} ${client.isChild ? 'sub-name' : ''}`}>
                           {client.client_name}
                         </span>
                         {isParent && childCount > 0 && (
@@ -567,6 +577,15 @@ export default function ClientsPage() {
         /* Expand */
         .expand-cell { text-align: center; width: 40px; }
         .row-num { text-align: center; font-size: 0.8rem; color: #5a6a7a; font-weight: 600; width: 45px; }
+        .th-with-actions { display: flex; align-items: center; gap: 0.75rem; }
+        .th-buttons { display: flex; gap: 0.25rem; }
+        .th-expand-btn {
+          background: rgba(212,175,55,0.15); border: 1px solid rgba(212,175,55,0.3);
+          color: #D4AF37; padding: 0.2rem 0.5rem; border-radius: 6px;
+          font-size: 0.7rem; cursor: pointer; font-family: inherit; font-weight: 600;
+          transition: all 0.2s; white-space: nowrap;
+        }
+        .th-expand-btn:hover { background: rgba(212,175,55,0.3); border-color: rgba(212,175,55,0.5); }
         .toggle-btn {
           background: none; border: none; color: #D4AF37;
           cursor: pointer; font-size: 0.85rem; padding: 0.25rem;
@@ -579,6 +598,7 @@ export default function ClientsPage() {
         .client-name-row { display: flex; align-items: center; gap: 0.5rem; }
         .client-name { color: #ffffff; font-weight: 500; }
         .parent-name { font-weight: 700; color: #ffffff; }
+        .sub-name { color: #D4AF37; font-weight: 600; }
         .child-count {
           font-size: 0.7rem; color: #7aa0c0;
           background: rgba(45,80,112,0.15); padding: 0.1rem 0.4rem;
