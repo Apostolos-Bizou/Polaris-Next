@@ -494,15 +494,15 @@ export default function MembersPage() {
 
         /* ═══ DETAIL MODAL ═══ */
         .detail-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10002; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-        .detail-box { background: linear-gradient(145deg, #0d1f2d, #0a1628); border: 1px solid rgba(45,80,112,0.4); border-radius: 20px; width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto; }
-        .detail-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; border-bottom: 2px solid rgba(212,175,55,0.3); }
+        .detail-box { background: linear-gradient(145deg, #0d1f2d, #0a1628); border: 1px solid rgba(45,80,112,0.4); border-radius: 20px; width: 100%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+        .detail-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; border-bottom: 2px solid rgba(212,175,55,0.3); flex-shrink: 0; }
         .detail-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #D4AF37; }
         .detail-sub { color: #7aa0c0; font-size: 0.9rem; margin-top: 0.2rem; }
         .detail-close { background: none; border: none; color: #7aa0c0; font-size: 1.5rem; cursor: pointer; }
-        .detail-body { padding: 1rem 1.5rem 1.5rem; }
+        .detail-body { padding: 0; overflow-y: auto; flex: 1; }
         .detail-table { width: 100%; border-collapse: collapse; }
-        .detail-table th { font-size: 0.85rem; color: #7aa0c0; text-align: left; padding: 0.75rem 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.3); font-weight: 600; }
-        .detail-table td { padding: 0.65rem 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.1); }
+        .detail-table th { font-size: 0.85rem; color: #7aa0c0; text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.3); font-weight: 600; position: sticky; top: 0; background: #0d1f2d; z-index: 5; }
+        .detail-table td { padding: 0.65rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.1); }
         .detail-month { font-weight: 600; color: #ffffff; }
         .detail-members { font-weight: 700; font-size: 1.05rem; }
         .detail-members.up { color: #4CAF50; }
