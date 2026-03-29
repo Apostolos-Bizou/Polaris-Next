@@ -83,6 +83,9 @@ export default function RenewalsPage() {
         <button className={`rn-sec-tab ${r.activeSection === 'notes' ? 'active' : ''}`} onClick={() => r.setActiveSection('notes')}>
           📝 Notes & Activity
         </button>
+        <button className={`rn-sec-tab ${r.activeSection === 'calendar' ? 'active' : ''}`} onClick={() => r.setActiveSection('calendar')}>
+          📅 Renewal Calendar
+        </button>
       </div>
 
       {/* ═══ PIPELINE TAB ═══ */}
@@ -375,12 +378,11 @@ export default function RenewalsPage() {
       {r.activeSection === 'notes' && (
         <div className="rn-section">
           <div className="rn-two-col">
-            {/* Left: Add Note */}
+            {/* Left: Add Note/Todo */}
             <div className="rn-notes-form-side">
-              {/* Add Note Form */}
               <div className="rn-note-form">
                 <div className="rn-section-header-row">
-                  <h3 className="rn-subsection-title">➕ Add Note</h3>
+                  <h3 className="rn-subsection-title">➕ Add Note / Todo</h3>
                   <a href="/email" className="rn-goto-email-compact">📧 Email Center →</a>
                 </div>
                 <div className="rn-qe-form">
@@ -410,39 +412,59 @@ export default function RenewalsPage() {
                     placeholder="Add your note, call summary, or follow-up details..."
                     value={r.noteContent}
                     onChange={e => r.setNoteContent(e.target.value)}
-                    rows={5}
+                    rows={4}
                   />
 
+                  {/* Reminder */}
+                  <div className="rn-reminder-row">
+                    <span className="rn-reminder-label">⏰ Reminder:</span>
+                    <input type="date" className="rn-reminder-input" value={r.noteReminderDate} onChange={e => r.setNoteReminderDate(e.target.value)} />
+                    <input type="time" className="rn-reminder-input" value={r.noteReminderTime} onChange={e => r.setNoteReminderTime(e.target.value)} />
+                  </div>
+
                   <div className="rn-qe-actions">
-                    <button className="rn-qe-btn cancel" onClick={() => { r.setNoteClient(''); r.setNoteContent(''); r.setNoteType('note'); }}>Clear</button>
-                    <button
-                      className="rn-qe-btn send"
-                      onClick={r.addNote}
-                      disabled={!r.noteClient || !r.noteContent.trim()}
-                    >
+                    <button className="rn-qe-btn cancel" onClick={() => { r.setNoteClient(''); r.setNoteContent(''); r.setNoteType('note'); r.setNoteReminderDate(''); r.setNoteReminderTime(''); }}>Clear</button>
+                    <button className="rn-qe-btn send" onClick={r.addNote} disabled={!r.noteClient || !r.noteContent.trim()}>
                       ➕ Add Note
                     </button>
                   </div>
                 </div>
               </div>
+
+              {/* Upcoming Reminders */}
+              {r.upcomingReminders.length > 0 && (
+                <div className="rn-reminders-box">
+                  <h4 className="rn-subsection-title">⏰ Upcoming Reminders ({r.upcomingReminders.length})</h4>
+                  {r.upcomingReminders.map(rem => (
+                    <div key={rem.id} className={`rn-reminder-item ${rem.completed ? 'done' : ''}`}>
+                      <button className="rn-todo-check" onClick={() => r.toggleNoteComplete(rem.id)}>
+                        {rem.completed ? '✅' : '⬜'}
+                      </button>
+                      <div className="rn-reminder-info">
+                        <span className="rn-reminder-client">{rem.client_name}</span>
+                        <span className="rn-reminder-text">{rem.content.substring(0, 60)}{rem.content.length > 60 ? '...' : ''}</span>
+                        <span className="rn-reminder-datetime">📅 {rem.reminder_date} {rem.reminder_time && `🕐 ${rem.reminder_time}`}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Right: Recent Activity with search + filters */}
             <div className="rn-notes-list-side">
-              <h3 className="rn-subsection-title">📝 Recent Activity ({r.filteredNotes.length})</h3>
-
-              {/* Search */}
-              <div className="rn-notes-search">
-                <span className="rn-ns-icon">🔍</span>
-                <input
-                  className="rn-ns-input"
-                  placeholder="Search notes..."
-                  value={r.noteSearch}
-                  onChange={e => r.setNoteSearch(e.target.value)}
-                />
+              <div className="rn-section-header-row">
+                <h3 className="rn-subsection-title">📝 {r.showArchived ? 'Archived' : 'Active'} ({r.filteredNotes.length})</h3>
+                <button className={`rn-archive-toggle ${r.showArchived ? 'active' : ''}`} onClick={() => r.setShowArchived(!r.showArchived)}>
+                  {r.showArchived ? '📋 Show Active' : '📦 Show Archived'}
+                </button>
               </div>
 
-              {/* Type filter tabs */}
+              <div className="rn-notes-search">
+                <span className="rn-ns-icon">🔍</span>
+                <input className="rn-ns-input" placeholder="Search notes..." value={r.noteSearch} onChange={e => r.setNoteSearch(e.target.value)} />
+              </div>
+
               <div className="rn-notes-filters">
                 {([
                   { key: 'all', label: 'All', icon: '📋' },
@@ -452,41 +474,87 @@ export default function RenewalsPage() {
                   { key: 'meeting', label: 'Meeting', icon: '🤝' },
                   { key: 'followup', label: 'Follow-up', icon: '🔔' },
                 ] as const).map(f => (
-                  <button
-                    key={f.key}
-                    className={`rn-nf-tab ${r.noteFilter === f.key ? 'active' : ''}`}
-                    onClick={() => r.setNoteFilter(f.key)}
-                  >
+                  <button key={f.key} className={`rn-nf-tab ${r.noteFilter === f.key ? 'active' : ''}`} onClick={() => r.setNoteFilter(f.key)}>
                     {f.icon} {f.label}
                   </button>
                 ))}
               </div>
 
-              {/* Notes list */}
               {r.filteredNotes.length === 0 ? (
-                <div className="rn-empty">
-                  {r.noteSearch || r.noteFilter !== 'all'
-                    ? 'No notes matching your filters.'
-                    : 'No notes yet. Add your first note.'}
-                </div>
+                <div className="rn-empty">{r.noteSearch || r.noteFilter !== 'all' ? 'No notes matching filters.' : r.showArchived ? 'No archived notes.' : 'No notes yet.'}</div>
               ) : (
                 r.filteredNotes.map(note => (
-                  <div key={note.id} className={`rn-note-item ${note.type}`}>
-                    <div className="rn-note-icon">{NOTE_ICONS[note.type]}</div>
+                  <div key={note.id} className={`rn-note-item ${note.type} ${note.completed ? 'completed' : ''}`}>
+                    <button className="rn-todo-check" onClick={() => r.toggleNoteComplete(note.id)}>
+                      {note.completed ? '✅' : '⬜'}
+                    </button>
                     <div className="rn-note-content">
                       <div className="rn-note-header">
                         <a href={`/clients/${note.client_id}`} className="rn-note-client">{note.client_name}</a>
                         <span className={`rn-note-type-badge ${note.type}`}>{note.type}</span>
+                        {note.reminder_date && <span className="rn-note-reminder-badge">⏰ {note.reminder_date}</span>}
                         <span className="rn-note-date">{fmtDate(note.created_at)}</span>
                       </div>
-                      <p className="rn-note-text">{note.content}</p>
+                      <p className={`rn-note-text ${note.completed ? 'strikethrough' : ''}`}>{note.content}</p>
                       <span className="rn-note-author">By {note.created_by}</span>
                     </div>
-                    <button className="rn-note-delete" onClick={() => r.deleteNote(note.id)} title="Delete">🗑️</button>
+                    <div className="rn-note-actions-col">
+                      {!r.showArchived && (
+                        <button className="rn-note-archive" onClick={() => r.archiveNote(note.id)} title="Archive">📦</button>
+                      )}
+                      {r.showArchived && (
+                        <button className="rn-note-archive" onClick={() => r.unarchiveNote(note.id)} title="Unarchive">↩️</button>
+                      )}
+                      <button className="rn-note-delete" onClick={() => r.deleteNote(note.id)} title="Delete">🗑️</button>
+                    </div>
                   </div>
                 ))
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ CALENDAR TAB ═══ */}
+      {r.activeSection === 'calendar' && (
+        <div className="rn-section">
+          <h3 className="rn-subsection-title">📅 Renewal Calendar — 12 Month View</h3>
+          <p className="rn-cal-subtitle">Contract expiration timeline across the year. Each bar represents a client&apos;s contract nearing expiry.</p>
+
+          <div className="rn-calendar-grid">
+            {r.calendarData.map(month => (
+              <div key={`${month.year}-${month.month}`} className={`rn-cal-month ${month.isCurrentMonth ? 'current' : ''} ${month.contracts.length > 0 ? 'has-items' : ''}`}>
+                <div className="rn-cal-month-header">
+                  <span className="rn-cal-month-name">{month.label}</span>
+                  <span className="rn-cal-month-year">{month.year}</span>
+                  {month.contracts.length > 0 && (
+                    <span className="rn-cal-month-count">{month.contracts.length}</span>
+                  )}
+                </div>
+                <div className="rn-cal-month-body">
+                  {month.contracts.length === 0 ? (
+                    <div className="rn-cal-empty">—</div>
+                  ) : (
+                    month.contracts.map(c => {
+                      const expDay = new Date(c.expiry_date).getDate();
+                      return (
+                        <a key={c.contract_id} href={`/clients/${c.client_id}`} className={`rn-cal-item ${c.urgency}`}>
+                          <span className="rn-cal-day">{expDay}</span>
+                          <span className="rn-cal-client-name">{c.client_name}</span>
+                          <span className="rn-cal-members">{c.member_count} 👥</span>
+                        </a>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Summary bar */}
+          <div className="rn-cal-summary">
+            <span>📊 Total: {r.contracts.length} renewals across 12 months</span>
+            <span>👥 {r.contracts.reduce((s, c) => s + c.member_count, 0).toLocaleString()} members</span>
           </div>
         </div>
       )}

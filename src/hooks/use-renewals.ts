@@ -42,6 +42,19 @@ export interface RenewalNote {
   content: string;
   created_at: string;
   created_by: string;
+  // Todo/Reminder fields
+  reminder_date?: string;
+  reminder_time?: string;
+  completed?: boolean;
+  archived?: boolean;
+}
+
+export interface CalendarMonth {
+  month: number; // 0-11
+  year: number;
+  label: string; // "Jan", "Feb" etc
+  contracts: ExpiringContract[];
+  isCurrentMonth: boolean;
 }
 
 export interface ActionItem {
@@ -81,6 +94,7 @@ function generateDemoExpiring(): ExpiringContract[] {
   const day = 86400000;
 
   return [
+    // Within 90 days
     { client_id: 'CLI-2026-0030', client_name: 'KYKLADES MARITIME', contract_id: 'ASA-2024-030', contract_type: 'ASA', member_count: 85, expiry_date: new Date(now + day * 12).toISOString(), days_until: 12, urgency: 'critical', status: 'active' },
     { client_id: 'CLI-2026-0015', client_name: 'EFNAV S.A.', contract_id: 'ASA-2024-015', contract_type: 'ASA', member_count: 45, expiry_date: new Date(now + day * 22).toISOString(), days_until: 22, urgency: 'critical', status: 'active' },
     { client_id: 'CLI-2026-0020', client_name: 'GOLDEN UNION SHIPPING', contract_id: 'ASA-2024-020', contract_type: 'ASA', member_count: 112, expiry_date: new Date(now + day * 28).toISOString(), days_until: 28, urgency: 'critical', status: 'active' },
@@ -90,6 +104,18 @@ function generateDemoExpiring(): ExpiringContract[] {
     { client_id: 'CLI-2026-0001', client_name: 'ELETSON HOLDINGS', contract_id: 'ASA-2024-001', contract_type: 'ASA', member_count: 78, expiry_date: new Date(now + day * 68).toISOString(), days_until: 68, urgency: 'ok', status: 'active' },
     { client_id: 'CLI-2026-0003', client_name: 'CENTROFIN MARINE', contract_id: 'ASA-2024-003', contract_type: 'ASA', member_count: 145, expiry_date: new Date(now + day * 75).toISOString(), days_until: 75, urgency: 'ok', status: 'active' },
     { client_id: 'CLI-2026-0004', client_name: 'ASTRA SHIPMANAGEMENT', contract_id: 'ASA-2024-004', contract_type: 'ASA', member_count: 68, expiry_date: new Date(now + day * 82).toISOString(), days_until: 82, urgency: 'ok', status: 'active' },
+    // Future months (for calendar view)
+    { client_id: 'CLI-2026-0025', client_name: 'MARINE TRUST LTD', contract_id: 'ASA-2024-025', contract_type: 'ASA', member_count: 55, expiry_date: '2026-07-15T00:00:00Z', days_until: 108, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0012', client_name: 'AEGEAN BULK CO.', contract_id: 'ASA-2024-012', contract_type: 'ASA', member_count: 92, expiry_date: '2026-07-28T00:00:00Z', days_until: 121, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0018', client_name: 'NAVIOS MARITIME', contract_id: 'ASA-2024-018', contract_type: 'ASA', member_count: 135, expiry_date: '2026-08-10T00:00:00Z', days_until: 134, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0022', client_name: 'BLUE STAR FERRIES', contract_id: 'ASA-2024-022', contract_type: 'ASA', member_count: 210, expiry_date: '2026-09-01T00:00:00Z', days_until: 156, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0028', client_name: 'PANTHEON TANKERS', contract_id: 'ASA-2024-028', contract_type: 'ASA', member_count: 88, expiry_date: '2026-09-20T00:00:00Z', days_until: 175, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0035', client_name: 'EASTERN MEDITERRANEAN', contract_id: 'ASA-2024-035', contract_type: 'ASA', member_count: 67, expiry_date: '2026-10-05T00:00:00Z', days_until: 190, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0040', client_name: 'PIRAEUS SHIPPING', contract_id: 'ASA-2024-040', contract_type: 'ASA', member_count: 42, expiry_date: '2026-11-12T00:00:00Z', days_until: 228, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0042', client_name: 'HELLENIC CARRIERS', contract_id: 'ASA-2024-042', contract_type: 'ASA', member_count: 73, expiry_date: '2026-11-25T00:00:00Z', days_until: 241, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0045', client_name: 'ALPHA GAS CARRIER', contract_id: 'ASA-2024-045', contract_type: 'ASA', member_count: 58, expiry_date: '2026-12-08T00:00:00Z', days_until: 254, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0048', client_name: 'CAPE SHIPPING', contract_id: 'ASA-2024-048', contract_type: 'ASA', member_count: 95, expiry_date: '2027-01-15T00:00:00Z', days_until: 292, urgency: 'ok', status: 'active' },
+    { client_id: 'CLI-2026-0050', client_name: 'OMEGA NAVIGATION', contract_id: 'ASA-2024-050', contract_type: 'ASA', member_count: 48, expiry_date: '2027-02-20T00:00:00Z', days_until: 328, urgency: 'ok', status: 'active' },
   ];
 }
 
@@ -116,7 +142,7 @@ export function useRenewals() {
   const [contracts, setContracts] = useState<ExpiringContract[]>([]);
   const [notes, setNotes] = useState<RenewalNote[]>([]);
   const [expiringFilter, setExpiringFilter] = useState<ExpiringFilter>(30);
-  const [activeSection, setActiveSection] = useState<'pipeline' | 'expiring' | 'notes' | 'actions'>('pipeline');
+  const [activeSection, setActiveSection] = useState<'pipeline' | 'expiring' | 'notes' | 'actions' | 'calendar'>('pipeline');
 
   // Note form
   const [noteClient, setNoteClient] = useState('');
@@ -124,6 +150,9 @@ export function useRenewals() {
   const [noteContent, setNoteContent] = useState('');
   const [noteFilter, setNoteFilter] = useState<RenewalNote['type'] | 'all'>('all');
   const [noteSearch, setNoteSearch] = useState('');
+  const [noteReminderDate, setNoteReminderDate] = useState('');
+  const [noteReminderTime, setNoteReminderTime] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
 
   // Quick Email state
   const [emailClient, setEmailClient] = useState('');
@@ -334,20 +363,38 @@ export function useRenewals() {
       content: noteContent,
       created_at: new Date().toISOString(),
       created_by: 'Admin',
+      reminder_date: noteReminderDate || undefined,
+      reminder_time: noteReminderTime || undefined,
+      completed: false,
+      archived: false,
     };
     setNotes(prev => [newNote, ...prev]);
     setNoteContent('');
     setNoteClient('');
     setNoteType('note');
-  }, [noteClient, noteType, noteContent]);
+    setNoteReminderDate('');
+    setNoteReminderTime('');
+  }, [noteClient, noteType, noteContent, noteReminderDate, noteReminderTime]);
 
   const deleteNote = useCallback((id: string) => {
     setNotes(prev => prev.filter(n => n.id !== id));
   }, []);
 
+  const toggleNoteComplete = useCallback((id: string) => {
+    setNotes(prev => prev.map(n => n.id === id ? { ...n, completed: !n.completed } : n));
+  }, []);
+
+  const archiveNote = useCallback((id: string) => {
+    setNotes(prev => prev.map(n => n.id === id ? { ...n, archived: true } : n));
+  }, []);
+
+  const unarchiveNote = useCallback((id: string) => {
+    setNotes(prev => prev.map(n => n.id === id ? { ...n, archived: false } : n));
+  }, []);
+
   // ═══ Filtered notes ═══
   const filteredNotes = useMemo(() => {
-    let result = [...notes];
+    let result = notes.filter(n => showArchived ? n.archived : !n.archived);
     if (noteFilter !== 'all') {
       result = result.filter(n => n.type === noteFilter);
     }
@@ -359,16 +406,52 @@ export function useRenewals() {
       );
     }
     return result;
-  }, [notes, noteFilter, noteSearch]);
+  }, [notes, noteFilter, noteSearch, showArchived]);
 
-  // ═══ Last note per client (for expiring contracts table) ═══
+  // ═══ Upcoming reminders (sorted by date) ═══
+  const upcomingReminders = useMemo(() => {
+    return notes
+      .filter(n => n.reminder_date && !n.completed && !n.archived)
+      .sort((a, b) => {
+        const da = new Date(`${a.reminder_date}T${a.reminder_time || '09:00'}`).getTime();
+        const db = new Date(`${b.reminder_date}T${b.reminder_time || '09:00'}`).getTime();
+        return da - db;
+      });
+  }, [notes]);
+
+  // ═══ Last note per client ═══
   const lastNoteByClient = useMemo(() => {
     const map: Record<string, RenewalNote> = {};
-    notes.forEach(n => {
+    notes.filter(n => !n.archived).forEach(n => {
       if (!map[n.client_id]) map[n.client_id] = n;
     });
     return map;
   }, [notes]);
+
+  // ═══ Calendar data — 12 months ═══
+  const calendarData = useMemo((): CalendarMonth[] => {
+    const now = new Date();
+    const months: CalendarMonth[] = [];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      const month = d.getMonth();
+      const year = d.getFullYear();
+      const contractsInMonth = contracts.filter(c => {
+        const exp = new Date(c.expiry_date);
+        return exp.getMonth() === month && exp.getFullYear() === year;
+      });
+      months.push({
+        month,
+        year,
+        label: monthNames[month],
+        contracts: contractsInMonth.sort((a, b) => new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime()),
+        isCurrentMonth: month === now.getMonth() && year === now.getFullYear(),
+      });
+    }
+    return months;
+  }, [contracts]);
 
   // ═══ Quick Email Templates ═══
   const emailTemplates = useMemo(() => [
@@ -458,8 +541,13 @@ export function useRenewals() {
     showActiveOnly, setShowActiveOnly,
     // Notes
     notes, filteredNotes, addNote, deleteNote, lastNoteByClient,
+    toggleNoteComplete, archiveNote, unarchiveNote, upcomingReminders,
     noteClient, setNoteClient, noteType, setNoteType, noteContent, setNoteContent,
     noteFilter, setNoteFilter, noteSearch, setNoteSearch,
+    noteReminderDate, setNoteReminderDate, noteReminderTime, setNoteReminderTime,
+    showArchived, setShowArchived,
+    // Calendar
+    calendarData,
     // Quick Email
     emailClient, setEmailClient, emailTemplate, setEmailTemplate,
     emailRecipient, setEmailRecipient, emailSubject, setEmailSubject,

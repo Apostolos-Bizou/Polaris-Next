@@ -323,3 +323,73 @@
 .rn-ln-text { color: #8899aa; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rn-ln-date { color: #556677; font-size: 0.7rem; white-space: nowrap; }
 .rn-no-note { color: #445566; font-size: 0.78rem; font-style: italic; }
+
+/* ═══ REMINDER ROW ═══════════════════════════════════ */
+.rn-reminder-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.rn-reminder-label { font-size: 0.82rem; color: #8899aa; font-weight: 600; }
+.rn-reminder-input { background: rgba(13,31,45,0.8); border: 1px solid rgba(45,80,112,0.3); border-radius: 8px; padding: 0.4rem 0.6rem; color: #e8e8e8; font-size: 0.85rem; outline: none; font-family: 'Open Sans', sans-serif; }
+.rn-reminder-input:focus { border-color: rgba(212,175,55,0.5); }
+
+/* ═══ TODO CHECKBOX ══════════════════════════════════ */
+.rn-todo-check { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0; flex-shrink: 0; transition: transform 0.15s; }
+.rn-todo-check:hover { transform: scale(1.2); }
+.rn-note-item.completed { opacity: 0.6; }
+.rn-note-text.strikethrough { text-decoration: line-through; color: #556677; }
+
+/* ═══ ARCHIVE TOGGLE ═════════════════════════════════ */
+.rn-archive-toggle { background: rgba(45,80,112,0.2); border: 1px solid rgba(136,153,170,0.2); color: #667788; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.rn-archive-toggle:hover { border-color: rgba(212,175,55,0.3); color: #b8d4e8; }
+.rn-archive-toggle.active { background: rgba(255,152,0,0.12); border-color: rgba(255,152,0,0.3); color: #FFB74D; }
+
+/* Note actions column */
+.rn-note-actions-col { display: flex; flex-direction: column; gap: 0.3rem; flex-shrink: 0; }
+.rn-note-archive { background: none; border: none; cursor: pointer; font-size: 0.85rem; opacity: 0.3; transition: opacity 0.15s; padding: 0.15rem; }
+.rn-note-archive:hover { opacity: 0.8; }
+.rn-note-reminder-badge { font-size: 0.68rem; background: rgba(255,152,0,0.15); color: #FFB74D; padding: 0.1rem 0.4rem; border-radius: 8px; }
+
+/* ═══ UPCOMING REMINDERS BOX ═════════════════════════ */
+.rn-reminders-box { margin-top: 1.25rem; background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 1rem 1.25rem; }
+.rn-reminder-item { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,152,0,0.1); }
+.rn-reminder-item:last-child { border-bottom: none; }
+.rn-reminder-item.done { opacity: 0.5; }
+.rn-reminder-info { flex: 1; min-width: 0; }
+.rn-reminder-client { font-weight: 700; font-size: 0.82rem; color: #D4AF37; display: block; }
+.rn-reminder-text { font-size: 0.78rem; color: #8899aa; display: block; }
+.rn-reminder-datetime { font-size: 0.72rem; color: #FFB74D; display: block; margin-top: 0.15rem; }
+
+/* ═══ CALENDAR — 12 Month Grid ═══════════════════════ */
+.rn-cal-subtitle { color: #667788; font-size: 0.88rem; margin: -0.5rem 0 1.5rem; }
+
+.rn-calendar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+.rn-cal-month { background: rgba(13,31,45,0.5); border: 1px solid rgba(45,80,112,0.2); border-radius: 12px; overflow: hidden; min-height: 120px; transition: all 0.2s; }
+.rn-cal-month:hover { border-color: rgba(45,80,112,0.4); }
+.rn-cal-month.current { border-color: rgba(212,175,55,0.5); box-shadow: 0 0 15px rgba(212,175,55,0.1); }
+.rn-cal-month.has-items { border-color: rgba(255,152,0,0.3); }
+
+.rn-cal-month-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.65rem 0.85rem; background: rgba(0,0,0,0.25); border-bottom: 1px solid rgba(45,80,112,0.15); }
+.rn-cal-month.current .rn-cal-month-header { background: rgba(212,175,55,0.12); }
+.rn-cal-month-name { font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 700; color: #e8e8e8; }
+.rn-cal-month.current .rn-cal-month-name { color: #D4AF37; }
+.rn-cal-month-year { font-size: 0.75rem; color: #556677; }
+.rn-cal-month-count { margin-left: auto; background: rgba(255,152,0,0.2); color: #FFB74D; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 10px; }
+
+.rn-cal-month-body { padding: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.rn-cal-empty { text-align: center; color: #334455; font-size: 0.85rem; padding: 1rem 0; }
+
+.rn-cal-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.6rem; background: rgba(10,22,40,0.6); border-radius: 8px; text-decoration: none; transition: all 0.15s; border-left: 3px solid transparent; cursor: pointer; }
+.rn-cal-item:hover { background: rgba(212,175,55,0.08); transform: translateX(3px); }
+.rn-cal-item.critical { border-left-color: #F44336; background: rgba(244,67,54,0.06); }
+.rn-cal-item.warning { border-left-color: #FF9800; background: rgba(255,152,0,0.06); }
+.rn-cal-item.ok { border-left-color: #4CAF50; }
+
+.rn-cal-day { font-family: 'Montserrat', sans-serif; font-size: 0.82rem; font-weight: 800; color: #D4AF37; min-width: 22px; }
+.rn-cal-client-name { flex: 1; font-size: 0.78rem; font-weight: 600; color: #b8d4e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rn-cal-members { font-size: 0.7rem; color: #667788; white-space: nowrap; }
+
+.rn-cal-summary { display: flex; gap: 2rem; margin-top: 1.25rem; padding: 0.75rem 1rem; background: rgba(10,22,40,0.4); border: 1px solid rgba(45,80,112,0.2); border-radius: 8px; font-size: 0.88rem; color: #8899aa; }
+
+/* Calendar responsive */
+@media (max-width: 1200px) { .rn-calendar-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) { .rn-calendar-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .rn-calendar-grid { grid-template-columns: 1fr; } }
