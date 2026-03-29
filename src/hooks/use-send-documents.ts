@@ -329,20 +329,21 @@ export function useSendDocuments() {
         }));
       }
 
-      // Load recipients
-      await loadRecipients(offerData.clientId, offerData.contactName, offerData.contactEmail);
-
-      // Load generated docs
-      await loadOfferDocs(offerData.offerId);
     } else {
       setOffer(null);
       setShowClientSearch(true);
       setShowCQ(false);
     }
 
-    // Load templates
-    loadTemplates();
+    // Open modal IMMEDIATELY
     setIsOpen(true);
+
+    // Load data async (non-blocking)
+    if (offerData) {
+      loadRecipients(offerData.clientId, offerData.contactName, offerData.contactEmail);
+      loadOfferDocs(offerData.offerId);
+    }
+    loadTemplates();
   }, []);
 
   /* ─── Close modal ─── */
