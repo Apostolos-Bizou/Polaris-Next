@@ -122,6 +122,8 @@ export function useRenewals() {
   const [noteClient, setNoteClient] = useState('');
   const [noteType, setNoteType] = useState<RenewalNote['type']>('note');
   const [noteContent, setNoteContent] = useState('');
+  const [noteFilter, setNoteFilter] = useState<RenewalNote['type'] | 'all'>('all');
+  const [noteSearch, setNoteSearch] = useState('');
 
   // Quick Email state
   const [emailClient, setEmailClient] = useState('');
@@ -343,6 +345,31 @@ export function useRenewals() {
     setNotes(prev => prev.filter(n => n.id !== id));
   }, []);
 
+  // ═══ Filtered notes ═══
+  const filteredNotes = useMemo(() => {
+    let result = [...notes];
+    if (noteFilter !== 'all') {
+      result = result.filter(n => n.type === noteFilter);
+    }
+    if (noteSearch) {
+      const q = noteSearch.toLowerCase();
+      result = result.filter(n =>
+        n.client_name.toLowerCase().includes(q) ||
+        n.content.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [notes, noteFilter, noteSearch]);
+
+  // ═══ Last note per client (for expiring contracts table) ═══
+  const lastNoteByClient = useMemo(() => {
+    const map: Record<string, RenewalNote> = {};
+    notes.forEach(n => {
+      if (!map[n.client_id]) map[n.client_id] = n;
+    });
+    return map;
+  }, [notes]);
+
   // ═══ Quick Email Templates ═══
   const emailTemplates = useMemo(() => [
     { id: 'renewal_01', name: 'Renewal Reminder', category: 'renewal' },
@@ -430,8 +457,9 @@ export function useRenewals() {
     contracts, filteredExpiring, expiringFilter, setExpiringFilter, expiringCounts,
     showActiveOnly, setShowActiveOnly,
     // Notes
-    notes, addNote, deleteNote,
+    notes, filteredNotes, addNote, deleteNote, lastNoteByClient,
     noteClient, setNoteClient, noteType, setNoteType, noteContent, setNoteContent,
+    noteFilter, setNoteFilter, noteSearch, setNoteSearch,
     // Quick Email
     emailClient, setEmailClient, emailTemplate, setEmailTemplate,
     emailRecipient, setEmailRecipient, emailSubject, setEmailSubject,
