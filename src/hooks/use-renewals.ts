@@ -123,15 +123,47 @@ export function useRenewals() {
   const [noteType, setNoteType] = useState<RenewalNote['type']>('note');
   const [noteContent, setNoteContent] = useState('');
 
+  // All clients for dropdown (parents + subsidiaries)
+  const [allClients, setAllClients] = useState<{ id: string; name: string; isChild: boolean }[]>([]);
+
   // Load data
   useEffect(() => {
     async function load() {
       setLoading(true);
+
+      // Fetch all clients from API for dropdown
+      try {
+        const res = await fetch('/api/proxy/getClients');
+        const data = await res.json();
+        if (data.success && data.data) {
+          const clients = data.data;
+          // Organize hierarchically: parents first, then children indented
+          const parents = clients.filter((c: any) => !c.parent_client_id);
+          const children = clients.filter((c: any) => c.parent_client_id);
+          const organized: { id: string; name: string; isChild: boolean }[] = [];
+          parents.forEach((p: any) => {
+            organized.push({ id: p.client_id || '', name: p.client_name || '', isChild: false });
+            children
+              .filter((c: any) => c.parent_client_id === p.client_id)
+              .forEach((c: any) => {
+                organized.push({ id: c.client_id || '', name: c.client_name || '', isChild: true });
+              });
+          });
+          // Add orphan children (no parent found)
+          children
+            .filter((c: any) => !parents.some((p: any) => p.client_id === c.parent_client_id))
+            .forEach((c: any) => {
+              organized.push({ id: c.client_id || '', name: c.client_name || '', isChild: true });
+            });
+          setAllClients(organized);
+        }
+      } catch { /* fallback to contracts list */ }
+
       // TODO: In production, fetch from API:
       // /api/proxy/getOffers → pipeline
       // /api/proxy/getExpiringContracts → contracts
       // /api/proxy/getRenewalNotes → notes
-      await new Promise(r => setTimeout(r, 600));
+      await new Promise(r => setTimeout(r, 400));
       setPipeline(generateDemoPipeline());
       setContracts(generateDemoExpiring());
       setNotes(generateDemoNotes());
@@ -312,6 +344,8 @@ export function useRenewals() {
     noteClient, setNoteClient, noteType, setNoteType, noteContent, setNoteContent,
     // Actions
     actionItems, actionCounts,
+    // All clients for dropdown
+    allClients,
     // Section nav
     activeSection, setActiveSection,
   };

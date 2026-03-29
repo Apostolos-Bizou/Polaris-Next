@@ -323,9 +323,17 @@ export default function RenewalsPage() {
                 <label>🏢 Client</label>
                 <select className="rn-select" value={r.noteClient} onChange={e => r.setNoteClient(e.target.value)}>
                   <option value="">Select Client...</option>
-                  {r.contracts.map(c => (
-                    <option key={c.client_id} value={`${c.client_id}|${c.client_name}`}>🏢 {c.client_name}</option>
-                  ))}
+                  {r.allClients.length > 0 ? (
+                    r.allClients.map(c => (
+                      <option key={c.id} value={`${c.id}|${c.name}`}>
+                        {c.isChild ? '└ ' : '🏢 '}{c.name}
+                      </option>
+                    ))
+                  ) : (
+                    r.contracts.map(c => (
+                      <option key={c.client_id} value={`${c.client_id}|${c.client_name}`}>🏢 {c.client_name}</option>
+                    ))
+                  )}
                 </select>
               </div>
               <div className="rn-form-group">
