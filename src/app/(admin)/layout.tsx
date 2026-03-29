@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { label: "Members", icon: "👥", href: "/members" },
   { label: "Offers", icon: "📝", href: "/offers" },
   { label: "Contracts", icon: "📋", href: "/contracts" },
+  { label: "Compare", icon: "⚖️", href: "/compare" },
   { label: "Email Center", icon: "📧", href: "/email" },
   { label: "Reports", icon: "📄", href: "/reports" },
   { label: "Renewals", icon: "🔄", href: "/renewals" },
