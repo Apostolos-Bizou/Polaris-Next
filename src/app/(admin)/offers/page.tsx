@@ -485,44 +485,42 @@ export default function OffersPage() {
             </div>
 
             <div className="modal-body">
-              {/* Status + Date */}
-              <div className="detail-row">
-                <div className="detail-item">
-                  <span className="detail-label">Status</span>
-                  <span className="status-badge" style={{
-                    color: getStatusConfig(selectedOffer.status).color,
-                    background: getStatusConfig(selectedOffer.status).bg
-                  }}>
-                    {getStatusConfig(selectedOffer.status).icon} {getStatusConfig(selectedOffer.status).label}
-                  </span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Created</span>
-                  <span className="detail-value">{new Date(selectedOffer.created_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Type</span>
-                  <span className={`type-badge ${selectedOffer.offer_type}`}>
-                    {selectedOffer.offer_type === 'comparison' ? '📊 Comparison Quote' : '📋 Standard Offer'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Contact info */}
-              {selectedOffer.contact_person && (
-                <div className="detail-row">
-                  <div className="detail-item">
-                    <span className="detail-label">Contact</span>
-                    <span className="detail-value">{selectedOffer.contact_person}</span>
+              {/* Offer Info Card — single unified card */}
+              <div className="offer-info-card">
+                <div className="offer-info-grid">
+                  <div className="offer-info-item">
+                    <span className="offer-info-label">Status</span>
+                    <span className="status-badge" style={{
+                      color: getStatusConfig(selectedOffer.status).color,
+                      background: getStatusConfig(selectedOffer.status).bg
+                    }}>
+                      {getStatusConfig(selectedOffer.status).icon} {getStatusConfig(selectedOffer.status).label}
+                    </span>
                   </div>
+                  <div className="offer-info-item">
+                    <span className="offer-info-label">Created</span>
+                    <span className="offer-info-value">{new Date(selectedOffer.created_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                  </div>
+                  <div className="offer-info-item">
+                    <span className="offer-info-label">Type</span>
+                    <span className={`type-badge ${selectedOffer.offer_type}`}>
+                      {selectedOffer.offer_type === 'comparison' ? '📊 Comparison Quote' : '📋 Standard Offer'}
+                    </span>
+                  </div>
+                  {selectedOffer.contact_person && (
+                    <div className="offer-info-item">
+                      <span className="offer-info-label">Contact</span>
+                      <span className="offer-info-value">{selectedOffer.contact_person}</span>
+                    </div>
+                  )}
                   {selectedOffer.contact_email && (
-                    <div className="detail-item">
-                      <span className="detail-label">Email</span>
-                      <span className="detail-value">{selectedOffer.contact_email}</span>
+                    <div className="offer-info-item">
+                      <span className="offer-info-label">Email</span>
+                      <span className="offer-info-value">{selectedOffer.contact_email}</span>
                     </div>
                   )}
                 </div>
-              )}
+              </div>
 
               {/* Financial Summary */}
               <div className="detail-section-title">💰 Financial Summary</div>
@@ -851,7 +849,7 @@ export default function OffersPage() {
           display: flex; align-items: stretch; justify-content: stretch;
         }
         .modal-box {
-          background: #0b1a2e;
+          background: #111c2e;
           border: none; border-radius: 0;
           width: 100%; height: 100%;
           overflow: hidden; display: flex; flex-direction: column;
@@ -867,15 +865,38 @@ export default function OffersPage() {
         .modal-subtitle { color: rgba(255,255,255,0.7); font-size: 1rem; margin-top: 0.2rem; }
         .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .modal-close:hover { background: rgba(255,255,255,0.3); }
-        .modal-body { padding: 2rem 2.5rem; flex: 1; overflow-y: auto; overflow-x: hidden; background: #0d1929; }
+        .modal-body { padding: 2rem 2.5rem; flex: 1; overflow-y: auto; overflow-x: hidden; background: #0f1e30; }
 
-        .detail-row { display: flex; gap: 2rem; margin-bottom: 0; flex-wrap: wrap; padding: 1.25rem 2rem; background: rgba(13,31,45,0.5); border: 1px solid rgba(45,80,112,0.2); border-radius: 0; }
-        .detail-row:first-child { border-radius: 12px 12px 0 0; }
-        .detail-row:last-of-type { border-radius: 0 0 12px 12px; margin-bottom: 1.5rem; }
-        .detail-row + .detail-row { border-top: none; }
-        .detail-item { flex: 1; min-width: 180px; }
-        .detail-label { font-size: 0.8rem; color: #7aa0c0; margin-bottom: 0.4rem; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-        .detail-value { color: #ffffff; font-size: 1.15rem; font-weight: 600; }
+        /* Offer Info Card — unified */
+        .offer-info-card {
+          background: rgba(13,31,45,0.7);
+          border: 1px solid rgba(45,80,112,0.3);
+          border-radius: 14px;
+          padding: 1.75rem 2rem;
+          margin-bottom: 1.5rem;
+        }
+        .offer-info-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 1.5rem;
+        }
+        .offer-info-item { }
+        .offer-info-label {
+          display: block;
+          font-size: 0.75rem;
+          color: #7aa0c0;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 0.5rem;
+        }
+        .offer-info-value {
+          color: #ffffff;
+          font-size: 1.15rem;
+          font-weight: 600;
+        }
+
+        
+        
         .detail-section-title {
           font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700;
           color: #D4AF37; margin: 2rem 0 1.25rem; padding-bottom: 0.75rem;
@@ -884,11 +905,11 @@ export default function OffersPage() {
 
         .financial-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; }
         .fin-card {
-          background: #0d1f2d; border: 1px solid rgba(212,175,55,0.25);
+          background: rgba(13,31,45,0.7); border: 1px solid rgba(45,80,112,0.35);
           border-radius: 14px; padding: 1.5rem; text-align: center;
         }
         .fin-card:hover { border-color: rgba(212,175,55,0.45); }
-        .fin-card.total { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.06); }
+        .fin-card.total { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.08); }
         .fin-label { font-size: 0.95rem; color: #7aa0c0; }
         .fin-value { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: #ffffff; margin: 0.3rem 0; }
         .fin-value.gold { color: #D4AF37; font-size: 2rem; }
@@ -916,7 +937,7 @@ export default function OffersPage() {
 
         /* Document Generation Cards */
         .doc-gen-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
-        .doc-gen-card { background: #0d1f2d; border: 1px solid rgba(212,175,55,0.2); border-radius: 14px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
+        .doc-gen-card { background: rgba(13,31,45,0.7); border: 1px solid rgba(212,175,55,0.2); border-radius: 14px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
         .doc-gen-card:hover { border-color: rgba(212,175,55,0.5); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
         .doc-gen-card.done { border-color: rgba(39,174,96,0.5); background: rgba(39,174,96,0.06); }
         .doc-gen-card.generating { border-color: rgba(243,156,18,0.5); background: rgba(243,156,18,0.06); }
@@ -937,12 +958,14 @@ export default function OffersPage() {
         .doc-gen-open:hover { background: rgba(52,152,219,0.25); }
 
         @media (max-width: 1024px) {
+          .offer-info-grid { grid-template-columns: repeat(3, 1fr); }
           .stats-grid { grid-template-columns: repeat(3, 1fr); }
           .toolbar { flex-direction: column; }
           .financial-grid { grid-template-columns: repeat(3, 1fr); }
           .doc-gen-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
+          .offer-info-grid { grid-template-columns: repeat(2, 1fr); }
           .stats-grid { grid-template-columns: repeat(2, 1fr); }
           .page-header { flex-direction: column; }
           .header-actions { width: 100%; }
