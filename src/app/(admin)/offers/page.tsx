@@ -205,7 +205,8 @@ export default function OffersPage() {
         />
       )}
 
-      {/* Stats Cards */}
+      {/* Stats Cards - hidden when analytics is open */}
+      {!showAnalytics && (
       <div className="stats-grid">
         <div className="stat-card" onClick={() => setStatusFilter('all')}>
           <div className="stat-value">{stats.total}</div>
@@ -233,6 +234,7 @@ export default function OffersPage() {
           <div className="stat-label">Rejected / Expired</div>
         </div>
       </div>
+      )}
 
       {/* Toolbar */}
       <div className="toolbar">

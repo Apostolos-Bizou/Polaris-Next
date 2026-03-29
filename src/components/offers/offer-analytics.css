@@ -2,7 +2,7 @@
    OFFER ANALYTICS DASHBOARD
    ═══════════════════════════════════════════════════════════════ */
 
-.oa-dashboard { margin-bottom: 2rem; }
+.oa-dashboard { margin-top: 1.5rem; margin-bottom: 2rem; border: 1px solid rgba(45,80,112,0.3); border-radius: 12px; overflow: hidden; }
 
 /* Header */
 .oa-header { background: linear-gradient(135deg, #c0392b, #e74c3c); padding: 1rem 1.5rem; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; }
@@ -14,7 +14,7 @@
 .oa-close-btn:hover { background: rgba(255,255,255,0.3); }
 
 /* ─── KPI Row ─────────────────────────────────────── */
-.oa-kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; padding: 1.5rem; background: rgba(10,22,40,0.5); }
+.oa-kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; padding: 1.5rem; background: #0a1628; }
 .oa-kpi { border: none; border-radius: 16px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; font-family: 'Open Sans', sans-serif; }
 .oa-kpi:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
 .oa-kpi.total { background: linear-gradient(135deg, #1e3a5f, #2d5a87); }
@@ -28,11 +28,11 @@
 .oa-kpi-icon-bg { position: absolute; bottom: 0.5rem; right: 0.75rem; font-size: 2rem; opacity: 0.15; }
 
 /* ─── Three Column Grid ───────────────────────────── */
-.oa-three-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; padding: 0 1.5rem 1.5rem; }
+.oa-three-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; padding: 0 1.5rem 1.5rem; background: #0a1628; }
 .oa-three-col:last-child { grid-template-columns: 1fr 1fr 1fr; }
 
 /* ─── Card Base ───────────────────────────────────── */
-.oa-card { background: rgba(13,31,45,0.85); border: 1px solid rgba(45,80,112,0.3); border-radius: 16px; padding: 1.25rem; }
+.oa-card { background: #0d1f2d; border: 1px solid rgba(45,80,112,0.3); border-radius: 16px; padding: 1.25rem; }
 .oa-card.wide { grid-column: span 1; }
 .oa-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .oa-card-title { font-family: 'Montserrat', sans-serif; color: #D4AF37; font-size: 1.1rem; font-weight: 700; margin: 0; }
