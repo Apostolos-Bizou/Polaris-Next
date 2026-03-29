@@ -131,12 +131,13 @@
 
 /* ── Fees ──────────────────────────────────────────────── */
 .cf-fees { display: flex; flex-direction: column; }
-.cf-fee-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(45,80,112,0.15); }
+.cf-fee-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid rgba(45,80,112,0.15); }
 .cf-fee-row:last-child { border-bottom: none; }
-.cf-fee-row span:first-child { color: #7aa0c0; font-size: 0.85rem; }
-.cf-fee-row span:last-child { font-weight: 700; font-size: 0.9rem; }
-.cf-fee-row.total { border-top: 2px solid rgba(212,175,55,0.3); margin-top: 0.5rem; padding-top: 0.75rem; }
-.cf-fee-row.total span:first-child { color: #D4AF37; font-weight: 700; }
+.cf-fee-row span:first-child { color: #7aa0c0; font-size: 1.05rem; }
+.cf-fee-row span:last-child { font-weight: 700; font-size: 1.15rem; }
+.cf-fee-row.total { border-top: 2px solid rgba(212,175,55,0.3); margin-top: 0.75rem; padding-top: 1rem; }
+.cf-fee-row.total span:first-child { color: #D4AF37; font-weight: 700; font-size: 1.15rem; }
+.cf-fee-row.total span:last-child { font-size: 1.35rem; }
 
 /* ── Cyprus Tax View ──────────────────────────────────── */
 .cf-cyprus { background: linear-gradient(145deg, rgba(15,35,60,0.8), rgba(5,15,30,0.9)) !important; border-color: rgba(212,175,55,0.3) !important; }
