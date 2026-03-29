@@ -9,6 +9,8 @@ import SendDocumentsModal from '@/components/offers/send-documents-modal';
 import { useSendDocuments } from '@/hooks/use-send-documents';
 import type { SendDocsOffer } from '@/hooks/use-send-documents';
 
+import AcceptOfferModal from '@/components/offers/accept-offer-modal';
+
 // ── Types ────────────────────────────────────────────────────────────
 interface OfferItem {
   plan_name: string;
@@ -88,6 +90,8 @@ export default function OffersPage() {
 
   // ── Send Documents hook ──
   const sendDocs = useSendDocuments();
+  const [showAccept, setShowAccept] = useState(false);
+  const [acceptOffer, setAcceptOfferState] = useState<Offer | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -186,6 +190,8 @@ export default function OffersPage() {
   // ── View offer detail ────────────────────────────────────────────
   const openDetail = (offer: Offer) => { setSelectedOffer(offer); setShowDetail(true); setDocError(null); };
   const closeDetail = () => { setShowDetail(false); setSelectedOffer(null); setDocError(null); };
+
+  const openAcceptOffer = (offer: Offer) => { setAcceptOfferState(offer); setShowAccept(true); closeDetail(); };
 
   // ── Open Send Documents modal ────────────────────────────────
   const openSendDocs = async (offerObj: any) => {
@@ -685,7 +691,7 @@ export default function OffersPage() {
                 </button>
 
                 {!['accepted', 'signed', 'converted'].includes(selectedOffer.status.toLowerCase()) && (
-                  <button className="modal-btn accept" onClick={() => { /* TODO: Accept offer flow */ }}>
+                  <button className="modal-btn accept" onClick={() => openAcceptOffer(selectedOffer)}>
                     ✅ Accept Offer
                   </button>
                 )}
@@ -736,6 +742,17 @@ export default function OffersPage() {
 
       
       {/* Send Documents Modal */}
+      {/* Accept Offer Modal */}
+      {showAccept && acceptOffer && (
+        <AcceptOfferModal
+          offer={acceptOffer}
+          onClose={() => { setShowAccept(false); setAcceptOfferState(null); }}
+          onAccepted={(offerId) => {
+            setOffers(prev => prev.map(o => o.offer_id === offerId ? { ...o, status: 'accepted' } : o));
+          }}
+        />
+      )}
+
       <SendDocumentsModal sd={sendDocs} />
 
       <style jsx>{`
