@@ -119,6 +119,8 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
       </div>
       <div className="sd-footer-actions">
         <button className="sd-btn cancel" onClick={sd.closeModal}>Cancel</button>
+        <button className="sd-btn preview" onClick={() => alert('Preview coming soon')}>👁️ Preview Email</button>
+        <button className="sd-btn draft" onClick={sd.saveDraft} disabled={sd.attachmentCount===0}>💾 Save Draft</button>
         <button className="sd-btn email" onClick={openInEmailCenter} disabled={sd.attachmentCount===0}>
           📧 Open in Email Center
         </button>
@@ -184,6 +186,8 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
 .sd-btn{padding:10px 24px;border:none;border-radius:25px;font-family:'Montserrat',sans-serif;font-weight:600;cursor:pointer;transition:all 0.3s;font-size:0.95rem;display:flex;align-items:center;gap:8px}
 .sd-btn:disabled{opacity:0.5;cursor:not-allowed}
 .sd-btn.cancel{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6)}.sd-btn.cancel:hover{background:rgba(255,255,255,0.1)}
+.sd-btn.preview{background:rgba(45,80,112,0.5);border:1px solid rgba(45,80,112,0.6);color:#b8d4e8}.sd-btn.preview:hover{background:rgba(45,80,112,0.7);transform:translateY(-2px)}
+.sd-btn.draft{background:linear-gradient(135deg,#f39c12,#e67e22);color:white}.sd-btn.draft:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 5px 20px rgba(243,156,18,0.4)}
 .sd-btn.email{background:linear-gradient(135deg,#D4AF37,#c49932);color:#0a1628;padding:10px 32px;font-size:1rem}
 .sd-btn.email:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,175,55,0.4)}
 @media(max-width:1024px){.sd-body{padding:15px}.sd-prog-grid{grid-template-columns:repeat(3,1fr)}.sd-two-col{grid-template-columns:1fr}.sd-header{padding:15px 20px}.sd-title{font-size:1.3rem}.sd-footer{flex-direction:column;gap:15px}}
