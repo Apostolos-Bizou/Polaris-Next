@@ -285,3 +285,19 @@
 
 /* ═══ Detailed View ══════════════════════════════════ */
 .rn-detailed-view { background: rgba(10,22,40,0.4); border: 1px solid rgba(45,80,112,0.2); border-radius: 12px; padding: 1.25rem; }
+
+/* ═══ Go to Email Center Link ════════════════════════ */
+.rn-goto-email { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; background: linear-gradient(135deg, rgba(46,125,50,0.1), rgba(76,175,80,0.05)); border: 1px solid rgba(46,125,50,0.3); border-radius: 12px; text-decoration: none; transition: all 0.2s; margin-bottom: 1.25rem; cursor: pointer; }
+.rn-goto-email:hover { border-color: rgba(46,125,50,0.6); background: linear-gradient(135deg, rgba(46,125,50,0.15), rgba(76,175,80,0.08)); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(46,125,50,0.2); }
+.rn-goto-email > span:first-child { font-size: 1.8rem; }
+.rn-goto-email strong { color: #4CAF50; font-size: 1rem; display: block; }
+.rn-goto-desc { color: #8899aa; font-size: 0.82rem; display: block; margin-top: 0.15rem; }
+.rn-goto-arrow { font-size: 1.3rem; color: #4CAF50; margin-left: auto; }
+
+/* ═══ Row Actions (Renew + Email buttons) ════════════ */
+.rn-row-actions { display: flex; gap: 0.4rem; }
+.rn-email-btn { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(33,150,243,0.15); border: 1px solid rgba(33,150,243,0.3); color: #64B5F6; padding: 0.35rem 0.6rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.15s; }
+.rn-email-btn:hover { background: rgba(33,150,243,0.25); transform: translateY(-1px); }
+
+/* ═══ Note Form (in notes tab) ═══════════════════════ */
+.rn-note-form { background: rgba(10,22,40,0.4); border: 1px solid rgba(45,80,112,0.2); border-radius: 12px; padding: 1.25rem; }

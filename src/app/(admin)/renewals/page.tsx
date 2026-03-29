@@ -230,170 +230,79 @@ export default function RenewalsPage() {
       {/* ═══ EXPIRING CONTRACTS TAB ═══ */}
       {r.activeSection === 'expiring' && (
         <div className="rn-section">
-          <div className="rn-two-col">
-            {/* Left: Expiring Contracts */}
-            <div className="rn-expiring-left">
-              <div className="rn-section-header-row">
-                <h3 className="rn-subsection-title">⏰ Expiring Contracts</h3>
-                <button
-                  className={`rn-active-filter ${r.showActiveOnly ? 'active' : ''}`}
-                  onClick={() => r.setShowActiveOnly(!r.showActiveOnly)}
-                >
-                  Only In-use &amp; Active
-                </button>
-              </div>
+          <div className="rn-section-header-row">
+            <h3 className="rn-subsection-title">⏰ Expiring Contracts</h3>
+            <button
+              className={`rn-active-filter ${r.showActiveOnly ? 'active' : ''}`}
+              onClick={() => r.setShowActiveOnly(!r.showActiveOnly)}
+            >
+              Only In-use &amp; Active
+            </button>
+          </div>
 
-              {/* Time filter tabs */}
-              <div className="rn-expiring-tabs">
-                {([30, 60, 90] as const).map(days => (
-                  <button
-                    key={days}
-                    className={`rn-exp-tab ${r.expiringFilter === days ? 'active' : ''}`}
-                    onClick={() => r.setExpiringFilter(days)}
-                  >
-                    {days} Days
-                    <span className="rn-exp-tab-count">
-                      {days === 30 ? r.expiringCounts.d30 : days === 60 ? r.expiringCounts.d60 : r.expiringCounts.d90}
-                    </span>
-                  </button>
-                ))}
-              </div>
+          {/* Time filter tabs */}
+          <div className="rn-expiring-tabs">
+            {([30, 60, 90] as const).map(days => (
+              <button
+                key={days}
+                className={`rn-exp-tab ${r.expiringFilter === days ? 'active' : ''}`}
+                onClick={() => r.setExpiringFilter(days)}
+              >
+                {days} Days
+                <span className="rn-exp-tab-count">
+                  {days === 30 ? r.expiringCounts.d30 : days === 60 ? r.expiringCounts.d60 : r.expiringCounts.d90}
+                </span>
+              </button>
+            ))}
+          </div>
 
-              {/* Summary cards */}
-              <div className="rn-exp-summary">
-                <div className="rn-exp-summary-card critical">
-                  <span className="rn-exp-sum-val">{r.expiringCounts.d30}</span>
-                  <span className="rn-exp-sum-label">≤30 days</span>
-                  <span className="rn-exp-sum-members">{r.expiringCounts.m30.toLocaleString()} 👥</span>
-                </div>
-                <div className="rn-exp-summary-card warning">
-                  <span className="rn-exp-sum-val">{r.expiringCounts.d60}</span>
-                  <span className="rn-exp-sum-label">≤60 days</span>
-                  <span className="rn-exp-sum-members">{r.expiringCounts.m60.toLocaleString()} 👥</span>
-                </div>
-                <div className="rn-exp-summary-card ok">
-                  <span className="rn-exp-sum-val">{r.expiringCounts.d90}</span>
-                  <span className="rn-exp-sum-label">≤90 days</span>
-                  <span className="rn-exp-sum-members">{r.expiringCounts.m90.toLocaleString()} 👥</span>
-                </div>
-              </div>
-
-              {/* Expiring table */}
-              <div className="rn-table-wrap">
-                <table className="rn-table expiring">
-                  <thead>
-                    <tr><th>Client</th><th>Contract</th><th>Members</th><th>Expiry</th><th>Days</th><th>Action</th></tr>
-                  </thead>
-                  <tbody>
-                    {r.filteredExpiring.length === 0 ? (
-                      <tr><td colSpan={6} style={{ textAlign: 'center', color: '#667788', padding: '2rem' }}>No contracts expiring in {r.expiringFilter} days</td></tr>
-                    ) : (
-                      r.filteredExpiring.map(c => (
-                        <tr key={c.contract_id}>
-                          <td><a href={`/clients/${c.client_id}`} className="rn-client-link"><strong>{c.client_name}</strong></a></td>
-                          <td>{c.contract_type}</td>
-                          <td style={{ textAlign: 'center' }}><span className="rn-member-badge">{c.member_count.toLocaleString()} 👥</span></td>
-                          <td>{fmtDate(c.expiry_date)}</td>
-                          <td><span className={`rn-days-badge ${c.urgency}`}>{c.days_until} days</span></td>
-                          <td><a href="/offers" className="rn-renew-btn">🔄 Renew</a></td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+          {/* Summary cards */}
+          <div className="rn-exp-summary">
+            <div className="rn-exp-summary-card critical">
+              <span className="rn-exp-sum-val">{r.expiringCounts.d30}</span>
+              <span className="rn-exp-sum-label">≤30 days</span>
+              <span className="rn-exp-sum-members">{r.expiringCounts.m30.toLocaleString()} 👥</span>
             </div>
+            <div className="rn-exp-summary-card warning">
+              <span className="rn-exp-sum-val">{r.expiringCounts.d60}</span>
+              <span className="rn-exp-sum-label">≤60 days</span>
+              <span className="rn-exp-sum-members">{r.expiringCounts.m60.toLocaleString()} 👥</span>
+            </div>
+            <div className="rn-exp-summary-card ok">
+              <span className="rn-exp-sum-val">{r.expiringCounts.d90}</span>
+              <span className="rn-exp-sum-label">≤90 days</span>
+              <span className="rn-exp-sum-members">{r.expiringCounts.m90.toLocaleString()} 👥</span>
+            </div>
+          </div>
 
-            {/* Right: Quick Email for expiring clients */}
-            <div className="rn-quick-email-side">
-              <h3 className="rn-subsection-title">✉️ Quick Renewal Email</h3>
-              <div className="rn-qe-form">
-                <select className="rn-select" value={r.emailClient} onChange={e => r.setEmailClient(e.target.value)}>
-                  <option value="">Select Client...</option>
-                  {r.allClients.length > 0 ? (
-                    r.allClients.map(c => (
-                      <option key={c.id} value={`${c.id}|${c.name}`}>{c.isChild ? '└ ' : '🏢 '}{c.name}</option>
-                    ))
-                  ) : (
-                    r.contracts.map(c => (
-                      <option key={c.client_id} value={`${c.client_id}|${c.client_name}`}>🏢 {c.client_name}</option>
-                    ))
-                  )}
-                </select>
-                <select className="rn-select" value={r.emailTemplate} onChange={e => {
-                  r.setEmailTemplate(e.target.value);
-                  const tmpl = r.emailTemplates.find(t => t.id === e.target.value);
-                  if (tmpl) r.setEmailSubject(tmpl.name);
-                }}>
-                  <option value="">Select Template...</option>
-                  {r.emailTemplates.map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
-                <input className="rn-input" placeholder="Recipients..." value={r.emailRecipient} onChange={e => r.setEmailRecipient(e.target.value)} />
-                <input className="rn-input" placeholder="Subject..." value={r.emailSubject} onChange={e => r.setEmailSubject(e.target.value)} />
-
-                <div className="rn-qe-type-tags">
-                  {(['call', 'email', 'followup', 'meeting', 'note'] as const).map(t => (
-                    <button key={t} className={`rn-qe-tag ${r.noteType === t ? 'active' : ''}`} onClick={() => r.setNoteType(t)}>
-                      {NOTE_ICONS[t]} {t.charAt(0).toUpperCase() + t.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                <textarea
-                  className="rn-textarea"
-                  placeholder="Enter your email or note message..."
-                  value={r.emailMessage}
-                  onChange={e => r.setEmailMessage(e.target.value)}
-                  rows={4}
-                />
-
-                <div className="rn-qe-actions">
-                  <button className="rn-qe-btn cancel" onClick={r.clearEmailForm}>Cancel</button>
-                  <button
-                    className="rn-qe-btn save"
-                    onClick={() => {
-                      r.setNoteContent(r.emailMessage);
-                      r.setNoteClient(r.emailClient);
-                      // Small delay for state to propagate
-                      setTimeout(() => {
-                        r.saveEmailAsNote();
-                      }, 50);
-                    }}
-                    disabled={!r.emailClient || !r.emailMessage.trim()}
-                  >
-                    📝 Save as Note
-                  </button>
-                  <button
-                    className="rn-qe-btn send"
-                    onClick={r.sendQuickEmail}
-                    disabled={!r.emailClient || !r.emailSubject.trim() || r.emailSending}
-                  >
-                    {r.emailSending ? '📤 Sending...' : '📤 Send Email'}
-                  </button>
-                </div>
-              </div>
-
-              {/* Recent Activity */}
-              <div className="rn-recent-activity">
-                <h4 className="rn-ra-title">Recent Activity</h4>
-                {r.notes.length === 0 ? (
-                  <p className="rn-ra-empty">No notes yet. Send an email or add a note above.</p>
+          {/* Expiring table - full width */}
+          <div className="rn-table-wrap">
+            <table className="rn-table expiring">
+              <thead>
+                <tr><th>Client</th><th>Contract</th><th>Members</th><th>Expiry</th><th>Days</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                {r.filteredExpiring.length === 0 ? (
+                  <tr><td colSpan={6} style={{ textAlign: 'center', color: '#667788', padding: '2rem' }}>No contracts expiring in {r.expiringFilter} days</td></tr>
                 ) : (
-                  r.notes.slice(0, 5).map(note => (
-                    <div key={note.id} className="rn-ra-item">
-                      <span className="rn-ra-icon">{NOTE_ICONS[note.type]}</span>
-                      <div className="rn-ra-content">
-                        <span className="rn-ra-client">{note.client_name}</span>
-                        <span className="rn-ra-text">{note.content.substring(0, 80)}{note.content.length > 80 ? '...' : ''}</span>
-                        <span className="rn-ra-date">{fmtDate(note.created_at)}</span>
-                      </div>
-                    </div>
+                  r.filteredExpiring.map(c => (
+                    <tr key={c.contract_id}>
+                      <td><a href={`/clients/${c.client_id}`} className="rn-client-link"><strong>{c.client_name}</strong></a></td>
+                      <td>{c.contract_type}</td>
+                      <td style={{ textAlign: 'center' }}><span className="rn-member-badge">{c.member_count.toLocaleString()} 👥</span></td>
+                      <td>{fmtDate(c.expiry_date)}</td>
+                      <td><span className={`rn-days-badge ${c.urgency}`}>{c.days_until} days</span></td>
+                      <td>
+                        <div className="rn-row-actions">
+                          <a href="/offers" className="rn-renew-btn">🔄 Renew</a>
+                          <a href="/email" className="rn-email-btn">📧 Email</a>
+                        </div>
+                      </td>
+                    </tr>
                   ))
                 )}
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -452,12 +361,23 @@ export default function RenewalsPage() {
       {r.activeSection === 'notes' && (
         <div className="rn-section">
           <div className="rn-two-col">
-            {/* Left: Quick Email & Notes Form */}
+            {/* Left: Add Note + Go to Email Center */}
             <div className="rn-notes-form-side">
-              <div className="rn-qe-section">
-                <h3 className="rn-subsection-title">✉️ Send Quick Email</h3>
+              {/* Link to Email Center */}
+              <a href="/email" className="rn-goto-email">
+                <span>📧</span>
+                <div>
+                  <strong>Go to Email Center</strong>
+                  <span className="rn-goto-desc">Compose, send & manage all client emails</span>
+                </div>
+                <span className="rn-goto-arrow">→</span>
+              </a>
+
+              {/* Add Note Form */}
+              <div className="rn-note-form">
+                <h3 className="rn-subsection-title">➕ Add Note</h3>
                 <div className="rn-qe-form">
-                  <select className="rn-select" value={r.emailClient} onChange={e => r.setEmailClient(e.target.value)}>
+                  <select className="rn-select" value={r.noteClient} onChange={e => r.setNoteClient(e.target.value)}>
                     <option value="">Select Client...</option>
                     {r.allClients.length > 0 ? (
                       r.allClients.map(c => (
@@ -469,21 +389,9 @@ export default function RenewalsPage() {
                       ))
                     )}
                   </select>
-                  <select className="rn-select" value={r.emailTemplate} onChange={e => {
-                    r.setEmailTemplate(e.target.value);
-                    const tmpl = r.emailTemplates.find(t => t.id === e.target.value);
-                    if (tmpl) r.setEmailSubject(tmpl.name);
-                  }}>
-                    <option value="">Select Template...</option>
-                    {r.emailTemplates.map(t => (
-                      <option key={t.id} value={t.id}>{t.name}</option>
-                    ))}
-                  </select>
-                  <input className="rn-input" placeholder="📧 Recipients..." value={r.emailRecipient} onChange={e => r.setEmailRecipient(e.target.value)} />
-                  <input className="rn-input" placeholder="Subject or title..." value={r.emailSubject} onChange={e => r.setEmailSubject(e.target.value)} />
 
                   <div className="rn-qe-type-tags">
-                    {(['call', 'email', 'followup', 'meeting', 'note'] as const).map(t => (
+                    {(['note', 'call', 'email', 'meeting', 'followup'] as const).map(t => (
                       <button key={t} className={`rn-qe-tag ${r.noteType === t ? 'active' : ''}`} onClick={() => r.setNoteType(t)}>
                         {NOTE_ICONS[t]} {t.charAt(0).toUpperCase() + t.slice(1)}
                       </button>
@@ -492,19 +400,20 @@ export default function RenewalsPage() {
 
                   <textarea
                     className="rn-textarea"
-                    placeholder="Enter your email or note message to prospects..."
-                    value={r.emailMessage}
-                    onChange={e => r.setEmailMessage(e.target.value)}
+                    placeholder="Add your note, call summary, or follow-up details..."
+                    value={r.noteContent}
+                    onChange={e => r.setNoteContent(e.target.value)}
                     rows={5}
                   />
 
                   <div className="rn-qe-actions">
-                    <button className="rn-qe-btn cancel" onClick={r.clearEmailForm}>Cancel</button>
-                    <button className="rn-qe-btn save" onClick={r.saveEmailAsNote} disabled={!r.emailClient || !r.emailMessage.trim()}>
-                      📝 Save as Note
-                    </button>
-                    <button className="rn-qe-btn send" onClick={r.sendQuickEmail} disabled={!r.emailClient || !r.emailSubject.trim() || r.emailSending}>
-                      {r.emailSending ? '📤 Sending...' : '📤 Send Email'}
+                    <button className="rn-qe-btn cancel" onClick={() => { r.setNoteClient(''); r.setNoteContent(''); r.setNoteType('note'); }}>Clear</button>
+                    <button
+                      className="rn-qe-btn send"
+                      onClick={r.addNote}
+                      disabled={!r.noteClient || !r.noteContent.trim()}
+                    >
+                      ➕ Add Note
                     </button>
                   </div>
                 </div>
@@ -515,7 +424,7 @@ export default function RenewalsPage() {
             <div className="rn-notes-list-side">
               <h3 className="rn-subsection-title">📝 Recent Activity ({r.notes.length})</h3>
               {r.notes.length === 0 ? (
-                <div className="rn-empty">No notes yet. Send an email or add a note.</div>
+                <div className="rn-empty">No notes yet. Add your first note or send an email from the Email Center.</div>
               ) : (
                 r.notes.map(note => (
                   <div key={note.id} className={`rn-note-item ${note.type}`}>
