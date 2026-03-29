@@ -94,7 +94,7 @@ export default function ClientFolderPage() {
             </h1>
             <div className="cf-meta">
               <span>📅 Contract: <strong>{fmtDate(client.contract_start)}</strong> — <strong>{fmtDate(client.contract_end)}</strong></span>
-              <span>👥 Members: <strong>{fmt(client.total_members)}</strong></span>
+              <span>👥 Members: <strong>{fmt(kpis?.total_members || 0)}</strong></span>
               {contracts.length > 0 && <span>📄 Contracts: <strong>{contracts.length}</strong></span>}
               {isParent && subsidiaries.length > 0 && (
                 <span>🏷️ Subsidiaries: <strong>{subsidiaries.length}</strong></span>
@@ -128,12 +128,12 @@ export default function ClientFolderPage() {
           </div>
           <div className="cf-stat">
             <div className="cf-stat-icon">💰</div>
-            <div className="cf-stat-value">{fmtUsd(kpis.approved_amount)}</div>
+            <div className="cf-stat-value">{fmtUsd(kpis.total_cost_usd)}</div>
             <div className="cf-stat-label">Approved Amount</div>
           </div>
           <div className="cf-stat">
             <div className="cf-stat-icon">📊</div>
-            <div className="cf-stat-value">{kpis.utilization}%</div>
+            <div className="cf-stat-value">{(kpis.utilization || 0).toFixed(1)}%</div>
             <div className="cf-stat-label">Utilization</div>
           </div>
           <div className="cf-stat">
@@ -157,20 +157,20 @@ export default function ClientFolderPage() {
                 <div className="cf-bar-track">
                   <div
                     className="cf-bar-fill inpatient"
-                    style={{ width: `${(kpis.inpatient_claims / kpis.total_claims * 100)}%` }}
+                    style={{ width: `${(kpis.inpatient_cases / kpis.total_claims * 100)}%` }}
                   />
                 </div>
-                <span className="cf-bar-value">{fmt(kpis.inpatient_claims)} ({fmtUsd(kpis.inpatient_cost)})</span>
+                <span className="cf-bar-value">{fmt(kpis.inpatient_cases)} ({fmtUsd(kpis.inpatient_cost || 0)})</span>
               </div>
               <div className="cf-bar-row">
                 <span className="cf-bar-label">Outpatient</span>
                 <div className="cf-bar-track">
                   <div
                     className="cf-bar-fill outpatient"
-                    style={{ width: `${(kpis.outpatient_claims / kpis.total_claims * 100)}%` }}
+                    style={{ width: `${(kpis.outpatient_cases / kpis.total_claims * 100)}%` }}
                   />
                 </div>
-                <span className="cf-bar-value">{fmt(kpis.outpatient_claims)} ({fmtUsd(kpis.outpatient_cost)})</span>
+                <span className="cf-bar-value">{fmt(kpis.outpatient_cases)} ({fmtUsd(kpis.outpatient_cost || 0)})</span>
               </div>
             </div>
           </div>
@@ -211,19 +211,19 @@ export default function ClientFolderPage() {
             <div className="cf-section-header">💰 Financial Breakdown</div>
             <div className="cf-fin-grid">
               <div className="cf-fin-item green">
-                <div className="cf-fin-value">{fmtUsd(financials.revenue)}</div>
+                <div className="cf-fin-value">{fmtUsd(financials.total_revenue)}</div>
                 <div className="cf-fin-label">Total Premium</div>
               </div>
               <div className="cf-fin-item blue">
-                <div className="cf-fin-value">{fmtUsd(financials.claims_paid)}</div>
+                <div className="cf-fin-value">{fmtUsd(financials.total_claims_cost)}</div>
                 <div className="cf-fin-label">Total Claims</div>
               </div>
               <div className="cf-fin-item orange">
-                <div className="cf-fin-value">{fmtUsd(Math.round(financials.revenue * 0.08))}</div>
+                <div className="cf-fin-value">{fmtUsd(Math.round(financials.admin_fees))}</div>
                 <div className="cf-fin-label">Admin Fees</div>
               </div>
               <div className="cf-fin-item red">
-                <div className="cf-fin-value">{kpis?.loss_ratio}%</div>
+                <div className="cf-fin-value">{(financials?.loss_ratio || 0).toFixed(1)}%</div>
                 <div className="cf-fin-label">Loss Ratio</div>
               </div>
             </div>
@@ -236,7 +236,7 @@ export default function ClientFolderPage() {
           <div className="cf-category-grid">
             {categories.map(cat => (
               <div key={cat.category} className="cf-cat-item">
-                <div className="cf-cat-value">{fmt(cat.claims)}</div>
+                <div className="cf-cat-value">{fmt(cat.count)}</div>
                 <div className="cf-cat-label">{cat.category}</div>
                 <div className="cf-cat-cost">{fmtUsd(cat.cost)}</div>
               </div>
@@ -269,19 +269,19 @@ export default function ClientFolderPage() {
             <div className="cf-fees">
               <div className="cf-fee-row">
                 <span>Admin Fee</span>
-                <span style={{ color: "#3498db" }}>{fmtUsd(Math.round(financials.revenue * 0.08))}</span>
+                <span style={{ color: "#3498db" }}>{fmtUsd(Math.round(financials.admin_fees))}</span>
               </div>
               <div className="cf-fee-row">
                 <span>Claims Processing</span>
-                <span style={{ color: "#27ae60" }}>{fmtUsd(Math.round(financials.revenue * 0.03))}</span>
+                <span style={{ color: "#27ae60" }}>{fmtUsd(Math.round(financials.total_revenue * 0.03))}</span>
               </div>
               <div className="cf-fee-row">
                 <span>Stop-Loss Premium</span>
-                <span style={{ color: "#9b59b6" }}>{fmtUsd(Math.round(financials.revenue * 0.05))}</span>
+                <span style={{ color: "#9b59b6" }}>{fmtUsd(Math.round(financials.total_revenue * 0.05))}</span>
               </div>
               <div className="cf-fee-row total">
                 <span>Total Charges</span>
-                <span style={{ color: "#D4AF37" }}>{fmtUsd(Math.round(financials.revenue * 0.16))}</span>
+                <span style={{ color: "#D4AF37" }}>{fmtUsd(Math.round(financials.total_revenue * 0.16))}</span>
               </div>
             </div>
           </div>
@@ -297,12 +297,12 @@ export default function ClientFolderPage() {
             <div className="cf-cyprus-kpis">
               <div className="cf-cyprus-card blue-border">
                 <div className="cf-cyprus-icon">💵</div>
-                <div className="cf-cyprus-value blue">{fmtUsd(financials.revenue)}</div>
+                <div className="cf-cyprus-value blue">{fmtUsd(financials.total_revenue)}</div>
                 <div className="cf-cyprus-label">Revenue from Client</div>
               </div>
               <div className="cf-cyprus-card red-border">
                 <div className="cf-cyprus-icon">📤</div>
-                <div className="cf-cyprus-value red">{fmtUsd(financials.claims_paid)}</div>
+                <div className="cf-cyprus-value red">{fmtUsd(financials.total_claims_cost)}</div>
                 <div className="cf-cyprus-label">Claims Paid</div>
               </div>
               <div className="cf-cyprus-card green-border">
@@ -312,33 +312,33 @@ export default function ClientFolderPage() {
               </div>
               <div className="cf-cyprus-card gold-border">
                 <div className="cf-cyprus-icon">🏛️</div>
-                <div className="cf-cyprus-value gold">{fmtUsd(financials.tax_contribution)}</div>
+                <div className="cf-cyprus-value gold">{fmtUsd(financials.tax_amount)}</div>
                 <div className="cf-cyprus-label">Tax Contribution</div>
               </div>
             </div>
             <div className="cf-cyprus-ratios">
               <div>
-                <div className="cf-ratio-value green">{kpis?.loss_ratio}%</div>
+                <div className="cf-ratio-value green">{(financials?.loss_ratio || 0).toFixed(1)}%</div>
                 <div className="cf-ratio-label">Loss Ratio</div>
                 <div className="cf-ratio-target">Target: &lt;70%</div>
               </div>
               <div>
-                <div className="cf-ratio-value gold">{financials.gross_margin}%</div>
+                <div className="cf-ratio-value gold">{(financials.profit_margin || 0).toFixed(1)}%</div>
                 <div className="cf-ratio-label">Gross Margin</div>
                 <div className="cf-ratio-target">Target: &gt;30%</div>
               </div>
               <div>
-                <div className="cf-ratio-value blue">{fmtUsd(financials.arpm)}</div>
+                <div className="cf-ratio-value blue">{fmtUsd(financials.revenue_per_member)}</div>
                 <div className="cf-ratio-label">ARPM</div>
                 <div className="cf-ratio-target">Avg Rev/Member</div>
               </div>
               <div>
-                <div className="cf-ratio-value purple">{fmtUsd(financials.cpm)}</div>
+                <div className="cf-ratio-value purple">{fmtUsd(financials.claims_per_member_cost)}</div>
                 <div className="cf-ratio-label">CPM</div>
                 <div className="cf-ratio-target">Cost/Member</div>
               </div>
               <div>
-                <div className="cf-ratio-value orange">{financials.revenue_share}%</div>
+                <div className="cf-ratio-value orange">{financials.total_revenue_share}%</div>
                 <div className="cf-ratio-label">Revenue Share</div>
                 <div className="cf-ratio-target">% of Total</div>
               </div>
@@ -348,9 +348,9 @@ export default function ClientFolderPage() {
             <div className="cf-cfo-note">
               <div className="cf-cfo-title">💡 CFO Assessment</div>
               <div className="cf-cfo-text">
-                {financials.gross_margin > 30
-                  ? `${client.client_name} is performing well with a ${financials.gross_margin}% gross margin and ${kpis?.loss_ratio}% loss ratio. Revenue contribution of ${financials.revenue_share}% with ${fmt(kpis?.total_members || 0)} active members. Recommend maintaining current terms at renewal.`
-                  : `${client.client_name} shows a ${financials.gross_margin}% gross margin which is below target. Loss ratio at ${kpis?.loss_ratio}% needs monitoring. Consider premium adjustment or benefit restructuring at next renewal.`
+                {financials.profit_margin > 30
+                  ? `${client.client_name} is performing well with a ${(financials.profit_margin || 0).toFixed(1)}% gross margin and ${(financials?.loss_ratio || 0).toFixed(1)}% loss ratio. Revenue contribution of ${financials.total_revenue_share}% with ${fmt(kpis?.total_members || 0)} active members. Recommend maintaining current terms at renewal.`
+                  : `${client.client_name} shows a ${(financials.profit_margin || 0).toFixed(1)}% gross margin which is below target. Loss ratio at ${(financials?.loss_ratio || 0).toFixed(1)}% needs monitoring. Consider premium adjustment or benefit restructuring at next renewal.`
                 }
               </div>
             </div>
@@ -441,8 +441,8 @@ export default function ClientFolderPage() {
             <div className="cf-report-card">
               <div className="cf-report-icon">💰</div>
               <div className="cf-report-title">Revenue Impact</div>
-              <div className="cf-report-value">{fmtUsd(financials?.revenue || 0)}</div>
-              <div className="cf-report-note">{financials?.revenue_share}% of total</div>
+              <div className="cf-report-value">{fmtUsd(financials?.total_revenue || 0)}</div>
+              <div className="cf-report-note">{financials?.total_revenue_share}% of total</div>
             </div>
           </div>
         </div>

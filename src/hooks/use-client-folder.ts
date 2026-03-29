@@ -1,38 +1,72 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
-// ═══════════════════════════════════════════════════════════════════════
-// Types
-// ═══════════════════════════════════════════════════════════════════════
+// ─── Types (keep same interface so page.tsx doesn't need changes) ────
 export interface ClientInfo {
   client_id: string;
   client_name: string;
   client_type: string;
   parent_client_id: string;
-  total_members: number;
   status: string;
-  country: string;
+  contract_start: string | null;
+  contract_end: string | null;
   contact_name: string;
   contact_email: string;
-  contract_start: string;
-  contract_end: string;
-  plan_type: string;
+  contact_phone: string;
+  mobile: string;
+  registered_address: string;
+  operating_address: string;
+  tin_number: string;
+  vat_number: string;
+  contact_capacity: string;
+  authorized_signatory_name: string;
+  authorized_signatory_title: string;
 }
 
 export interface ClientKPIs {
   total_members: number;
   total_claims: number;
-  approved_amount: number;
-  utilization: number;
-  cost_per_member: number;
-  loss_ratio: number;
-  inpatient_claims: number;
-  outpatient_claims: number;
-  inpatient_cost: number;
-  outpatient_cost: number;
+  total_cost_usd: number;
+  total_fees: number;
+  inpatient_cases: number;
+  outpatient_cases: number;
+  exgratia_cases: number;
   principal_members: number;
   dependent_members: number;
+  new_enrollments: number;
+  cancellations: number;
+  cost_per_member: number;
+  utilization: number;
+  avg_claim_cost: number;
+}
+
+export interface ClientFinancials {
+  total_revenue: number;
+  total_claims_cost: number;
+  gross_profit: number;
+  profit_margin: number;
+  loss_ratio: number;
+  admin_fees: number;
+  net_profit: number;
+  tax_amount: number;  // Cyprus 12.5% CIT
+  after_tax_profit: number;
+  revenue_per_member: number;
+  claims_per_member_cost: number;
+}
+
+export interface CategoryBreakdown {
+  category: string;
+  count: number;
+  cost: number;
+}
+
+export interface ProviderData {
+  name: string;
+  hospital?: string;
+  claims: number;
+  cost: number;
+  country?: string;
 }
 
 export interface ClientContract {
@@ -42,139 +76,57 @@ export interface ClientContract {
   version: string;
   effective_date: string | null;
   expiry_date: string | null;
-  signed_date?: string | null;
+  signed_date: string | null;
 }
 
-export interface ClientFinancials {
-  revenue: number;
-  claims_paid: number;
-  net_profit: number;
-  tax_contribution: number;
-  gross_margin: number;
-  arpm: number;
-  cpm: number;
-  revenue_share: number;
-}
-
-export interface CategoryBreakdown {
-  category: string;
-  claims: number;
-  cost: number;
-}
-
-export interface ProviderData {
-  name: string;
-  country: string;
-  claims: number;
-  cost: number;
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// Dummy data generator based on client
-// ═══════════════════════════════════════════════════════════════════════
-const CLIENTS_DB: Record<string, ClientInfo> = {
-  "CLI-2026-0001": { client_id: "CLI-2026-0001", client_name: "ELETSON", client_type: "parent", parent_client_id: "", total_members: 850, status: "active", country: "Greece", contact_name: "Panagiotis Eletson", contact_email: "pe@eletson.com", contract_start: "2024-01-01", contract_end: "2025-12-31", plan_type: "Gold, Platinum, Silver" },
-  "CLI-2026-0002": { client_id: "CLI-2026-0002", client_name: "ELETSON GOLD", client_type: "subsidiary", parent_client_id: "CLI-2026-0001", total_members: 320, status: "active", country: "Greece", contact_name: "", contact_email: "", contract_start: "2024-01-01", contract_end: "2025-12-31", plan_type: "Gold" },
-  "CLI-2026-0003": { client_id: "CLI-2026-0003", client_name: "ELETSON PLATINUM", client_type: "subsidiary", parent_client_id: "CLI-2026-0001", total_members: 280, status: "active", country: "Greece", contact_name: "", contact_email: "", contract_start: "2024-01-01", contract_end: "2025-12-31", plan_type: "Platinum" },
-  "CLI-2026-0004": { client_id: "CLI-2026-0004", client_name: "ELETSON SILVER", client_type: "subsidiary", parent_client_id: "CLI-2026-0001", total_members: 250, status: "active", country: "Greece", contact_name: "", contact_email: "", contract_start: "2024-06-01", contract_end: "2025-12-31", plan_type: "Silver" },
-  "CLI-2026-0005": { client_id: "CLI-2026-0005", client_name: "THENAMARIS", client_type: "parent", parent_client_id: "", total_members: 1250, status: "active", country: "Greece", contact_name: "Ioannis Theodorou", contact_email: "it@thenamaris.com", contract_start: "2024-01-01", contract_end: "2026-06-30", plan_type: "Gold, Platinum, Diamond" },
-  "CLI-2026-0006": { client_id: "CLI-2026-0006", client_name: "THENAMARIS GOLD", client_type: "subsidiary", parent_client_id: "CLI-2026-0005", total_members: 480, status: "active", country: "Greece", contact_name: "", contact_email: "", contract_start: "2024-01-01", contract_end: "2026-06-30", plan_type: "Gold" },
-  "CLI-2026-0007": { client_id: "CLI-2026-0007", client_name: "THENAMARIS PLATINUM", client_type: "subsidiary", parent_client_id: "CLI-2026-0005", total_members: 420, status: "active", country: "Greece", contact_name: "", contact_email: "", contract_start: "2024-01-01", contract_end: "2026-06-30", plan_type: "Platinum" },
-  "CLI-2026-0008": { client_id: "CLI-2026-0008", client_name: "THENAMARIS DIAMOND", client_type: "subsidiary", parent_client_id: "CLI-2026-0005", total_members: 350, status: "active", country: "Greece", contact_name: "", contact_email: "", contract_start: "2024-03-01", contract_end: "2026-06-30", plan_type: "Diamond" },
-  "CLI-2026-0009": { client_id: "CLI-2026-0009", client_name: "EURONAV", client_type: "parent", parent_client_id: "", total_members: 780, status: "active", country: "Greece", contact_name: "Hugo De Stoop", contact_email: "hds@euronav.com", contract_start: "2024-04-01", contract_end: "2026-03-31", plan_type: "Gold, Platinum" },
-  "CLI-2026-0012": { client_id: "CLI-2026-0012", client_name: "TSAKOS ENERGY NAVIGATION", client_type: "parent", parent_client_id: "", total_members: 1100, status: "active", country: "Greece", contact_name: "Nikolas Tsakos", contact_email: "nt@tenn.gr", contract_start: "2023-07-01", contract_end: "2025-06-30", plan_type: "Gold, Platinum, Silver" },
-  "CLI-2026-0016": { client_id: "CLI-2026-0016", client_name: "DYNACOM TANKERS", client_type: "parent", parent_client_id: "", total_members: 620, status: "active", country: "Greece", contact_name: "Georgios Procopiou", contact_email: "gp@dynacom.gr", contract_start: "2025-01-01", contract_end: "2026-12-31", plan_type: "Gold, Platinum" },
-  "CLI-2026-0019": { client_id: "CLI-2026-0019", client_name: "DANAOS CORPORATION", client_type: "parent", parent_client_id: "", total_members: 540, status: "active", country: "Greece", contact_name: "John Coustas", contact_email: "jc@danaos.com", contract_start: "2024-02-01", contract_end: "2025-08-31", plan_type: "Gold, Platinum" },
-  "CLI-2026-0022": { client_id: "CLI-2026-0022", client_name: "STAR BULK CARRIERS", client_type: "parent", parent_client_id: "", total_members: 920, status: "active", country: "Greece", contact_name: "Petros Pappas", contact_email: "pp@starbulk.com", contract_start: "", contract_end: "", plan_type: "Gold" },
-  "CLI-2026-0026": { client_id: "CLI-2026-0026", client_name: "COSTAMARE INC", client_type: "parent", parent_client_id: "", total_members: 430, status: "active", country: "Greece", contact_name: "Konstantinos Konstantakopoulos", contact_email: "kk@costamare.com", contract_start: "2024-03-01", contract_end: "2025-09-30", plan_type: "Gold, Platinum" },
-  "CLI-2026-0031": { client_id: "CLI-2026-0031", client_name: "CAPITAL MARITIME", client_type: "parent", parent_client_id: "", total_members: 720, status: "active", country: "Greece", contact_name: "Evangelos Marinakis", contact_email: "em@capital-ship.com", contract_start: "2024-01-15", contract_end: "2026-01-14", plan_type: "Gold, Platinum" },
-  "CLI-2026-0034": { client_id: "CLI-2026-0034", client_name: "MARAN TANKERS", client_type: "parent", parent_client_id: "", total_members: 980, status: "active", country: "Greece", contact_name: "John Angelicoussis", contact_email: "ja@maran.com", contract_start: "2024-01-01", contract_end: "2025-12-31", plan_type: "Gold" },
-  "CLI-2026-0049": { client_id: "CLI-2026-0049", client_name: "KYKLADES MARITIME CORPORATION", client_type: "parent", parent_client_id: "", total_members: 156, status: "active", country: "Greece", contact_name: "Stavros Nikos", contact_email: "sn@kyklades.gr", contract_start: "2024-09-01", contract_end: "2025-08-31", plan_type: "Platinum" },
-  "CLI-2026-0053": { client_id: "CLI-2026-0053", client_name: "LEADER MARINE", client_type: "parent", parent_client_id: "", total_members: 478, status: "active", country: "Greece", contact_name: "Alexandros Metaxas", contact_email: "am@leader.gr", contract_start: "2024-05-01", contract_end: "2026-04-30", plan_type: "Gold" },
-};
-
-function generateKPIs(client: ClientInfo): ClientKPIs {
-  const m = client.total_members;
-  const claims = Math.round(m * 0.32);
-  const cost = Math.round(claims * 72);
-  const inp = Math.round(claims * 0.35);
-  const outp = claims - inp;
-  return {
-    total_members: m,
-    total_claims: claims,
-    approved_amount: cost,
-    utilization: Math.round((claims / m) * 100 * 10) / 10,
-    cost_per_member: Math.round(cost / m),
-    loss_ratio: Math.round(Math.random() * 20 + 55),
-    inpatient_claims: inp,
-    outpatient_claims: outp,
-    inpatient_cost: Math.round(inp * 95),
-    outpatient_cost: Math.round(outp * 48),
-    principal_members: Math.round(m * 0.6),
-    dependent_members: Math.round(m * 0.4),
-  };
-}
-
-function generateFinancials(client: ClientInfo, kpis: ClientKPIs): ClientFinancials {
-  const revenue = Math.round(kpis.total_members * 120);
-  const claims_paid = kpis.approved_amount;
-  const net_profit = revenue - claims_paid;
-  return {
-    revenue,
-    claims_paid,
-    net_profit,
-    tax_contribution: Math.round(net_profit * 0.125),
-    gross_margin: Math.round((net_profit / revenue) * 100),
-    arpm: Math.round(revenue / kpis.total_members),
-    cpm: kpis.cost_per_member,
-    revenue_share: Math.round(Math.random() * 8 + 2),
-  };
-}
-
-function generateCategories(kpis: ClientKPIs): CategoryBreakdown[] {
-  const total = kpis.total_claims;
-  return [
-    { category: "Consultation", claims: Math.round(total * 0.30), cost: Math.round(total * 0.30 * 45) },
-    { category: "Laboratory", claims: Math.round(total * 0.22), cost: Math.round(total * 0.22 * 38) },
-    { category: "Hospitalization", claims: Math.round(total * 0.15), cost: Math.round(total * 0.15 * 180) },
-    { category: "Dental", claims: Math.round(total * 0.12), cost: Math.round(total * 0.12 * 55) },
-    { category: "Pharmacy", claims: Math.round(total * 0.11), cost: Math.round(total * 0.11 * 32) },
-    { category: "Surgery", claims: Math.round(total * 0.10), cost: Math.round(total * 0.10 * 250) },
-  ];
-}
-
-function generateProviders(): ProviderData[] {
-  return [
-    { name: "American Medical Center", country: "Cyprus", claims: 85, cost: 12400 },
-    { name: "Apollonion Hospital", country: "Cyprus", claims: 72, cost: 9800 },
-    { name: "Iasis Hospital", country: "Cyprus", claims: 54, cost: 7200 },
-    { name: "Mediterranean Hospital", country: "Greece", claims: 41, cost: 5600 },
-    { name: "Hygeia Hospital", country: "Greece", claims: 38, cost: 4900 },
-  ];
-}
-
-// ── Client cache (shared across hook instances) ─────────────────────
-let _clientsCache: any[] | null = null;
-let _clientsCacheTime = 0;
+// ─── Client list cache (shared across instances) ─────────────────────
+let allClientsCache: ClientInfo[] | null = null;
+let allClientsCacheTime = 0;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-async function getCachedClients(): Promise<any[]> {
-  if (_clientsCache && Date.now() - _clientsCacheTime < CACHE_TTL) {
-    return _clientsCache;
+async function fetchAllClients(): Promise<ClientInfo[]> {
+  if (allClientsCache && Date.now() - allClientsCacheTime < CACHE_TTL) {
+    return allClientsCache;
   }
-  const res = await fetch("/api/proxy/getClients");
-  const data = await res.json();
-  _clientsCache = data.data || data.clients || [];
-  _clientsCacheTime = Date.now();
-  return _clientsCache;
+  try {
+    const res = await fetch('/api/proxy/getClients');
+    const data = await res.json();
+    if (data.success && data.data) {
+      allClientsCache = data.data.map((c: any) => ({
+        client_id: c.client_id || '',
+        client_name: c.client_name || '',
+        client_type: c.client_type || '',
+        parent_client_id: c.parent_client_id || '',
+        status: c.status || 'active',
+        contract_start: c.contract_start || null,
+        contract_end: c.contract_end || null,
+        contact_name: c.contact_name || '',
+        contact_email: c.contact_email || '',
+        contact_phone: c.contact_phone || '',
+        mobile: c.mobile || '',
+        registered_address: c.registered_address || '',
+        operating_address: c.operating_address || '',
+        tin_number: c.tin_number || '',
+        vat_number: c.vat_number ? String(c.vat_number) : '',
+        contact_capacity: c.contact_capacity || '',
+        authorized_signatory_name: c.authorized_signatory_name || '',
+        authorized_signatory_title: c.authorized_signatory_title || '',
+      }));
+      allClientsCacheTime = Date.now();
+      return allClientsCache!;
+    }
+  } catch (err) {
+    console.error('Failed to fetch clients:', err);
+  }
+  return [];
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// MAIN HOOK
+// MAIN HOOK — NOW WITH REAL API DATA
 // ═══════════════════════════════════════════════════════════════════════
 export function useClientFolder(clientId: string) {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [client, setClient] = useState<ClientInfo | null>(null);
   const [kpis, setKpis] = useState<ClientKPIs | null>(null);
   const [financials, setFinancials] = useState<ClientFinancials | null>(null);
@@ -186,92 +138,140 @@ export function useClientFolder(clientId: string) {
   const loadData = useCallback(async () => {
     if (!clientId) return;
     setLoading(true);
-    setError("");
+    setError('');
 
     try {
-      // Use cached clients (5 min TTL)
-      const allClients = await getCachedClients();
+      // ═══ Step 1: Get client info from clients list ═══
+      const allClients = await fetchAllClients();
+      const clientData = allClients.find(c => c.client_id === clientId);
 
-      // Find this client
-      const found = allClients.find(
-        (c: any) => c.client_id === clientId || c.id === clientId
-      );
-
-      if (!found) {
-        setError("Client not found");
+      if (!clientData) {
+        setError('Client not found');
         setLoading(false);
         return;
       }
 
-      // Map API data to ClientInfo
-      const clientData: ClientInfo = {
-        client_id: found.client_id || found.id || clientId,
-        client_name: found.client_name || found.name || "Unknown",
-        client_type: (found.client_type || "").toLowerCase(),
-        parent_client_id: found.parent_client_id || "",
-        total_members: found.total_members || found.member_count || 0,
-        status: found.status || "active",
-        country: found.country || "Greece",
-        contact_name: found.contact_name || "",
-        contact_email: found.contact_email || "",
-        contract_start: found.contract_start || "",
-        contract_end: found.contract_end || "",
-        plan_type: found.plan_type || "",
-      };
-
       setClient(clientData);
 
-      // Generate KPIs
-      const clientKpis = generateKPIs(clientData);
-      setKpis(clientKpis);
-
-      // Generate financials
-      setFinancials(generateFinancials(clientData, clientKpis));
-
-      // Categories
-      setCategories(generateCategories(clientKpis));
-
-      // Providers
-      setProviders(generateProviders());
-
       // Find subsidiaries if parent
-      if (clientData.client_type === "parent") {
-        const subs = allClients
-          .filter((c: any) => c.parent_client_id === clientId)
-          .map((c: any) => ({
-            client_id: c.client_id || c.id || "",
-            client_name: c.client_name || c.name || "",
-            client_type: (c.client_type || "").toLowerCase(),
-            parent_client_id: c.parent_client_id || "",
-            total_members: c.total_members || c.member_count || 0,
-            status: c.status || "active",
-            country: c.country || "Greece",
-            contact_name: c.contact_name || "",
-            contact_email: c.contact_email || "",
-            contract_start: c.contract_start || "",
-            contract_end: c.contract_end || "",
-            plan_type: c.plan_type || "",
-          }));
+      if (clientData.client_type === 'parent') {
+        const subs = allClients.filter(c => c.parent_client_id === clientId);
         setSubsidiaries(subs);
       } else {
         setSubsidiaries([]);
       }
 
-      // Dummy contracts
-      setContracts([
-        {
-          contract_id: `CON-${clientId.replace("CLI-", "")}`,
-          doc_type: "ASA",
-          status: clientData.status === "active" ? "Active" : "Draft",
-          version: "2",
-          effective_date: clientData.contract_start || null,
-          expiry_date: clientData.contract_end || null,
-          signed_date: clientData.contract_start || null,
-        },
+      // ═══ Step 2: Fetch real KPI data from API (parallel calls) ═══
+      const isParent = clientData.client_type === 'parent';
+      // Parents need GROUP: prefix for backend aggregation
+      const kpiClientId = isParent ? `GROUP:${clientId}` : clientId;
+      const cleanClientId = clientId;
+
+      const kpiParams = new URLSearchParams({
+        clientId: kpiClientId,
+        year: '2025',
+        cumulative: 'true',
+      });
+
+      const baseParams = new URLSearchParams({ clientId: cleanClientId });
+
+      const [kpiRes, catRes, hospRes] = await Promise.all([
+        fetch(`/api/proxy/getClientKPISummary?${kpiParams.toString()}`).then(r => r.json()).catch(() => null),
+        fetch(`/api/proxy/getCategoriesBreakdown?${baseParams.toString()}`).then(r => r.json()).catch(() => null),
+        fetch(`/api/proxy/getHospitalsData?${baseParams.toString()}`).then(r => r.json()).catch(() => null),
       ]);
+
+      console.log(`📁 Client Folder KPI for ${clientData.client_name} (${kpiClientId}):`, {
+        periods: kpiRes?.periods_matched,
+        members: kpiRes?.kpis?.total_members,
+        claims: kpiRes?.kpis?.total_claims,
+      });
+
+      // ═══ Step 3: Parse KPI response ═══
+      const k = kpiRes?.kpis || {};
+      const ct = kpiRes?.claimTypes || {};
+      const mt = kpiRes?.memberTypes || {};
+
+      const totalMembers = k.total_members || 0;
+      const totalClaims = k.total_claims || 0;
+      const totalCost = k.total_cost_usd || 0;
+      const totalFees = k.total_fees || 0;
+
+      const clientKpis: ClientKPIs = {
+        total_members: totalMembers,
+        total_claims: totalClaims,
+        total_cost_usd: totalCost,
+        total_fees: totalFees,
+        inpatient_cases: ct.inpatient || k.inpatient_cases || 0,
+        outpatient_cases: ct.outpatient || k.outpatient_cases || 0,
+        exgratia_cases: ct.exgratia || k.exgratia_cases || 0,
+        principal_members: mt.principal || k.principal_members || 0,
+        dependent_members: mt.dependent || k.dependent_members || 0,
+        new_enrollments: k.new_enrollments || 0,
+        cancellations: k.cancellations || 0,
+        cost_per_member: totalMembers > 0 ? totalCost / totalMembers : 0,
+        utilization: totalMembers > 0 ? (totalClaims / totalMembers) * 100 : 0,
+        avg_claim_cost: totalClaims > 0 ? totalCost / totalClaims : 0,
+      };
+      setKpis(clientKpis);
+
+      // ═══ Step 4: Calculate financials from real data ═══
+      const revenue = totalFees > 0 ? totalFees : totalCost * 1.35; // Fees or estimate
+      const grossProfit = revenue - totalCost;
+      const profitMargin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+      const lossRatio = revenue > 0 ? (totalCost / revenue) * 100 : 0;
+      const adminFees = revenue * 0.08; // ~8% admin
+      const netProfit = grossProfit - adminFees;
+      const taxRate = 0.125; // Cyprus CIT 12.5%
+      const taxAmount = netProfit > 0 ? netProfit * taxRate : 0;
+      const afterTaxProfit = netProfit - taxAmount;
+
+      setFinancials({
+        total_revenue: revenue,
+        total_claims_cost: totalCost,
+        gross_profit: grossProfit,
+        profit_margin: profitMargin,
+        loss_ratio: lossRatio,
+        admin_fees: adminFees,
+        net_profit: netProfit,
+        tax_amount: taxAmount,
+        after_tax_profit: afterTaxProfit,
+        revenue_per_member: totalMembers > 0 ? revenue / totalMembers : 0,
+        claims_per_member_cost: totalMembers > 0 ? totalCost / totalMembers : 0,
+      });
+
+      // ═══ Step 5: Parse categories ═══
+      const parsedCategories: CategoryBreakdown[] = (catRes?.data || []).map((c: any) => ({
+        category: c.category || c.name || 'Unknown',
+        count: c.count || c.claims || c.total || 0,
+        cost: c.cost_usd || c.cost || 0,
+      }));
+      setCategories(parsedCategories);
+
+      // ═══ Step 6: Parse hospitals/providers ═══
+      const parsedProviders: ProviderData[] = (hospRes?.data || []).slice(0, 10).map((h: any) => ({
+        name: h.hospital || h.name || 'Unknown',
+        hospital: h.hospital || h.name || 'Unknown',
+        claims: h.claims || h.count || 0,
+        cost: h.cost_usd || h.cost || 0,
+        country: h.country || '',
+      }));
+      setProviders(parsedProviders);
+
+      // ═══ Step 7: Contracts (dummy for now — will use real API in future) ═══
+      setContracts([{
+        contract_id: `CON-${clientId.replace('CLI-', '')}`,
+        doc_type: 'ASA',
+        status: clientData.status === 'active' ? 'Active' : 'Draft',
+        version: '2',
+        effective_date: clientData.contract_start || null,
+        expiry_date: clientData.contract_end || null,
+        signed_date: clientData.contract_start || null,
+      }]);
+
     } catch (err) {
-      console.error("Failed to load client:", err);
-      setError("Failed to load client data");
+      console.error('Failed to load client folder:', err);
+      setError('Failed to load client data');
     } finally {
       setLoading(false);
     }
@@ -283,11 +283,11 @@ export function useClientFolder(clientId: string) {
 
   // ── Derived: initials ──────────────────────────────────────────────
   const initials = useMemo(() => {
-    if (!client) return "??";
+    if (!client) return '??';
     return client.client_name
-      .split(" ")
+      .split(' ')
       .map(w => w[0])
-      .join("")
+      .join('')
       .substring(0, 2)
       .toUpperCase();
   }, [client]);
