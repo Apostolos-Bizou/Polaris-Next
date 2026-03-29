@@ -85,6 +85,11 @@ export default function OffersPage() {
   const [showComparison, setShowComparison] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
 
+  // Document generation state
+  const [generatingDoc, setGeneratingDoc] = useState<string | null>(null); // 'nda' | 'dpa' | 'asa' | 'proposal' | 'cq' | 'all'
+  const [generatedDocs, setGeneratedDocs] = useState<Record<string, Record<string, { fileUrl: string; fileName: string }>>>({});
+  const [docError, setDocError] = useState<string | null>(null);
+
   // Client list for the create form
   const dummyClients = [
     { client_id: 'CLI-2026-0001', client_name: 'DIANA SHIPPING SERVICES SA', client_type: 'parent', parent_client_id: null },
@@ -172,8 +177,96 @@ export default function OffersPage() {
   }, [offers, searchClient, statusFilter, typeFilter]);
 
   // ── View offer detail ────────────────────────────────────────────
-  const openDetail = (offer: Offer) => { setSelectedOffer(offer); setShowDetail(true); };
-  const closeDetail = () => { setShowDetail(false); setSelectedOffer(null); };
+  const openDetail = (offer: Offer) => { setSelectedOffer(offer); setShowDetail(true); setDocError(null); };
+  const closeDetail = () => { setShowDetail(false); setSelectedOffer(null); setDocError(null); };
+
+  // ── Document Generation ─────────────────────────────────────────
+  const generateDoc = async (type: string, offer: Offer) => {
+    setGeneratingDoc(type);
+    setDocError(null);
+    try {
+      let url = '';
+      let method = 'GET';
+      let body: string | undefined;
+
+      if (type === 'nda') {
+        url = `/api/proxy/createNDA?clientId=${encodeURIComponent(offer.client_id)}&offerId=${encodeURIComponent(offer.offer_id)}`;
+      } else if (type === 'dpa') {
+        url = `/api/proxy/createDPA?clientId=${encodeURIComponent(offer.client_id)}&offerId=${encodeURIComponent(offer.offer_id)}`;
+      } else if (type === 'asa') {
+        url = `/api/proxy/createASAFromOffer?offerId=${encodeURIComponent(offer.offer_id)}`;
+      } else if (type === 'proposal') {
+        url = `/api/proxy/createProposalFromOffer?offerId=${encodeURIComponent(offer.offer_id)}`;
+      } else if (type === 'cq') {
+        url = '/api/proxy/generateComparisonQuote';
+        method = 'POST';
+        body = JSON.stringify({
+          action: 'generateComparisonQuote',
+          clientId: offer.client_id,
+          clientName: offer.client_name,
+          contactPerson: offer.contact_person || 'Sir/Madam',
+          principals: offer.total_principals,
+          dependents: offer.total_dependents,
+          totalMembers: offer.total_members,
+          options: offer.items?.map(item => ({
+            name: item.plan_name,
+            regFee: item.subtotal_reg,
+            fundDep: item.subtotal_fund,
+            totalCost: item.subtotal_reg + item.subtotal_fund,
+            perMember: offer.total_members > 0 ? ((item.subtotal_reg + item.subtotal_fund) / offer.total_members).toFixed(2) : '0',
+          })) || [],
+        });
+      }
+
+      const res = await fetch(url, {
+        method,
+        ...(body ? { headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body } : {}),
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        const docUrl = result.fileUrl || result.documentUrl || '';
+        const docName = result.fileName || result.documentName || `${type.toUpperCase()} - ${offer.offer_id}`;
+        setGeneratedDocs(prev => ({
+          ...prev,
+          [offer.offer_id]: {
+            ...(prev[offer.offer_id] || {}),
+            [type]: { fileUrl: docUrl, fileName: docName },
+          },
+        }));
+        // Open in new tab
+        if (docUrl) window.open(docUrl, '_blank');
+      } else {
+        setDocError(`Failed to generate ${type.toUpperCase()}: ${result.error || 'Unknown error'}`);
+      }
+    } catch (err: any) {
+      setDocError(`Error generating ${type.toUpperCase()}: ${err.message}`);
+    }
+    setGeneratingDoc(null);
+  };
+
+  // Generate ALL documents sequentially
+  const generateAllDocs = async (offer: Offer) => {
+    setGeneratingDoc('all');
+    setDocError(null);
+    const isComparison = offer.offer_type === 'comparison' || offer.offer_id.startsWith('CQ-');
+    const types = ['nda', 'dpa', 'asa', 'proposal'];
+    if (isComparison) types.push('cq');
+
+    for (const type of types) {
+      try {
+        await generateDoc(type, offer);
+      } catch { /* continue */ }
+    }
+    setGeneratingDoc(null);
+  };
+
+  // Get doc status for an offer
+  const getDocStatus = (offerId: string, docType: string): 'none' | 'generating' | 'done' => {
+    if (generatingDoc === docType || generatingDoc === 'all') return 'generating';
+    if (generatedDocs[offerId]?.[docType]) return 'done';
+    return 'none';
+  };
 
   return (
     <div className="offers-page">
@@ -455,18 +548,114 @@ export default function OffersPage() {
                 </>
               )}
 
+              {/* ── Generated Documents ──────────────────────── */}
+              <div className="detail-section-title">📂 Generated Documents</div>
+              {docError && (
+                <div style={{ background: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.3)', borderRadius: '8px', padding: '0.75rem', marginBottom: '1rem', color: '#EF5350', fontSize: '0.85rem' }}>
+                  ❌ {docError}
+                </div>
+              )}
+              <div className="doc-gen-grid">
+                {/* NDA */}
+                <div className={`doc-gen-card ${getDocStatus(selectedOffer.offer_id, 'nda')}`}>
+                  <div className="doc-gen-top">
+                    <span className="doc-gen-icon">📜</span>
+                    <span className="doc-gen-name">NDA</span>
+                    {getDocStatus(selectedOffer.offer_id, 'nda') === 'done' && <span className="doc-gen-check">✅</span>}
+                  </div>
+                  <div className="doc-gen-desc">Non-Disclosure Agreement</div>
+                  {getDocStatus(selectedOffer.offer_id, 'nda') === 'done' ? (
+                    <a href={generatedDocs[selectedOffer.offer_id]?.nda?.fileUrl} target="_blank" rel="noreferrer" className="doc-gen-open">📄 Open</a>
+                  ) : (
+                    <button className="doc-gen-btn nda" onClick={() => generateDoc('nda', selectedOffer)} disabled={generatingDoc !== null}>
+                      {generatingDoc === 'nda' ? '⏳...' : '📜 Generate'}
+                    </button>
+                  )}
+                </div>
+
+                {/* DPA */}
+                <div className={`doc-gen-card ${getDocStatus(selectedOffer.offer_id, 'dpa')}`}>
+                  <div className="doc-gen-top">
+                    <span className="doc-gen-icon">🔒</span>
+                    <span className="doc-gen-name">DPA</span>
+                    {getDocStatus(selectedOffer.offer_id, 'dpa') === 'done' && <span className="doc-gen-check">✅</span>}
+                  </div>
+                  <div className="doc-gen-desc">Data Processing Agreement</div>
+                  {getDocStatus(selectedOffer.offer_id, 'dpa') === 'done' ? (
+                    <a href={generatedDocs[selectedOffer.offer_id]?.dpa?.fileUrl} target="_blank" rel="noreferrer" className="doc-gen-open">🔒 Open</a>
+                  ) : (
+                    <button className="doc-gen-btn dpa" onClick={() => generateDoc('dpa', selectedOffer)} disabled={generatingDoc !== null}>
+                      {generatingDoc === 'dpa' ? '⏳...' : '🔒 Generate'}
+                    </button>
+                  )}
+                </div>
+
+                {/* ASA */}
+                <div className={`doc-gen-card ${getDocStatus(selectedOffer.offer_id, 'asa')}`}>
+                  <div className="doc-gen-top">
+                    <span className="doc-gen-icon">📋</span>
+                    <span className="doc-gen-name">ASA</span>
+                    {getDocStatus(selectedOffer.offer_id, 'asa') === 'done' && <span className="doc-gen-check">✅</span>}
+                  </div>
+                  <div className="doc-gen-desc">Administrative Services Agreement</div>
+                  {getDocStatus(selectedOffer.offer_id, 'asa') === 'done' ? (
+                    <a href={generatedDocs[selectedOffer.offer_id]?.asa?.fileUrl} target="_blank" rel="noreferrer" className="doc-gen-open">📋 Open</a>
+                  ) : (
+                    <button className="doc-gen-btn asa" onClick={() => generateDoc('asa', selectedOffer)} disabled={generatingDoc !== null}>
+                      {generatingDoc === 'asa' ? '⏳...' : '📋 Generate'}
+                    </button>
+                  )}
+                </div>
+
+                {/* Proposal */}
+                <div className={`doc-gen-card ${getDocStatus(selectedOffer.offer_id, 'proposal')}`}>
+                  <div className="doc-gen-top">
+                    <span className="doc-gen-icon">📄</span>
+                    <span className="doc-gen-name">Proposal</span>
+                    {getDocStatus(selectedOffer.offer_id, 'proposal') === 'done' && <span className="doc-gen-check">✅</span>}
+                  </div>
+                  <div className="doc-gen-desc">Healthcare TPA Services Proposal</div>
+                  {getDocStatus(selectedOffer.offer_id, 'proposal') === 'done' ? (
+                    <a href={generatedDocs[selectedOffer.offer_id]?.proposal?.fileUrl} target="_blank" rel="noreferrer" className="doc-gen-open">📄 Open</a>
+                  ) : (
+                    <button className="doc-gen-btn proposal" onClick={() => generateDoc('proposal', selectedOffer)} disabled={generatingDoc !== null}>
+                      {generatingDoc === 'proposal' ? '⏳...' : '📄 Generate'}
+                    </button>
+                  )}
+                </div>
+
+                {/* CQ - only for comparison */}
+                {(selectedOffer.offer_type === 'comparison' || selectedOffer.offer_id.startsWith('CQ-')) && (
+                  <div className={`doc-gen-card ${getDocStatus(selectedOffer.offer_id, 'cq')}`}>
+                    <div className="doc-gen-top">
+                      <span className="doc-gen-icon">📊</span>
+                      <span className="doc-gen-name">Comparison Quote</span>
+                      {getDocStatus(selectedOffer.offer_id, 'cq') === 'done' && <span className="doc-gen-check">✅</span>}
+                    </div>
+                    <div className="doc-gen-desc">Multi-plan comparison document</div>
+                    {getDocStatus(selectedOffer.offer_id, 'cq') === 'done' ? (
+                      <a href={generatedDocs[selectedOffer.offer_id]?.cq?.fileUrl} target="_blank" rel="noreferrer" className="doc-gen-open">📊 Open</a>
+                    ) : (
+                      <button className="doc-gen-btn cq" onClick={() => generateDoc('cq', selectedOffer)} disabled={generatingDoc !== null}>
+                        {generatingDoc === 'cq' ? '⏳...' : '📊 Generate'}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* Action Buttons */}
               <div className="modal-actions">
-                {selectedOffer.status === 'draft' && (
-                  <button className="modal-btn send">📧 Send Offer</button>
-                )}
-                <button className="modal-btn docs">📄 Generate Proposal</button>
-                <button className="modal-btn nda">📜 NDA</button>
-                {selectedOffer.offer_type !== 'comparison' && (
-                  <>
-                    <button className="modal-btn dpa">🔒 DPA</button>
-                    <button className="modal-btn asa">📋 ASA</button>
-                  </>
+                <button className="modal-btn generate-all" onClick={() => generateAllDocs(selectedOffer)} disabled={generatingDoc !== null}>
+                  {generatingDoc === 'all' ? '⏳ Generating All...' : '📁 Generate All Documents'}
+                </button>
+                <button className="modal-btn send" onClick={() => { /* TODO: Open Send Documents modal */ }}>
+                  📨 Send Documents
+                </button>
+                {!['accepted', 'signed', 'converted'].includes(selectedOffer.status.toLowerCase()) && (
+                  <button className="modal-btn accept" onClick={() => { /* TODO: Accept offer flow */ }}>
+                    ✅ Accept Offer
+                  </button>
                 )}
               </div>
             </div>
@@ -675,6 +864,31 @@ export default function OffersPage() {
         .modal-btn.dpa { background: #9b59b6; color: white; }
         .modal-btn.asa { background: #27ae60; color: white; }
         .modal-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+        .modal-btn.generate-all { background: linear-gradient(135deg, #1e3a5f, #2d5a87); color: white; }
+        .modal-btn.accept { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+
+        /* Document Generation Cards */
+        .doc-gen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+        .doc-gen-card { background: rgba(10,22,40,0.6); border: 1px solid rgba(45,80,112,0.25); border-radius: 12px; padding: 1rem; text-align: center; transition: all 0.2s; }
+        .doc-gen-card:hover { border-color: rgba(45,80,112,0.5); }
+        .doc-gen-card.done { border-color: rgba(39,174,96,0.4); background: rgba(39,174,96,0.06); }
+        .doc-gen-card.generating { border-color: rgba(243,156,18,0.4); background: rgba(243,156,18,0.06); }
+        .doc-gen-top { display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.3rem; }
+        .doc-gen-icon { font-size: 1.3rem; }
+        .doc-gen-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.95rem; color: #e8e8e8; }
+        .doc-gen-check { font-size: 0.85rem; }
+        .doc-gen-desc { font-size: 0.72rem; color: #667788; margin-bottom: 0.75rem; }
+        .doc-gen-btn { width: 100%; padding: 0.5rem; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+        .doc-gen-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+        .doc-gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .doc-gen-btn.nda { background: #e67e22; color: white; }
+        .doc-gen-btn.dpa { background: #9b59b6; color: white; }
+        .doc-gen-btn.asa { background: #27ae60; color: white; }
+        .doc-gen-btn.proposal { background: #1e3a5f; color: white; }
+        .doc-gen-btn.cq { background: #8b5cf6; color: white; }
+        .doc-gen-open { display: inline-block; padding: 0.45rem 0.75rem; background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.3); border-radius: 8px; color: #5dade2; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+        .doc-gen-open:hover { background: rgba(52,152,219,0.25); }
 
         @media (max-width: 1024px) {
           .stats-grid { grid-template-columns: repeat(3, 1fr); }
