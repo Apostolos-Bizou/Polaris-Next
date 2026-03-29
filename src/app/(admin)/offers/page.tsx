@@ -849,7 +849,7 @@ export default function OffersPage() {
           display: flex; align-items: stretch; justify-content: stretch;
         }
         .modal-box {
-          background: #111c2e;
+          background: #162a44;
           border: none; border-radius: 0;
           width: 100%; height: 100%;
           overflow: hidden; display: flex; flex-direction: column;
@@ -865,7 +865,7 @@ export default function OffersPage() {
         .modal-subtitle { color: rgba(255,255,255,0.7); font-size: 1rem; margin-top: 0.2rem; }
         .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .modal-close:hover { background: rgba(255,255,255,0.3); }
-        .modal-body { padding: 2rem 2.5rem; flex: 1; overflow-y: auto; overflow-x: hidden; background: #0f1e30; }
+        .modal-body { padding: 2rem 2.5rem; flex: 1; overflow-y: auto; overflow-x: hidden; background: #162a44; }
 
         /* Offer Info Card — unified */
         .offer-info-card {
