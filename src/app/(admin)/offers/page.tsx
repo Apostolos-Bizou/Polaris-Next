@@ -806,88 +806,92 @@ export default function OffersPage() {
         .action-btn:hover { background: rgba(45,80,112,0.25); border-color: rgba(45,80,112,0.5); }
         .empty-row { text-align: center; color: #5a6a7a; padding: 3rem 1rem !important; }
 
-        /* Modal */
+        /* Modal - FULL SCREEN */
         .modal-overlay {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0,0,0,0.7); z-index: 1000;
-          display: flex; align-items: center; justify-content: center; padding: 2rem;
+          background: rgba(0,0,0,0.95); z-index: 10001;
+          display: flex; align-items: stretch; justify-content: stretch;
+          padding: 0; margin: 0; overflow: hidden;
         }
         .modal-box {
-          background: linear-gradient(145deg, #0d1f0d, #0a1a0a);
-          border: 1px solid rgba(45,80,112,0.3); border-radius: 20px;
-          width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto;
+          background: #0a1628;
+          border: none; border-radius: 0;
+          width: 100%; height: 100%; max-width: 100%; max-height: 100%;
+          overflow: hidden; display: flex; flex-direction: column;
         }
         .modal-header {
-          display: flex; justify-content: space-between; align-items: flex-start;
-          padding: 1.5rem; border-bottom: 1px solid rgba(45,80,112,0.2);
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 1rem 2rem;
+          background: linear-gradient(135deg, #1e3a5f, #2d5a87);
+          flex-shrink: 0;
         }
-        .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #D4AF37; }
-        .modal-subtitle { color: rgba(184,212,232,0.7); font-size: 0.9rem; margin-top: 0.25rem; }
-        .modal-close { background: none; border: none; color: #7aa0c0; font-size: 1.5rem; cursor: pointer; }
-        .modal-close:hover { color: #e74c3c; }
-        .modal-body { padding: 1.5rem; }
+        .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 800; color: #ffffff; }
+        .modal-subtitle { color: rgba(255,255,255,0.7); font-size: 1rem; margin-top: 0.2rem; }
+        .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: rgba(255,255,255,0.3); }
+        .modal-body { padding: 2rem; flex: 1; overflow-y: auto; overflow-x: hidden; background: #0a1628; }
 
-        .detail-row { display: flex; gap: 1.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
-        .detail-item { flex: 1; min-width: 150px; }
-        .detail-label { font-size: 0.8rem; color: #5a6a7a; margin-bottom: 0.25rem; display: block; }
-        .detail-value { color: #ffffff; font-size: 0.95rem; }
+        .detail-row { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .detail-item { flex: 1; min-width: 180px; }
+        .detail-label { font-size: 0.95rem; color: #667788; margin-bottom: 0.3rem; display: block; }
+        .detail-value { color: #ffffff; font-size: 1.1rem; font-weight: 600; }
         .detail-section-title {
-          font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700;
-          color: #ffffff; margin: 1.5rem 0 1rem; padding-bottom: 0.5rem;
-          border-bottom: 1px solid rgba(45,80,112,0.2);
+          font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700;
+          color: #D4AF37; margin: 2rem 0 1.25rem; padding-bottom: 0.75rem;
+          border-bottom: 2px solid rgba(212,175,55,0.2);
         }
 
-        .financial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+        .financial-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
         .fin-card {
-          background: rgba(10,22,40,0.5); border: 1px solid rgba(45,80,112,0.15);
-          border-radius: 12px; padding: 1rem; text-align: center;
+          background: #0d1f2d; border: 1px solid rgba(45,80,112,0.25);
+          border-radius: 14px; padding: 1.25rem; text-align: center;
         }
-        .fin-card.total { border-color: rgba(212,175,55,0.3); background: rgba(212,175,55,0.08); grid-column: 1 / -1; }
-        .fin-label { font-size: 0.8rem; color: #7aa0c0; }
-        .fin-value { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #ffffff; margin: 0.25rem 0; }
-        .fin-value.gold { color: #D4AF37; font-size: 1.6rem; }
-        .fin-sub { font-size: 0.75rem; color: #5a6a7a; }
+        .fin-card.total { border-color: rgba(212,175,55,0.3); background: rgba(212,175,55,0.06); grid-column: 1 / -1; }
+        .fin-label { font-size: 0.95rem; color: #7aa0c0; }
+        .fin-value { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: #ffffff; margin: 0.3rem 0; }
+        .fin-value.gold { color: #D4AF37; font-size: 2rem; }
+        .fin-sub { font-size: 0.88rem; color: #667788; }
 
-        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
-        .items-table th { font-size: 0.75rem; color: #7aa0c0; text-align: left; padding: 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.2); }
-        .items-table td { font-size: 0.85rem; color: rgba(184,212,232,0.7); padding: 0.5rem; border-bottom: 1px solid rgba(45,80,112,0.1); }
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+        .items-table th { font-size: 0.88rem; color: #7aa0c0; text-align: left; padding: 0.75rem; border-bottom: 1px solid rgba(45,80,112,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
+        .items-table td { font-size: 1rem; color: #b8d4e8; padding: 0.75rem; border-bottom: 1px solid rgba(45,80,112,0.15); }
 
-        .modal-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(45,80,112,0.2); }
+        .modal-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid rgba(45,80,112,0.2); }
         .modal-btn {
-          padding: 0.6rem 1rem; border-radius: 10px; border: none;
-          font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-          font-family: inherit;
+          padding: 0.85rem 1.5rem; border-radius: 12px; border: none;
+          font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+          font-family: 'Montserrat', sans-serif;
         }
-        .modal-btn.send { background: #3498db; color: white; }
+        .modal-btn.send { background: linear-gradient(135deg, #D4AF37, #c49932); color: #0a1628; }
         .modal-btn.docs { background: #1e3a5f; color: white; }
         .modal-btn.nda { background: #e67e22; color: white; }
         .modal-btn.dpa { background: #9b59b6; color: white; }
         .modal-btn.asa { background: #27ae60; color: white; }
-        .modal-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
 
         .modal-btn.generate-all { background: linear-gradient(135deg, #1e3a5f, #2d5a87); color: white; }
         .modal-btn.accept { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
 
         /* Document Generation Cards */
-        .doc-gen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
-        .doc-gen-card { background: rgba(10,22,40,0.6); border: 1px solid rgba(45,80,112,0.25); border-radius: 12px; padding: 1rem; text-align: center; transition: all 0.2s; }
-        .doc-gen-card:hover { border-color: rgba(45,80,112,0.5); }
-        .doc-gen-card.done { border-color: rgba(39,174,96,0.4); background: rgba(39,174,96,0.06); }
-        .doc-gen-card.generating { border-color: rgba(243,156,18,0.4); background: rgba(243,156,18,0.06); }
-        .doc-gen-top { display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.3rem; }
-        .doc-gen-icon { font-size: 1.3rem; }
-        .doc-gen-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.95rem; color: #e8e8e8; }
-        .doc-gen-check { font-size: 0.85rem; }
-        .doc-gen-desc { font-size: 0.72rem; color: #667788; margin-bottom: 0.75rem; }
-        .doc-gen-btn { width: 100%; padding: 0.5rem; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-        .doc-gen-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+        .doc-gen-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .doc-gen-card { background: #0d1f2d; border: 1px solid rgba(45,80,112,0.3); border-radius: 14px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
+        .doc-gen-card:hover { border-color: rgba(45,80,112,0.6); transform: translateY(-2px); }
+        .doc-gen-card.done { border-color: rgba(39,174,96,0.5); background: rgba(39,174,96,0.06); }
+        .doc-gen-card.generating { border-color: rgba(243,156,18,0.5); background: rgba(243,156,18,0.06); }
+        .doc-gen-top { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .doc-gen-icon { font-size: 1.8rem; }
+        .doc-gen-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.15rem; color: #e8e8e8; }
+        .doc-gen-check { font-size: 1rem; }
+        .doc-gen-desc { font-size: 0.82rem; color: #667788; margin-bottom: 1rem; }
+        .doc-gen-btn { width: 100%; padding: 0.7rem; border-radius: 10px; border: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.15s; font-family: 'Montserrat', sans-serif; }
+        .doc-gen-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .doc-gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .doc-gen-btn.nda { background: #e67e22; color: white; }
         .doc-gen-btn.dpa { background: #9b59b6; color: white; }
         .doc-gen-btn.asa { background: #27ae60; color: white; }
         .doc-gen-btn.proposal { background: #1e3a5f; color: white; }
         .doc-gen-btn.cq { background: #8b5cf6; color: white; }
-        .doc-gen-open { display: inline-block; padding: 0.45rem 0.75rem; background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.3); border-radius: 8px; color: #5dade2; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+        .doc-gen-open { display: inline-block; padding: 0.6rem 1rem; background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.3); border-radius: 10px; color: #5dade2; font-size: 0.95rem; font-weight: 700; text-decoration: none; transition: all 0.15s; }
         .doc-gen-open:hover { background: rgba(52,152,219,0.25); }
 
         @media (max-width: 1024px) {
