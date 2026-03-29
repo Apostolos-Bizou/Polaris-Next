@@ -133,10 +133,9 @@ export function useCompare() {
     const kpiClientId = isParent ? `GROUP:${clientId}` : clientId;
     const cleanClientId = clientId;
 
-    // Build params — quarter/year required by backend
+    // Build params — full year cumulative for maximum data coverage
     const kpiParams = new URLSearchParams({
       clientId: kpiClientId,
-      quarter: 'Q1',
       year: '2025',
       cumulative: 'true',
     });
