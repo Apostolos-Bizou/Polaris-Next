@@ -806,18 +806,18 @@ export default function OffersPage() {
         .action-btn:hover { background: rgba(45,80,112,0.25); border-color: rgba(45,80,112,0.5); }
         .empty-row { text-align: center; color: #5a6a7a; padding: 3rem 1rem !important; }
 
-        /* Modal - FULL SCREEN */
+        /* Modal - FULL CONTENT AREA (respects sidebar) */
         .modal-overlay {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0,0,0,0.95); z-index: 10001;
+          background: rgba(0,0,0,0.6); z-index: 10001;
           display: flex; align-items: stretch; justify-content: stretch;
-          padding: 0; margin: 0; overflow: hidden;
         }
         .modal-box {
           background: #0a1628;
           border: none; border-radius: 0;
-          width: 100%; height: 100%; max-width: 100%; max-height: 100%;
+          width: 100%; height: 100%;
           overflow: hidden; display: flex; flex-direction: column;
+          margin-left: 240px;
         }
         .modal-header {
           display: flex; justify-content: space-between; align-items: center;
@@ -898,6 +898,7 @@ export default function OffersPage() {
           .stats-grid { grid-template-columns: repeat(3, 1fr); }
           .toolbar { flex-direction: column; }
           .financial-grid { grid-template-columns: repeat(2, 1fr); }
+          .doc-gen-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
           .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -905,9 +906,12 @@ export default function OffersPage() {
           .header-actions { width: 100%; }
           .btn-create { flex: 1; }
           .financial-grid { grid-template-columns: 1fr; }
+          .modal-box { margin-left: 0; }
+          .doc-gen-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 480px) {
           .stats-grid { grid-template-columns: 1fr; }
+          .doc-gen-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </div>
