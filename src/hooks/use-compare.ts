@@ -6,9 +6,9 @@ import { useState, useEffect, useCallback } from 'react';
 export interface ClientOption {
   id: string;
   name: string;
-  isParent?: boolean;
-  isSubsidiary?: boolean;
-  parentName?: string;
+  isParent: boolean;
+  isSubsidiary: boolean;
+  parentName: string;
 }
 
 export interface ClientKPIs {
@@ -54,34 +54,23 @@ export interface CompareClientData {
 
 // ─── Default empty KPIs ──────────────────────────────────────────
 const emptyKPIs: ClientKPIs = {
-  total_members: 0,
-  total_claims: 0,
-  total_cost_usd: 0,
-  inpatient_cases: 0,
-  outpatient_cases: 0,
-  exgratia_cases: 0,
-  inpatient_cost: 0,
-  outpatient_cost: 0,
-  exgratia_cost: 0,
-  principal_members: 0,
-  dependent_members: 0,
-  new_enrollments: 0,
-  cancellations: 0,
-  cost_per_member: 0,
-  utilization: 0,
-  avg_claim_cost: 0,
+  total_members: 0, total_claims: 0, total_cost_usd: 0,
+  inpatient_cases: 0, outpatient_cases: 0, exgratia_cases: 0,
+  inpatient_cost: 0, outpatient_cost: 0, exgratia_cost: 0,
+  principal_members: 0, dependent_members: 0,
+  new_enrollments: 0, cancellations: 0,
+  cost_per_member: 0, utilization: 0, avg_claim_cost: 0,
 };
 
 // ─── Client list cache ───────────────────────────────────────────
 let clientsCache: ClientOption[] | null = null;
 let clientsCacheTime = 0;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000;
 
 // ─── Hook ────────────────────────────────────────────────────────
 export function useCompare() {
   const [clients, setClients] = useState<ClientOption[]>([]);
   const [clientsLoading, setClientsLoading] = useState(true);
-
   const [clientA, setClientA] = useState<CompareClientData | null>(null);
   const [clientB, setClientB] = useState<CompareClientData | null>(null);
   const [comparing, setComparing] = useState(false);
@@ -89,44 +78,37 @@ export function useCompare() {
   // Load clients list
   useEffect(() => {
     async function loadClients() {
-      // Check cache
       if (clientsCache && Date.now() - clientsCacheTime < CACHE_TTL) {
         setClients(clientsCache);
         setClientsLoading(false);
         return;
       }
-
       try {
         const res = await fetch('/api/proxy/getClients');
         const data = await res.json();
-        
         if (data.success && data.data) {
+          const idToName: Record<string, string> = {};
+          data.data.forEach((c: any) => { idToName[c.client_id] = c.client_name; });
+
           const mapped: ClientOption[] = data.data.map((c: any) => ({
-            id: c.id || c.clientId || c.name,
-            name: c.name || c.clientName || c.id,
-            isParent: c.isParent || c.is_parent || false,
-            isSubsidiary: c.isSubsidiary || c.is_subsidiary || false,
-            parentName: c.parentName || c.parent_name || '',
+            id: c.client_id,
+            name: c.client_name,
+            isParent: c.client_type === 'parent',
+            isSubsidiary: c.client_type === 'subsidiary',
+            parentName: c.parent_client_id ? (idToName[c.parent_client_id] || '') : '',
           }));
 
-          // Sort: parents first, then subsidiaries grouped under parents
-          const parents = mapped.filter(c => c.isParent);
+          const parents = mapped.filter(c => c.isParent).sort((a, b) => a.name.localeCompare(b.name));
           const subs = mapped.filter(c => c.isSubsidiary);
-          const standalone = mapped.filter(c => !c.isParent && !c.isSubsidiary);
+          const standalone = mapped.filter(c => !c.isParent && !c.isSubsidiary).sort((a, b) => a.name.localeCompare(b.name));
 
           const sorted: ClientOption[] = [];
           parents.forEach(p => {
             sorted.push(p);
-            subs.filter(s => s.parentName === p.name).forEach(s => sorted.push(s));
+            subs.filter(s => s.parentName === p.name).sort((a, b) => a.name.localeCompare(b.name)).forEach(s => sorted.push(s));
           });
-          // Add standalone (not parent, not subsidiary)
-          standalone.forEach(s => {
-            if (!sorted.find(x => x.id === s.id)) sorted.push(s);
-          });
-          // Add any remaining subs that didn't match a parent
-          subs.forEach(s => {
-            if (!sorted.find(x => x.id === s.id)) sorted.push(s);
-          });
+          standalone.forEach(s => { if (!sorted.find(x => x.id === s.id)) sorted.push(s); });
+          subs.forEach(s => { if (!sorted.find(x => x.id === s.id)) sorted.push(s); });
 
           clientsCache = sorted;
           clientsCacheTime = Date.now();
@@ -138,23 +120,44 @@ export function useCompare() {
         setClientsLoading(false);
       }
     }
-
     loadClients();
   }, []);
 
   // Fetch data for one client
   const fetchClientData = useCallback(async (clientId: string): Promise<Omit<CompareClientData, 'loading' | 'error'>> => {
-    const clientName = clients.find(c => c.id === clientId)?.name || clientId;
-    
+    const client = clients.find(c => c.id === clientId);
+    const clientName = client?.name || clientId;
+    const isParent = client?.isParent || false;
+
+    // ═══ KEY: Parents need GROUP: prefix for backend to aggregate subsidiaries ═══
+    const kpiClientId = isParent ? `GROUP:${clientId}` : clientId;
+    const cleanClientId = clientId;
+
+    // Build params — quarter/year required by backend
+    const kpiParams = new URLSearchParams({
+      clientId: kpiClientId,
+      quarter: 'Q1',
+      year: '2025',
+      cumulative: 'true',
+    });
+    const baseParams = new URLSearchParams({ clientId: cleanClientId });
+
     // Parallel API calls
     const [kpiRes, catRes, hospRes] = await Promise.all([
-      fetch(`/api/proxy/getClientKPISummary?clientId=${encodeURIComponent(clientId)}`).then(r => r.json()).catch(() => null),
-      fetch(`/api/proxy/getCategoriesBreakdown?clientId=${encodeURIComponent(clientId)}`).then(r => r.json()).catch(() => null),
-      fetch(`/api/proxy/getHospitalsData?clientId=${encodeURIComponent(clientId)}`).then(r => r.json()).catch(() => null),
+      fetch(`/api/proxy/getClientKPISummary?${kpiParams.toString()}`).then(r => r.json()).catch(() => null),
+      fetch(`/api/proxy/getCategoriesBreakdown?${baseParams.toString()}`).then(r => r.json()).catch(() => null),
+      fetch(`/api/proxy/getHospitalsData?${baseParams.toString()}`).then(r => r.json()).catch(() => null),
     ]);
 
+    console.log(`📊 Compare KPI for ${clientName} (${kpiClientId}):`, {
+      periods: kpiRes?.periods_matched,
+      members: kpiRes?.kpis?.total_members,
+      claims: kpiRes?.kpis?.total_claims,
+      cost: kpiRes?.kpis?.total_cost_usd,
+    });
+
     // Parse KPIs
-    const k = kpiRes?.kpis || kpiRes?.data || {};
+    const k = kpiRes?.kpis || {};
     const ct = kpiRes?.claimTypes || {};
     const mt = kpiRes?.memberTypes || {};
 
@@ -162,17 +165,9 @@ export function useCompare() {
     const totalClaims = k.total_claims || 0;
     const totalCost = k.total_cost_usd || k.total_cost || 0;
 
-    // Claim type breakdown
-    const inCases = ct.cases?.inpatient || k.inpatient_cases || 0;
-    const outCases = ct.cases?.outpatient || k.outpatient_cases || 0;
-    const exCases = ct.cases?.exgratia || k.exgratia_cases || 0;
-    
-    // Convert costs if needed (PHP to USD)
-    const rawInCost = ct.costs?.inpatient || k.inpatient_cost || 0;
-    const rawOutCost = ct.costs?.outpatient || k.outpatient_cost || 0;
-    const rawExCost = ct.costs?.exgratia || k.exgratia_cost || 0;
-    const rawTotal = rawInCost + rawOutCost + rawExCost;
-    const rate = (rawTotal > 0 && totalCost > 0 && rawTotal > totalCost * 2) ? totalCost / rawTotal : 1;
+    const inCases = ct.inpatient || k.inpatient_cases || 0;
+    const outCases = ct.outpatient || k.outpatient_cases || 0;
+    const exCases = ct.exgratia || k.exgratia_cases || 0;
 
     const kpis: ClientKPIs = {
       total_members: totalMembers,
@@ -181,12 +176,12 @@ export function useCompare() {
       inpatient_cases: inCases,
       outpatient_cases: outCases,
       exgratia_cases: exCases,
-      inpatient_cost: Math.round(rawInCost * rate),
-      outpatient_cost: Math.round(rawOutCost * rate),
-      exgratia_cost: Math.round(rawExCost * rate),
-      principal_members: mt.members?.principal || k.principal_members || 0,
-      dependent_members: mt.members?.dependent || k.dependent_members || 0,
-      new_enrollments: k.new_enrollments || k.enrollments || 0,
+      inpatient_cost: 0,
+      outpatient_cost: 0,
+      exgratia_cost: 0,
+      principal_members: mt.principal || k.principal_members || 0,
+      dependent_members: mt.dependent || k.dependent_members || 0,
+      new_enrollments: k.new_enrollments || 0,
       cancellations: k.cancellations || 0,
       cost_per_member: totalMembers > 0 ? totalCost / totalMembers : 0,
       utilization: totalMembers > 0 ? (totalClaims / totalMembers) * 100 : 0,
@@ -213,42 +208,23 @@ export function useCompare() {
   // Run comparison
   const runComparison = useCallback(async (idA: string, idB: string) => {
     if (!idA || !idB) return;
-    
     setComparing(true);
     setClientA({ clientId: idA, clientName: clients.find(c => c.id === idA)?.name || idA, kpis: emptyKPIs, categories: [], hospitals: [], loading: true, error: null });
     setClientB({ clientId: idB, clientName: clients.find(c => c.id === idB)?.name || idB, kpis: emptyKPIs, categories: [], hospitals: [], loading: true, error: null });
-
     try {
-      const [dataA, dataB] = await Promise.all([
-        fetchClientData(idA),
-        fetchClientData(idB),
-      ]);
-
+      const [dataA, dataB] = await Promise.all([fetchClientData(idA), fetchClientData(idB)]);
       setClientA({ ...dataA, loading: false, error: null });
       setClientB({ ...dataB, loading: false, error: null });
     } catch (err) {
       console.error('Comparison error:', err);
-      setClientA(prev => prev ? { ...prev, loading: false, error: 'Failed to load data' } : null);
-      setClientB(prev => prev ? { ...prev, loading: false, error: 'Failed to load data' } : null);
+      setClientA(prev => prev ? { ...prev, loading: false, error: 'Failed' } : null);
+      setClientB(prev => prev ? { ...prev, loading: false, error: 'Failed' } : null);
     } finally {
       setComparing(false);
     }
   }, [clients, fetchClientData]);
 
-  // Clear comparison
-  const clearComparison = useCallback(() => {
-    setClientA(null);
-    setClientB(null);
-    setComparing(false);
-  }, []);
+  const clearComparison = useCallback(() => { setClientA(null); setClientB(null); setComparing(false); }, []);
 
-  return {
-    clients,
-    clientsLoading,
-    clientA,
-    clientB,
-    comparing,
-    runComparison,
-    clearComparison,
-  };
+  return { clients, clientsLoading, clientA, clientB, comparing, runComparison, clearComparison };
 }
