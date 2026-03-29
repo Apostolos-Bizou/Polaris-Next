@@ -154,30 +154,30 @@ export default function RenewalsPage() {
               </div>
             </div>
 
-            {/* Right: Action Required */}
+            {/* Right: Action Required - clickable tabs */}
             <div className="rn-action-side">
               <h3 className="rn-subsection-title">🔔 Action Required</h3>
               <div className="rn-action-mini-list">
-                <div className="rn-action-mini-row">
+                <button className="rn-action-mini-tab" onClick={() => { r.setActiveSection('actions'); }}>
                   <span className="rn-ami-icon" style={{ color: '#F44336' }}>⚠️</span>
                   <span className="rn-ami-label">Follow-up overdue</span>
                   <span className="rn-ami-count">{r.actionCounts.overdue}</span>
-                </div>
-                <div className="rn-action-mini-row">
+                </button>
+                <button className="rn-action-mini-tab" onClick={() => { r.setActiveSection('actions'); }}>
                   <span className="rn-ami-icon" style={{ color: '#9C27B0' }}>📞</span>
                   <span className="rn-ami-label">Call today</span>
                   <span className="rn-ami-count">{r.actionCounts.call_today}</span>
-                </div>
-                <div className="rn-action-mini-row">
+                </button>
+                <button className="rn-action-mini-tab" onClick={() => { r.setActiveSection('actions'); }}>
                   <span className="rn-ami-icon" style={{ color: '#FF9800' }}>⏰</span>
                   <span className="rn-ami-label">Contracts expiring</span>
                   <span className="rn-ami-count">{r.actionCounts.expiring}</span>
-                </div>
-                <div className="rn-action-mini-row">
+                </button>
+                <button className="rn-action-mini-tab" onClick={() => { r.setActiveSection('actions'); }}>
                   <span className="rn-ami-icon" style={{ color: '#2196F3' }}>📤</span>
                   <span className="rn-ami-label">Send renewal</span>
                   <span className="rn-ami-count">{r.actionCounts.send_renewal}</span>
-                </div>
+                </button>
               </div>
             </div>
           </div>
