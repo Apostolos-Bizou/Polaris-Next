@@ -30,7 +30,7 @@ export default function RenewalsPage() {
       {/* Header */}
       <div className="rn-header">
         <div>
-          <h1 className="rn-title">🔄 Renewals Tracker</h1>
+          <h1 className="rn-title">📋 Follow Up Dashboard</h1>
           <p className="rn-subtitle">Contract renewals, pipeline management & follow-up queue</p>
         </div>
         <div className="rn-header-actions">
@@ -81,14 +81,19 @@ export default function RenewalsPage() {
           {r.actionItems.length > 0 && <span className="rn-sec-badge">{r.actionItems.length}</span>}
         </button>
         <button className={`rn-sec-tab ${r.activeSection === 'notes' ? 'active' : ''}`} onClick={() => r.setActiveSection('notes')}>
-          📝 Notes & Follow-ups
+          📝 Quick Email & Notes
         </button>
       </div>
 
-      {/* ═══ PIPELINE SECTION ═══ */}
+      {/* ═══ PIPELINE TAB ═══ */}
       {r.activeSection === 'pipeline' && (
         <div className="rn-section">
-          {/* Kanban Pipeline */}
+          {/* Kanban Pipeline with Refresh */}
+          <div className="rn-section-header-row">
+            <h3 className="rn-subsection-title">📊 Offers Pipeline</h3>
+            <button className="rn-refresh-btn" onClick={r.refreshPipeline}>🔄 Refresh</button>
+          </div>
+
           <div className="rn-pipeline-kanban">
             {(['draft', 'sent', 'followup1', 'followup2', 'followup3', 'accepted'] as const).map(stage => {
               const labels: Record<string, { label: string; icon: string; color: string }> = {
@@ -101,7 +106,6 @@ export default function RenewalsPage() {
               };
               const info = labels[stage];
               const offers = r.pipelineByStage[stage];
-
               return (
                 <div key={stage} className={`rn-pipeline-col ${stage}`}>
                   <div className="rn-pipeline-col-header" style={{ background: `${info.color}30`, color: info.color }}>
@@ -128,30 +132,62 @@ export default function RenewalsPage() {
             })}
           </div>
 
-          {/* Pipeline Bar Chart */}
-          <div className="rn-pipeline-chart">
-            <h3 className="rn-subsection-title">📊 Pipeline Distribution</h3>
-            <div className="rn-bars">
-              {r.pipelineBars.map(bar => (
-                <div key={bar.key} className="rn-bar-row">
-                  <span className="rn-bar-label">{bar.icon} {bar.label}</span>
-                  <div className="rn-bar-track">
-                    <div className="rn-bar-fill" style={{ width: `${bar.percentage}%`, background: bar.color }} />
+          {/* Two columns: Pipeline bars + Action Required */}
+          <div className="rn-two-col">
+            {/* Left: Pipeline Distribution */}
+            <div className="rn-pipeline-chart">
+              <h3 className="rn-subsection-title">📊 Offers Pipeline</h3>
+              <div className="rn-bars">
+                {r.pipelineBars.map(bar => (
+                  <div key={bar.key} className="rn-bar-row">
+                    <span className="rn-bar-label">{bar.icon} {bar.label}</span>
+                    <div className="rn-bar-track">
+                      <div className="rn-bar-fill" style={{ width: `${bar.percentage}%`, background: bar.color }} />
+                    </div>
+                    <span className="rn-bar-count">{bar.count}</span>
                   </div>
-                  <span className="rn-bar-count">{bar.count}</span>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="rn-pipeline-totals">
+                <span>👥 {r.pipelineTotals.total_members.toLocaleString()} Members</span>
+                <span>💰 {fmtCurrency(r.pipelineTotals.total_value)} Pipeline Value</span>
+              </div>
             </div>
-            <div className="rn-pipeline-totals">
-              <span>👥 {r.pipelineTotals.total_members.toLocaleString()} members</span>
-              <span>💰 {fmtCurrency(r.pipelineTotals.total_value)} pipeline value</span>
-              <span>📋 {r.pipelineTotals.active_offers} active offers</span>
+
+            {/* Right: Action Required */}
+            <div className="rn-action-side">
+              <h3 className="rn-subsection-title">🔔 Action Required</h3>
+              <div className="rn-action-mini-list">
+                <div className="rn-action-mini-row">
+                  <span className="rn-ami-icon" style={{ color: '#F44336' }}>⚠️</span>
+                  <span className="rn-ami-label">Follow-up overdue</span>
+                  <span className="rn-ami-count">{r.actionCounts.overdue}</span>
+                </div>
+                <div className="rn-action-mini-row">
+                  <span className="rn-ami-icon" style={{ color: '#9C27B0' }}>📞</span>
+                  <span className="rn-ami-label">Call today</span>
+                  <span className="rn-ami-count">{r.actionCounts.call_today}</span>
+                </div>
+                <div className="rn-action-mini-row">
+                  <span className="rn-ami-icon" style={{ color: '#FF9800' }}>⏰</span>
+                  <span className="rn-ami-label">Contracts expiring</span>
+                  <span className="rn-ami-count">{r.actionCounts.expiring}</span>
+                </div>
+                <div className="rn-action-mini-row">
+                  <span className="rn-ami-icon" style={{ color: '#2196F3' }}>📤</span>
+                  <span className="rn-ami-label">Send renewal</span>
+                  <span className="rn-ami-count">{r.actionCounts.send_renewal}</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Detailed View Table */}
+          {/* Detailed View Table with Print */}
           <div className="rn-detailed-view">
-            <h3 className="rn-subsection-title">📋 Detailed View</h3>
+            <div className="rn-section-header-row">
+              <h3 className="rn-subsection-title">📋 Detailed View</h3>
+              <button className="rn-print-btn" onClick={() => window.print()}>🖨️ Print</button>
+            </div>
             <div className="rn-table-wrap">
               <table className="rn-table">
                 <thead>
@@ -168,10 +204,9 @@ export default function RenewalsPage() {
                     const nextDays = o.status === 'draft' ? 7 : 3;
                     const nextDate = new Date(new Date(o.created_at).getTime() + nextDays * 86400000);
                     const noteIcon = o.status.includes('followup') ? '📞' : o.status === 'sent' ? '📧' : '📝';
-
                     return (
                       <tr key={o.offer_id}>
-                        <td><strong>{o.client_name}</strong></td>
+                        <td><a href={`/clients/${o.client_id}`} className="rn-client-link"><strong>{o.client_name}</strong></a></td>
                         <td><span className={`rn-stage-badge ${o.status}`}>{stageLabels[o.status] || o.status}</span></td>
                         <td style={{ textAlign: 'right' }}>{o.total_members.toLocaleString()}</td>
                         <td style={{ textAlign: 'right', color: '#D4AF37', fontWeight: 600 }}>{fmtCurrency(o.total_amount)}</td>
@@ -183,87 +218,189 @@ export default function RenewalsPage() {
                 </tbody>
               </table>
             </div>
+            <div className="rn-pipeline-totals">
+              <span>👥 {r.pipelineTotals.total_members.toLocaleString()} Members</span>
+              <span>💰 {fmtCurrency(r.pipelineTotals.total_value)} Pipeline Value</span>
+              <span>📋 {r.pipelineTotals.active_offers} active offers</span>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ═══ EXPIRING CONTRACTS SECTION ═══ */}
+      {/* ═══ EXPIRING CONTRACTS TAB ═══ */}
       {r.activeSection === 'expiring' && (
         <div className="rn-section">
-          {/* Time filter tabs */}
-          <div className="rn-expiring-tabs">
-            {([30, 60, 90] as const).map(days => (
-              <button
-                key={days}
-                className={`rn-exp-tab ${r.expiringFilter === days ? 'active' : ''}`}
-                onClick={() => r.setExpiringFilter(days)}
-              >
-                {days} Days
-                <span className="rn-exp-tab-count">
-                  {days === 30 ? r.expiringCounts.d30 : days === 60 ? r.expiringCounts.d60 : r.expiringCounts.d90}
-                </span>
-              </button>
-            ))}
-          </div>
+          <div className="rn-two-col">
+            {/* Left: Expiring Contracts */}
+            <div className="rn-expiring-left">
+              <div className="rn-section-header-row">
+                <h3 className="rn-subsection-title">⏰ Expiring Contracts</h3>
+                <button
+                  className={`rn-active-filter ${r.showActiveOnly ? 'active' : ''}`}
+                  onClick={() => r.setShowActiveOnly(!r.showActiveOnly)}
+                >
+                  Only In-use &amp; Active
+                </button>
+              </div>
 
-          {/* Summary cards */}
-          <div className="rn-exp-summary">
-            <div className="rn-exp-summary-card critical">
-              <span className="rn-exp-sum-val">{r.expiringCounts.d30}</span>
-              <span className="rn-exp-sum-label">≤30 days</span>
-              <span className="rn-exp-sum-members">{r.expiringCounts.m30.toLocaleString()} 👥</span>
-            </div>
-            <div className="rn-exp-summary-card warning">
-              <span className="rn-exp-sum-val">{r.expiringCounts.d60}</span>
-              <span className="rn-exp-sum-label">≤60 days</span>
-              <span className="rn-exp-sum-members">{r.expiringCounts.m60.toLocaleString()} 👥</span>
-            </div>
-            <div className="rn-exp-summary-card ok">
-              <span className="rn-exp-sum-val">{r.expiringCounts.d90}</span>
-              <span className="rn-exp-sum-label">≤90 days</span>
-              <span className="rn-exp-sum-members">{r.expiringCounts.m90.toLocaleString()} 👥</span>
-            </div>
-          </div>
+              {/* Time filter tabs */}
+              <div className="rn-expiring-tabs">
+                {([30, 60, 90] as const).map(days => (
+                  <button
+                    key={days}
+                    className={`rn-exp-tab ${r.expiringFilter === days ? 'active' : ''}`}
+                    onClick={() => r.setExpiringFilter(days)}
+                  >
+                    {days} Days
+                    <span className="rn-exp-tab-count">
+                      {days === 30 ? r.expiringCounts.d30 : days === 60 ? r.expiringCounts.d60 : r.expiringCounts.d90}
+                    </span>
+                  </button>
+                ))}
+              </div>
 
-          {/* Expiring table */}
-          <div className="rn-table-wrap">
-            <table className="rn-table expiring">
-              <thead>
-                <tr>
-                  <th>Client</th><th>Contract</th><th>Members</th><th>Expiry Date</th><th>Days Left</th><th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {r.filteredExpiring.length === 0 ? (
-                  <tr><td colSpan={6} style={{ textAlign: 'center', color: '#667788', padding: '2rem' }}>No contracts expiring in {r.expiringFilter} days</td></tr>
+              {/* Summary cards */}
+              <div className="rn-exp-summary">
+                <div className="rn-exp-summary-card critical">
+                  <span className="rn-exp-sum-val">{r.expiringCounts.d30}</span>
+                  <span className="rn-exp-sum-label">≤30 days</span>
+                  <span className="rn-exp-sum-members">{r.expiringCounts.m30.toLocaleString()} 👥</span>
+                </div>
+                <div className="rn-exp-summary-card warning">
+                  <span className="rn-exp-sum-val">{r.expiringCounts.d60}</span>
+                  <span className="rn-exp-sum-label">≤60 days</span>
+                  <span className="rn-exp-sum-members">{r.expiringCounts.m60.toLocaleString()} 👥</span>
+                </div>
+                <div className="rn-exp-summary-card ok">
+                  <span className="rn-exp-sum-val">{r.expiringCounts.d90}</span>
+                  <span className="rn-exp-sum-label">≤90 days</span>
+                  <span className="rn-exp-sum-members">{r.expiringCounts.m90.toLocaleString()} 👥</span>
+                </div>
+              </div>
+
+              {/* Expiring table */}
+              <div className="rn-table-wrap">
+                <table className="rn-table expiring">
+                  <thead>
+                    <tr><th>Client</th><th>Contract</th><th>Members</th><th>Expiry</th><th>Days</th><th>Action</th></tr>
+                  </thead>
+                  <tbody>
+                    {r.filteredExpiring.length === 0 ? (
+                      <tr><td colSpan={6} style={{ textAlign: 'center', color: '#667788', padding: '2rem' }}>No contracts expiring in {r.expiringFilter} days</td></tr>
+                    ) : (
+                      r.filteredExpiring.map(c => (
+                        <tr key={c.contract_id}>
+                          <td><a href={`/clients/${c.client_id}`} className="rn-client-link"><strong>{c.client_name}</strong></a></td>
+                          <td>{c.contract_type}</td>
+                          <td style={{ textAlign: 'center' }}><span className="rn-member-badge">{c.member_count.toLocaleString()} 👥</span></td>
+                          <td>{fmtDate(c.expiry_date)}</td>
+                          <td><span className={`rn-days-badge ${c.urgency}`}>{c.days_until} days</span></td>
+                          <td><a href="/offers" className="rn-renew-btn">🔄 Renew</a></td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Right: Quick Email for expiring clients */}
+            <div className="rn-quick-email-side">
+              <h3 className="rn-subsection-title">✉️ Quick Renewal Email</h3>
+              <div className="rn-qe-form">
+                <select className="rn-select" value={r.emailClient} onChange={e => r.setEmailClient(e.target.value)}>
+                  <option value="">Select Client...</option>
+                  {r.allClients.length > 0 ? (
+                    r.allClients.map(c => (
+                      <option key={c.id} value={`${c.id}|${c.name}`}>{c.isChild ? '└ ' : '🏢 '}{c.name}</option>
+                    ))
+                  ) : (
+                    r.contracts.map(c => (
+                      <option key={c.client_id} value={`${c.client_id}|${c.client_name}`}>🏢 {c.client_name}</option>
+                    ))
+                  )}
+                </select>
+                <select className="rn-select" value={r.emailTemplate} onChange={e => {
+                  r.setEmailTemplate(e.target.value);
+                  const tmpl = r.emailTemplates.find(t => t.id === e.target.value);
+                  if (tmpl) r.setEmailSubject(tmpl.name);
+                }}>
+                  <option value="">Select Template...</option>
+                  {r.emailTemplates.map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+                <input className="rn-input" placeholder="Recipients..." value={r.emailRecipient} onChange={e => r.setEmailRecipient(e.target.value)} />
+                <input className="rn-input" placeholder="Subject..." value={r.emailSubject} onChange={e => r.setEmailSubject(e.target.value)} />
+
+                <div className="rn-qe-type-tags">
+                  {(['call', 'email', 'followup', 'meeting', 'note'] as const).map(t => (
+                    <button key={t} className={`rn-qe-tag ${r.noteType === t ? 'active' : ''}`} onClick={() => r.setNoteType(t)}>
+                      {NOTE_ICONS[t]} {t.charAt(0).toUpperCase() + t.slice(1)}
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  className="rn-textarea"
+                  placeholder="Enter your email or note message..."
+                  value={r.emailMessage}
+                  onChange={e => r.setEmailMessage(e.target.value)}
+                  rows={4}
+                />
+
+                <div className="rn-qe-actions">
+                  <button className="rn-qe-btn cancel" onClick={r.clearEmailForm}>Cancel</button>
+                  <button
+                    className="rn-qe-btn save"
+                    onClick={() => {
+                      r.setNoteContent(r.emailMessage);
+                      r.setNoteClient(r.emailClient);
+                      // Small delay for state to propagate
+                      setTimeout(() => {
+                        r.saveEmailAsNote();
+                      }, 50);
+                    }}
+                    disabled={!r.emailClient || !r.emailMessage.trim()}
+                  >
+                    📝 Save as Note
+                  </button>
+                  <button
+                    className="rn-qe-btn send"
+                    onClick={r.sendQuickEmail}
+                    disabled={!r.emailClient || !r.emailSubject.trim() || r.emailSending}
+                  >
+                    {r.emailSending ? '📤 Sending...' : '📤 Send Email'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="rn-recent-activity">
+                <h4 className="rn-ra-title">Recent Activity</h4>
+                {r.notes.length === 0 ? (
+                  <p className="rn-ra-empty">No notes yet. Send an email or add a note above.</p>
                 ) : (
-                  r.filteredExpiring.map(c => (
-                    <tr key={c.contract_id}>
-                      <td><a href={`/clients/${c.client_id}`} className="rn-client-link"><strong>{c.client_name}</strong></a></td>
-                      <td>{c.contract_type}</td>
-                      <td style={{ textAlign: 'center' }}>
-                        <span className="rn-member-badge">{c.member_count.toLocaleString()} 👥</span>
-                      </td>
-                      <td>{fmtDate(c.expiry_date)}</td>
-                      <td>
-                        <span className={`rn-days-badge ${c.urgency}`}>{c.days_until} days</span>
-                      </td>
-                      <td>
-                        <a href="/offers" className="rn-renew-btn">🔄 Renew</a>
-                      </td>
-                    </tr>
+                  r.notes.slice(0, 5).map(note => (
+                    <div key={note.id} className="rn-ra-item">
+                      <span className="rn-ra-icon">{NOTE_ICONS[note.type]}</span>
+                      <div className="rn-ra-content">
+                        <span className="rn-ra-client">{note.client_name}</span>
+                        <span className="rn-ra-text">{note.content.substring(0, 80)}{note.content.length > 80 ? '...' : ''}</span>
+                        <span className="rn-ra-date">{fmtDate(note.created_at)}</span>
+                      </div>
+                    </div>
                   ))
                 )}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ═══ ACTION REQUIRED SECTION ═══ */}
+      {/* ═══ ACTION REQUIRED TAB ═══ */}
       {r.activeSection === 'actions' && (
         <div className="rn-section">
-          {/* Action summary */}
           <div className="rn-action-summary">
             <div className="rn-action-sum-card overdue">
               <span className="rn-asc-icon">🔴</span>
@@ -287,7 +424,6 @@ export default function RenewalsPage() {
             </div>
           </div>
 
-          {/* Action items list */}
           <div className="rn-action-list">
             {r.actionItems.length === 0 ? (
               <div className="rn-empty">✅ No pending actions — all caught up!</div>
@@ -312,80 +448,92 @@ export default function RenewalsPage() {
         </div>
       )}
 
-      {/* ═══ NOTES SECTION ═══ */}
+      {/* ═══ NOTES TAB ═══ */}
       {r.activeSection === 'notes' && (
         <div className="rn-section">
-          {/* Add Note Form */}
-          <div className="rn-note-form">
-            <h3 className="rn-subsection-title">➕ Add Note</h3>
-            <div className="rn-note-form-grid">
-              <div className="rn-form-group">
-                <label>🏢 Client</label>
-                <select className="rn-select" value={r.noteClient} onChange={e => r.setNoteClient(e.target.value)}>
-                  <option value="">Select Client...</option>
-                  {r.allClients.length > 0 ? (
-                    r.allClients.map(c => (
-                      <option key={c.id} value={`${c.id}|${c.name}`}>
-                        {c.isChild ? '└ ' : '🏢 '}{c.name}
-                      </option>
-                    ))
-                  ) : (
-                    r.contracts.map(c => (
-                      <option key={c.client_id} value={`${c.client_id}|${c.client_name}`}>🏢 {c.client_name}</option>
-                    ))
-                  )}
-                </select>
-              </div>
-              <div className="rn-form-group">
-                <label>📋 Type</label>
-                <select className="rn-select" value={r.noteType} onChange={e => r.setNoteType(e.target.value as any)}>
-                  <option value="note">📝 Note</option>
-                  <option value="call">📞 Call</option>
-                  <option value="email">📧 Email</option>
-                  <option value="meeting">🤝 Meeting</option>
-                  <option value="followup">🔔 Follow-up</option>
-                </select>
-              </div>
-              <div className="rn-form-group full">
-                <label>💬 Content</label>
-                <textarea
-                  className="rn-textarea"
-                  value={r.noteContent}
-                  onChange={e => r.setNoteContent(e.target.value)}
-                  placeholder="Add your note..."
-                  rows={3}
-                />
-              </div>
-            </div>
-            <div className="rn-note-form-actions">
-              <button className="rn-add-note-btn" onClick={r.addNote} disabled={!r.noteClient || !r.noteContent.trim()}>
-                ➕ Add Note
-              </button>
-            </div>
-          </div>
+          <div className="rn-two-col">
+            {/* Left: Quick Email & Notes Form */}
+            <div className="rn-notes-form-side">
+              <div className="rn-qe-section">
+                <h3 className="rn-subsection-title">✉️ Send Quick Email</h3>
+                <div className="rn-qe-form">
+                  <select className="rn-select" value={r.emailClient} onChange={e => r.setEmailClient(e.target.value)}>
+                    <option value="">Select Client...</option>
+                    {r.allClients.length > 0 ? (
+                      r.allClients.map(c => (
+                        <option key={c.id} value={`${c.id}|${c.name}`}>{c.isChild ? '└ ' : '🏢 '}{c.name}</option>
+                      ))
+                    ) : (
+                      r.contracts.map(c => (
+                        <option key={c.client_id} value={`${c.client_id}|${c.client_name}`}>🏢 {c.client_name}</option>
+                      ))
+                    )}
+                  </select>
+                  <select className="rn-select" value={r.emailTemplate} onChange={e => {
+                    r.setEmailTemplate(e.target.value);
+                    const tmpl = r.emailTemplates.find(t => t.id === e.target.value);
+                    if (tmpl) r.setEmailSubject(tmpl.name);
+                  }}>
+                    <option value="">Select Template...</option>
+                    {r.emailTemplates.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                  <input className="rn-input" placeholder="📧 Recipients..." value={r.emailRecipient} onChange={e => r.setEmailRecipient(e.target.value)} />
+                  <input className="rn-input" placeholder="Subject or title..." value={r.emailSubject} onChange={e => r.setEmailSubject(e.target.value)} />
 
-          {/* Notes list */}
-          <div className="rn-notes-list">
-            <h3 className="rn-subsection-title">📝 Recent Notes ({r.notes.length})</h3>
-            {r.notes.length === 0 ? (
-              <div className="rn-empty">No notes yet. Add your first note above.</div>
-            ) : (
-              r.notes.map(note => (
-                <div key={note.id} className={`rn-note-item ${note.type}`}>
-                  <div className="rn-note-icon">{NOTE_ICONS[note.type]}</div>
-                  <div className="rn-note-content">
-                    <div className="rn-note-header">
-                      <a href={`/clients/${note.client_id}`} className="rn-note-client">{note.client_name}</a>
-                      <span className={`rn-note-type-badge ${note.type}`}>{note.type}</span>
-                      <span className="rn-note-date">{fmtDate(note.created_at)}</span>
-                    </div>
-                    <p className="rn-note-text">{note.content}</p>
-                    <span className="rn-note-author">By {note.created_by}</span>
+                  <div className="rn-qe-type-tags">
+                    {(['call', 'email', 'followup', 'meeting', 'note'] as const).map(t => (
+                      <button key={t} className={`rn-qe-tag ${r.noteType === t ? 'active' : ''}`} onClick={() => r.setNoteType(t)}>
+                        {NOTE_ICONS[t]} {t.charAt(0).toUpperCase() + t.slice(1)}
+                      </button>
+                    ))}
                   </div>
-                  <button className="rn-note-delete" onClick={() => r.deleteNote(note.id)} title="Delete note">🗑️</button>
+
+                  <textarea
+                    className="rn-textarea"
+                    placeholder="Enter your email or note message to prospects..."
+                    value={r.emailMessage}
+                    onChange={e => r.setEmailMessage(e.target.value)}
+                    rows={5}
+                  />
+
+                  <div className="rn-qe-actions">
+                    <button className="rn-qe-btn cancel" onClick={r.clearEmailForm}>Cancel</button>
+                    <button className="rn-qe-btn save" onClick={r.saveEmailAsNote} disabled={!r.emailClient || !r.emailMessage.trim()}>
+                      📝 Save as Note
+                    </button>
+                    <button className="rn-qe-btn send" onClick={r.sendQuickEmail} disabled={!r.emailClient || !r.emailSubject.trim() || r.emailSending}>
+                      {r.emailSending ? '📤 Sending...' : '📤 Send Email'}
+                    </button>
+                  </div>
                 </div>
-              ))
-            )}
+              </div>
+            </div>
+
+            {/* Right: Recent Activity & Notes list */}
+            <div className="rn-notes-list-side">
+              <h3 className="rn-subsection-title">📝 Recent Activity ({r.notes.length})</h3>
+              {r.notes.length === 0 ? (
+                <div className="rn-empty">No notes yet. Send an email or add a note.</div>
+              ) : (
+                r.notes.map(note => (
+                  <div key={note.id} className={`rn-note-item ${note.type}`}>
+                    <div className="rn-note-icon">{NOTE_ICONS[note.type]}</div>
+                    <div className="rn-note-content">
+                      <div className="rn-note-header">
+                        <a href={`/clients/${note.client_id}`} className="rn-note-client">{note.client_name}</a>
+                        <span className={`rn-note-type-badge ${note.type}`}>{note.type}</span>
+                        <span className="rn-note-date">{fmtDate(note.created_at)}</span>
+                      </div>
+                      <p className="rn-note-text">{note.content}</p>
+                      <span className="rn-note-author">By {note.created_by}</span>
+                    </div>
+                    <button className="rn-note-delete" onClick={() => r.deleteNote(note.id)} title="Delete">🗑️</button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}

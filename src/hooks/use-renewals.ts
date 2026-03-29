@@ -123,6 +123,17 @@ export function useRenewals() {
   const [noteType, setNoteType] = useState<RenewalNote['type']>('note');
   const [noteContent, setNoteContent] = useState('');
 
+  // Quick Email state
+  const [emailClient, setEmailClient] = useState('');
+  const [emailTemplate, setEmailTemplate] = useState('');
+  const [emailRecipient, setEmailRecipient] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailSending, setEmailSending] = useState(false);
+
+  // Expiring filter
+  const [showActiveOnly, setShowActiveOnly] = useState(true);
+
   // All clients for dropdown (parents + subsidiaries)
   const [allClients, setAllClients] = useState<{ id: string; name: string; isChild: boolean }[]>([]);
 
@@ -332,16 +343,100 @@ export function useRenewals() {
     setNotes(prev => prev.filter(n => n.id !== id));
   }, []);
 
+  // ═══ Quick Email Templates ═══
+  const emailTemplates = useMemo(() => [
+    { id: 'renewal_01', name: 'Renewal Reminder', category: 'renewal' },
+    { id: 'contract_01', name: 'Contract Documents', category: 'contract' },
+    { id: 'welcome_01', name: 'Welcome Email', category: 'client' },
+    { id: 'balance_01', name: 'Outstanding Balance', category: 'finance' },
+    { id: 'revolving_01', name: 'Revolving Fund Alert', category: 'finance' },
+    { id: 'meeting_01', name: 'Meeting Follow-up', category: 'client' },
+  ], []);
+
+  // ═══ Send Quick Email ═══
+  const sendQuickEmail = useCallback(async () => {
+    if (!emailClient || !emailSubject.trim()) return;
+    setEmailSending(true);
+    try {
+      // TODO: In production, call /api/proxy/sendEmail
+      await new Promise(r => setTimeout(r, 1000));
+      const clientName = emailClient.split('|')[1] || emailClient;
+      const clientId = emailClient.split('|')[0] || emailClient;
+      // Also save as note
+      const emailNote: RenewalNote = {
+        id: `n-email-${Date.now()}`,
+        client_id: clientId,
+        client_name: clientName,
+        type: 'email',
+        content: `📧 Email sent: "${emailSubject}" to ${emailRecipient || 'client'}`,
+        created_at: new Date().toISOString(),
+        created_by: 'Admin',
+      };
+      setNotes(prev => [emailNote, ...prev]);
+      setEmailClient('');
+      setEmailTemplate('');
+      setEmailRecipient('');
+      setEmailSubject('');
+      setEmailMessage('');
+    } catch { /* empty */ }
+    setEmailSending(false);
+  }, [emailClient, emailSubject, emailRecipient]);
+
+  // ═══ Save as Note (from email form) ═══
+  const saveEmailAsNote = useCallback(() => {
+    if (!emailClient || !emailMessage.trim()) return;
+    const clientName = emailClient.split('|')[1] || emailClient;
+    const clientId = emailClient.split('|')[0] || emailClient;
+    const newNote: RenewalNote = {
+      id: `n-${Date.now()}`,
+      client_id: clientId,
+      client_name: clientName,
+      type: 'note',
+      content: emailMessage,
+      created_at: new Date().toISOString(),
+      created_by: 'Admin',
+    };
+    setNotes(prev => [newNote, ...prev]);
+    setEmailClient('');
+    setEmailTemplate('');
+    setEmailRecipient('');
+    setEmailSubject('');
+    setEmailMessage('');
+  }, [emailClient, emailMessage]);
+
+  // ═══ Clear email form ═══
+  const clearEmailForm = useCallback(() => {
+    setEmailClient('');
+    setEmailTemplate('');
+    setEmailRecipient('');
+    setEmailSubject('');
+    setEmailMessage('');
+  }, []);
+
+  // ═══ Refresh pipeline ═══
+  const refreshPipeline = useCallback(async () => {
+    setLoading(true);
+    await new Promise(r => setTimeout(r, 500));
+    setPipeline(generateDemoPipeline());
+    setLoading(false);
+  }, []);
+
   return {
     loading,
     kpis,
     // Pipeline
-    pipeline, pipelineByStage, pipelineTotals, pipelineBars,
+    pipeline, pipelineByStage, pipelineTotals, pipelineBars, refreshPipeline,
     // Expiring
     contracts, filteredExpiring, expiringFilter, setExpiringFilter, expiringCounts,
+    showActiveOnly, setShowActiveOnly,
     // Notes
     notes, addNote, deleteNote,
     noteClient, setNoteClient, noteType, setNoteType, noteContent, setNoteContent,
+    // Quick Email
+    emailClient, setEmailClient, emailTemplate, setEmailTemplate,
+    emailRecipient, setEmailRecipient, emailSubject, setEmailSubject,
+    emailMessage, setEmailMessage, emailSending,
+    emailTemplates, sendQuickEmail, saveEmailAsNote, clearEmailForm,
     // Actions
     actionItems, actionCounts,
     // All clients for dropdown
