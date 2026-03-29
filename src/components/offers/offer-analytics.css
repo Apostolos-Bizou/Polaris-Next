@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════════════════════════
+   OFFER ANALYTICS DASHBOARD
+   ═══════════════════════════════════════════════════════════════ */
+
+.oa-dashboard { margin-bottom: 2rem; }
+
+/* Header */
+.oa-header { background: linear-gradient(135deg, #c0392b, #e74c3c); padding: 1rem 1.5rem; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; }
+.oa-header-left { display: flex; align-items: center; gap: 0.75rem; }
+.oa-header-icon { font-size: 1.5rem; }
+.oa-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; margin: 0; }
+.oa-subtitle { color: rgba(255,255,255,0.7); font-size: 0.82rem; margin: 0; }
+.oa-close-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.15s; }
+.oa-close-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* ─── KPI Row ─────────────────────────────────────── */
+.oa-kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; padding: 1.5rem; background: rgba(10,22,40,0.5); }
+.oa-kpi { border: none; border-radius: 16px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; font-family: 'Open Sans', sans-serif; }
+.oa-kpi:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+.oa-kpi.total { background: linear-gradient(135deg, #1e3a5f, #2d5a87); }
+.oa-kpi.draft { background: linear-gradient(135deg, #6c757d, #868e96); }
+.oa-kpi.sent { background: linear-gradient(135deg, #2980b9, #3498db); }
+.oa-kpi.accepted { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+.oa-kpi.rejected { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+.oa-kpi-value { font-family: 'Montserrat', sans-serif; font-size: 2.5rem; font-weight: 800; color: white; line-height: 1; }
+.oa-kpi-value.gold { color: #D4AF37; }
+.oa-kpi-label { color: rgba(255,255,255,0.8); font-size: 1rem; margin-top: 0.3rem; }
+.oa-kpi-icon-bg { position: absolute; bottom: 0.5rem; right: 0.75rem; font-size: 2rem; opacity: 0.15; }
+
+/* ─── Three Column Grid ───────────────────────────── */
+.oa-three-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; padding: 0 1.5rem 1.5rem; }
+.oa-three-col:last-child { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ─── Card Base ───────────────────────────────────── */
+.oa-card { background: rgba(30,58,95,0.5); border: 1px solid rgba(212,175,55,0.25); border-radius: 16px; padding: 1.25rem; }
+.oa-card.wide { grid-column: span 1; }
+.oa-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.oa-card-title { font-family: 'Montserrat', sans-serif; color: #D4AF37; font-size: 1.1rem; font-weight: 700; margin: 0; }
+.oa-card-badge { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+
+/* ─── Pipeline Funnel ─────────────────────────────── */
+.oa-conversion-badge { color: rgba(255,255,255,0.7); background: rgba(39,174,96,0.2); padding: 0.35rem 0.75rem; border-radius: 15px; font-size: 0.82rem; font-weight: 600; }
+.oa-funnel { display: flex; flex-direction: column; gap: 0.65rem; }
+.oa-funnel-row { display: flex; align-items: center; gap: 0.75rem; }
+.oa-funnel-label { width: 55px; color: rgba(255,255,255,0.8); font-size: 0.9rem; }
+.oa-funnel-track { flex: 1; height: 32px; border-radius: 6px; overflow: hidden; }
+.oa-funnel-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; transition: width 0.6s ease; min-width: 2px; }
+.oa-funnel-count { font-weight: 700; color: white; font-size: 0.9rem; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+
+/* ─── Revenue Potential ───────────────────────────── */
+.oa-revenue-hero { text-align: center; padding: 1.25rem; background: rgba(39,174,96,0.12); border-radius: 12px; border: 2px solid rgba(39,174,96,0.35); margin-bottom: 1rem; }
+.oa-revenue-value { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; color: #2ecc71; }
+.oa-revenue-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+.oa-revenue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.oa-revenue-stat { text-align: center; padding: 0.75rem; border-radius: 10px; }
+.oa-revenue-stat:first-child { background: rgba(52,152,219,0.12); }
+.oa-revenue-stat:last-child { background: rgba(155,89,182,0.12); }
+.oa-rs-value { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 700; }
+.oa-rs-value.blue { color: #3498db; }
+.oa-rs-value.purple { color: #9b59b6; }
+.oa-rs-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 0.15rem; }
+
+/* ─── Follow-up Status ────────────────────────────── */
+.oa-followup-list { display: flex; flex-direction: column; gap: 0.65rem; }
+.oa-followup-row { display: flex; align-items: center; padding: 0.75rem; border-radius: 8px; gap: 0.75rem; }
+.oa-followup-row.overdue { background: rgba(231,76,60,0.12); border-left: 4px solid #e74c3c; }
+.oa-followup-row.today { background: rgba(243,156,18,0.12); border-left: 4px solid #f39c12; }
+.oa-followup-row.upcoming { background: rgba(52,152,219,0.12); border-left: 4px solid #3498db; }
+.oa-followup-row.completed { background: rgba(39,174,96,0.12); border-left: 4px solid #27ae60; }
+.oa-fu-label { flex: 1; color: rgba(255,255,255,0.8); font-size: 0.92rem; }
+.oa-fu-count { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 800; }
+.oa-fu-count.red { color: #e74c3c; }
+.oa-fu-count.orange { color: #f39c12; }
+.oa-fu-count.blue { color: #3498db; }
+.oa-fu-count.green { color: #27ae60; }
+
+/* ─── Email Tracking ──────────────────────────────── */
+.oa-email-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+.oa-email-stat { text-align: center; padding: 0.85rem; border-radius: 10px; }
+.oa-email-stat:first-child { background: rgba(52,152,219,0.12); }
+.oa-email-stat:last-child { background: rgba(39,174,96,0.12); }
+.oa-es-value { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; font-weight: 700; }
+.oa-es-value.blue { color: #3498db; }
+.oa-es-value.green { color: #27ae60; }
+.oa-es-label { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+.oa-email-note { text-align: center; }
+.oa-email-link { color: #D4AF37; font-size: 0.85rem; text-decoration: none; font-weight: 600; }
+.oa-email-link:hover { text-decoration: underline; }
+
+/* ─── Recent Activity ─────────────────────────────── */
+.oa-view-all { background: none; border: none; color: #D4AF37; font-size: 0.82rem; cursor: pointer; font-weight: 600; }
+.oa-view-all:hover { text-decoration: underline; }
+.oa-activity-list { display: flex; flex-direction: column; gap: 0.4rem; max-height: 240px; overflow-y: auto; }
+.oa-activity-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.4rem; border-radius: 8px; transition: background 0.15s; }
+.oa-activity-item:hover { background: rgba(255,255,255,0.03); }
+.oa-act-icon { font-size: 1rem; flex-shrink: 0; }
+.oa-act-info { flex: 1; min-width: 0; }
+.oa-act-client { font-weight: 600; font-size: 0.82rem; color: #e8e8e8; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.oa-act-id { font-size: 0.72rem; color: #556677; }
+.oa-act-badge { font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+
+/* ─── Top Clients ─────────────────────────────────── */
+.oa-top-clients { display: flex; flex-direction: column; gap: 0.5rem; }
+.oa-tc-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.5rem; border-radius: 8px; border-left: 3px solid transparent; transition: all 0.15s; }
+.oa-tc-row:nth-child(1) { border-left-color: #D4AF37; }
+.oa-tc-row:nth-child(2) { border-left-color: #3498db; }
+.oa-tc-row:nth-child(3) { border-left-color: #27ae60; }
+.oa-tc-row:nth-child(4) { border-left-color: #9b59b6; }
+.oa-tc-row:nth-child(5) { border-left-color: #e67e22; }
+.oa-tc-row:hover { background: rgba(255,255,255,0.03); }
+.oa-tc-rank { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 800; color: #556677; min-width: 20px; }
+.oa-tc-info { flex: 1; min-width: 0; }
+.oa-tc-name { font-weight: 700; font-size: 0.85rem; color: #e8e8e8; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.oa-tc-detail { font-size: 0.72rem; color: #556677; }
+.oa-tc-count { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 800; color: #D4AF37; }
+
+/* ─── Responsive ──────────────────────────────────── */
+@media (max-width: 1200px) {
+  .oa-kpi-row { grid-template-columns: repeat(3, 1fr); }
+  .oa-three-col { grid-template-columns: 1fr 1fr; }
+  .oa-three-col:last-child { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .oa-kpi-row { grid-template-columns: repeat(2, 1fr); padding: 1rem; }
+  .oa-three-col { grid-template-columns: 1fr; padding: 0 1rem 1rem; }
+  .oa-header { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+  .oa-kpi-value { font-size: 2rem; }
+}

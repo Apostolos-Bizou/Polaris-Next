@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import CreateOfferForm from '@/components/offers/create-offer-form';
 import ComparisonQuoteForm from '@/components/offers/comparison-quote-form';
+import OfferAnalytics from '@/components/offers/offer-analytics';
 
 // ── Types ────────────────────────────────────────────────────────────
 interface OfferItem {
@@ -82,6 +83,7 @@ export default function OffersPage() {
   const [showDetail, setShowDetail] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   // Client list for the create form
   const dummyClients = [
@@ -182,6 +184,9 @@ export default function OffersPage() {
           <p className="page-subtitle">Create, track and manage proposals & comparison quotes</p>
         </div>
         <div className="header-actions">
+          <button className={`btn-create analytics ${showAnalytics ? 'active' : ''}`} onClick={() => setShowAnalytics(!showAnalytics)}>
+            📊 Analytics
+          </button>
           <button className="btn-create comparison" onClick={() => setShowComparison(true)}>
             📊 New Comparison
           </button>
@@ -190,6 +195,15 @@ export default function OffersPage() {
           </button>
         </div>
       </div>
+
+      {/* Analytics Dashboard */}
+      {showAnalytics && (
+        <OfferAnalytics
+          offers={offers}
+          onFilterByStatus={(status) => { setStatusFilter(status); setShowAnalytics(false); }}
+          onClose={() => setShowAnalytics(false)}
+        />
+      )}
 
       {/* Stats Cards */}
       <div className="stats-grid">
@@ -512,6 +526,8 @@ export default function OffersPage() {
         }
         .btn-create.standard { background: linear-gradient(135deg, #1e3a5f, #2d5070); color: white; }
         .btn-create.comparison { background: linear-gradient(135deg, #6d28d9, #8b5cf6); color: white; }
+        .btn-create.analytics { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; }
+        .btn-create.analytics.active { box-shadow: 0 0 20px rgba(231,76,60,0.5); }
         .btn-create:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
 
         /* Stats */
