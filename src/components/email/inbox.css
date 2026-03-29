@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   INBOX — Email Client View
+   INBOX — Email Client View (Phase 4d Enhanced)
    ═══════════════════════════════════════════════════════════════ */
 
 /* Loading */
@@ -32,6 +32,10 @@
 .ib-stat-val.pending { color: #f39c12; }
 .ib-stat-val.answered { color: #2ecc71; }
 
+/* Empty Trash */
+.ib-empty-trash-btn { width: 100%; padding: 0.5rem; border: 1px solid rgba(231,76,60,0.4); background: rgba(231,76,60,0.1); color: #e74c3c; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.ib-empty-trash-btn:hover { background: rgba(231,76,60,0.2); border-color: rgba(231,76,60,0.6); }
+
 /* ── Main Area ────────────────────────────────────── */
 .ib-main { background: #ffffff; display: flex; flex-direction: column; }
 
@@ -55,10 +59,11 @@
 /* ── Email List ───────────────────────────────────── */
 .ib-email-list { flex: 1; overflow-y: auto; }
 
-.ib-email-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: background 0.15s; }
+.ib-email-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: background 0.15s; position: relative; }
 .ib-email-row:hover { background: #f0f4f8; }
 .ib-email-row.unread { background: #eef6fd; border-left: 3px solid #3498db; }
 .ib-email-row.answered { opacity: 0.75; }
+.ib-email-row.trashed { opacity: 0.6; }
 
 .ib-star-btn { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0; line-height: 1; margin-top: 2px; opacity: 0.7; }
 .ib-email-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1e3a5f, #2d5a87); display: flex; align-items: center; justify-content: center; color: #D4AF37; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
@@ -76,6 +81,20 @@
 .ib-tag.answered { background: #d1fae5; color: #065f46; }
 .ib-tag.pending { background: #fed7aa; color: #9a3412; }
 .ib-tag.unread { background: #dbeafe; color: #1e40af; }
+.ib-tag.attachment { background: #e8f4fd; color: #1565c0; }
+.ib-tag.cc { background: #f0e6fa; color: #6b21a8; }
+.ib-tag.thread { background: #ecfdf5; color: #047857; }
+
+/* Row delete button */
+.ib-row-delete { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 0.9rem; opacity: 0; transition: opacity 0.2s; padding: 0.25rem; }
+.ib-email-row:hover .ib-row-delete { opacity: 0.5; }
+.ib-row-delete:hover { opacity: 1 !important; }
+
+/* Row actions (trash view) */
+.ib-row-actions { display: flex; gap: 0.3rem; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); }
+.ib-row-action { background: none; border: 1px solid rgba(0,0,0,0.1); padding: 0.3rem 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all 0.15s; }
+.ib-row-action.restore:hover { background: rgba(46,204,113,0.1); border-color: rgba(46,204,113,0.4); }
+.ib-row-action.perm-delete:hover { background: rgba(231,76,60,0.1); border-color: rgba(231,76,60,0.4); }
 
 /* ── Thread View ──────────────────────────────────── */
 .ib-thread-view { padding: 0; }
@@ -86,18 +105,29 @@
 .ib-thread-actions { display: flex; gap: 0.5rem; }
 .ib-icon-btn { background: rgba(45,80,112,0.2); border: 1px solid rgba(136,153,170,0.2); padding: 0.35rem 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.15s; }
 .ib-icon-btn:hover { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.1); }
+.ib-icon-btn.delete:hover { border-color: rgba(231,76,60,0.5); background: rgba(231,76,60,0.1); }
+
+/* Delete confirmation */
+.ib-delete-confirm { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 1.25rem; background: rgba(231,76,60,0.08); border-bottom: 1px solid rgba(231,76,60,0.2); color: #e8e8e8; font-size: 0.88rem; }
+.ib-delete-yes { background: #e74c3c; color: white; border: none; padding: 0.35rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
+.ib-delete-yes:hover { background: #c0392b; }
+.ib-delete-no { background: none; color: #8899aa; border: 1px solid rgba(136,153,170,0.3); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
+.ib-delete-no:hover { border-color: #8899aa; color: #b8d4e8; }
 
 .ib-thread-subject { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #e8e8e8; padding: 1rem 1.25rem 0.5rem; margin: 0; }
 
 .ib-client-badge { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 1.25rem 1rem; padding: 0.5rem 1rem; background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #D4AF37; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
 .ib-client-badge:hover { background: rgba(212,175,55,0.15); border-color: rgba(212,175,55,0.6); }
 
-.ib-thread-email { margin: 0 1.25rem 1.5rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.ib-thread-email { margin: 0 1.25rem 1rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.ib-thread-email.reply-email { border-left: 3px solid #3498db; }
 .ib-thread-meta { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
 .ib-thread-sender { display: flex; align-items: center; gap: 0.75rem; }
 .ib-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1e3a5f, #2d5a87); display: flex; align-items: center; justify-content: center; color: #D4AF37; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; }
+.ib-avatar.reply-avatar { width: 36px; height: 36px; font-size: 0.9rem; background: linear-gradient(135deg, #2d5a87, #3498db); }
 .ib-sender-name { font-weight: 700; color: #1a202c; font-size: 1rem; }
 .ib-sender-email { font-size: 0.78rem; color: #718096; }
+.ib-meta-cc { font-size: 0.75rem; color: #9b59b6; margin-top: 0.15rem; }
 .ib-thread-date { font-size: 0.8rem; color: #667788; }
 .ib-thread-body { padding: 1.25rem; color: #2d3748; font-size: 1rem; line-height: 1.85; background: #ffffff; }
 
@@ -106,18 +136,98 @@
 .ib-status-tag.answered { background: rgba(46,204,113,0.15); color: #2ecc71; }
 .ib-status-tag.pending { background: rgba(243,156,18,0.15); color: #f39c12; }
 
-/* Attachments */
+/* ── Attachments Grid ─────────────────────────────── */
 .ib-attachments { padding: 0.75rem 1.25rem; border-top: 1px solid rgba(136,153,170,0.08); }
-.ib-attachments-title { font-size: 0.8rem; font-weight: 700; color: #8899aa; margin-bottom: 0.5rem; }
-.ib-attachment-item { font-size: 0.82rem; color: #b8d4e8; padding: 0.3rem 0; }
+.ib-attachments-title { font-size: 0.82rem; font-weight: 700; color: #4a5568; margin-bottom: 0.5rem; }
+.ib-attachments-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.ib-attachment-card { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; transition: all 0.15s; cursor: default; }
+.ib-attachment-card:hover { border-color: #3498db; background: #eef6fd; }
+.ib-att-icon { font-size: 1.2rem; }
+.ib-att-info { display: flex; flex-direction: column; }
+.ib-att-name { font-size: 0.82rem; font-weight: 600; color: #2d3748; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ib-att-size { font-size: 0.72rem; color: #718096; }
+.ib-att-download { background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 0.1rem; opacity: 0.6; transition: opacity 0.15s; }
+.ib-att-download:hover { opacity: 1; }
 
-/* Reply */
+/* ── Thread Replies Section ───────────────────────── */
+.ib-thread-replies { margin: 0 1.25rem; }
+.ib-thread-replies-title { font-family: 'Montserrat', sans-serif; font-size: 0.88rem; font-weight: 700; color: #D4AF37; margin-bottom: 0.75rem; padding-left: 0.25rem; }
+
+/* ── Reply Section ────────────────────────────────── */
 .ib-reply-section { margin: 0 1.25rem 1.5rem; background: rgba(10,22,40,0.5); border: 1px solid rgba(136,153,170,0.12); border-radius: 12px; overflow: hidden; }
-.ib-reply-header { padding: 0.75rem 1rem; background: rgba(45,80,112,0.15); border-bottom: 1px solid rgba(136,153,170,0.1); font-size: 0.85rem; font-weight: 600; color: #b8d4e8; }
-.ib-reply-actions { padding: 0.75rem 1rem; display: flex; justify-content: flex-end; border-top: 1px solid rgba(136,153,170,0.08); }
+
+/* Reply mode buttons */
+.ib-reply-mode-bar { display: flex; align-items: center; gap: 0.25rem; padding: 0.5rem 0.75rem; background: rgba(10,22,40,0.8); border-bottom: 1px solid rgba(136,153,170,0.1); }
+.ib-reply-mode-btn { background: rgba(45,80,112,0.2); border: 1px solid rgba(136,153,170,0.2); color: #8899aa; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.ib-reply-mode-btn:hover { border-color: rgba(212,175,55,0.4); color: #D4AF37; }
+.ib-reply-mode-btn.active { background: rgba(212,175,55,0.15); border-color: rgba(212,175,55,0.5); color: #D4AF37; }
+.ib-reply-mode-btn.forward { margin-left: 0.5rem; }
+.ib-reply-mode-btn.forward:hover { border-color: rgba(52,152,219,0.5); color: #3498db; }
+.ib-reply-mode-spacer { flex: 1; }
+.ib-cc-toggle-btn { background: none; border: 1px solid rgba(136,153,170,0.2); color: #667788; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.ib-cc-toggle-btn:hover { border-color: rgba(155,89,182,0.5); color: #9b59b6; }
+
+/* Reply header with To: */
+.ib-reply-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; border-bottom: 1px solid rgba(136,153,170,0.08); font-size: 0.85rem; }
+.ib-reply-to-label { color: #667788; font-weight: 600; }
+.ib-reply-to-email { color: #b8d4e8; }
+
+/* ── CC/BCC Email Chip Input ──────────────────────── */
+.ib-chip-input-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 1rem; border-bottom: 1px solid rgba(136,153,170,0.08); }
+.ib-chip-label { color: #9b59b6; font-weight: 700; font-size: 0.82rem; min-width: 30px; padding-top: 0.3rem; }
+.ib-chip-input-area { flex: 1; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; min-height: 32px; }
+.ib-email-chip { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(155,89,182,0.12); border: 1px solid rgba(155,89,182,0.3); color: #d4b1e8; padding: 0.15rem 0.5rem; border-radius: 12px; font-size: 0.78rem; }
+.ib-chip-remove { background: none; border: none; color: #e74c3c; font-size: 0.9rem; cursor: pointer; padding: 0 0.15rem; line-height: 1; opacity: 0.7; }
+.ib-chip-remove:hover { opacity: 1; }
+.ib-chip-input { flex: 1; min-width: 120px; background: none; border: none; color: #e8e8e8; font-size: 0.85rem; padding: 0.25rem 0; outline: none; }
+.ib-chip-input::placeholder { color: #556677; }
+
+/* Quoted original message */
+.ib-quoted-original { padding: 0.75rem 1rem; border-top: 1px solid rgba(136,153,170,0.06); max-height: 200px; overflow-y: auto; }
+
+/* ── Reply Attachments ────────────────────────────── */
+.ib-reply-attachments-area { padding: 0.5rem 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; border-top: 1px solid rgba(136,153,170,0.06); }
+.ib-attach-btn { background: rgba(45,80,112,0.2); border: 1px solid rgba(136,153,170,0.25); color: #8899aa; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
+.ib-attach-btn:hover { border-color: rgba(212,175,55,0.4); color: #D4AF37; }
+.ib-attached-files { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.ib-attached-file { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.3); color: #7ec8e3; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.78rem; }
+
+/* Reply actions */
+.ib-reply-actions { padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(136,153,170,0.08); }
+.ib-reply-summary { font-size: 0.78rem; color: #667788; }
 .ib-reply-send { background: linear-gradient(135deg, #2E7D32, #4CAF50); border: none; color: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
 .ib-reply-send:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(46,125,50,0.4); }
 .ib-reply-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Forward View ─────────────────────────────────── */
+.ib-forward-form { padding: 1.25rem; }
+.ib-fwd-field { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(136,153,170,0.08); }
+.ib-fwd-label { color: #667788; font-weight: 700; font-size: 0.85rem; min-width: 55px; }
+.ib-fwd-input { flex: 1; background: rgba(45,80,112,0.15); border: 1px solid rgba(136,153,170,0.2); color: #e8e8e8; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s; }
+.ib-fwd-input:focus { border-color: rgba(212,175,55,0.5); }
+.ib-fwd-subject { color: #b8d4e8; font-size: 0.92rem; }
+.ib-fwd-toggle-btns { display: flex; gap: 0.3rem; }
+.ib-cc-toggle { background: rgba(45,80,112,0.2); border: 1px solid rgba(136,153,170,0.2); color: #667788; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+.ib-cc-toggle:hover { border-color: rgba(155,89,182,0.5); color: #9b59b6; }
+
+/* Forward - carried attachments */
+.ib-fwd-attachments-carried { padding: 0.75rem 0; border-bottom: 1px solid rgba(136,153,170,0.08); }
+.ib-fwd-att-label { font-size: 0.82rem; color: #667788; display: block; margin-bottom: 0.4rem; }
+.ib-fwd-att-list { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.ib-fwd-att-chip { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(52,152,219,0.08); border: 1px solid rgba(52,152,219,0.2); color: #7ec8e3; padding: 0.2rem 0.5rem; border-radius: 8px; font-size: 0.78rem; }
+
+/* Forward textarea */
+.ib-fwd-body { margin-top: 1rem; }
+.ib-fwd-textarea { width: 100%; background: rgba(10,22,40,0.4); border: 1px solid rgba(136,153,170,0.15); color: #b8d4e8; padding: 1rem; border-radius: 10px; font-family: 'Open Sans', sans-serif; font-size: 0.92rem; line-height: 1.7; resize: vertical; outline: none; transition: border-color 0.2s; }
+.ib-fwd-textarea:focus { border-color: rgba(212,175,55,0.4); }
+
+/* Forward actions */
+.ib-fwd-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; }
+.ib-fwd-cancel { background: none; border: 1px solid rgba(136,153,170,0.3); color: #8899aa; padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; }
+.ib-fwd-cancel:hover { border-color: #8899aa; color: #b8d4e8; }
+.ib-fwd-send { background: linear-gradient(135deg, #2980b9, #3498db); border: none; color: white; padding: 0.55rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.ib-fwd-send:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(41,128,185,0.4); }
+.ib-fwd-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Responsive ───────────────────────────────────── */
 @media (max-width: 768px) {
@@ -126,4 +236,9 @@
   .ib-toolbar { flex-direction: column; }
   .ib-search-box { width: 100%; }
   .ib-thread-subject { font-size: 1.1rem; }
+  .ib-reply-mode-bar { flex-wrap: wrap; }
+  .ib-thread-email { margin: 0 0.75rem 1rem; }
+  .ib-reply-section { margin: 0 0.75rem 1.5rem; }
+  .ib-fwd-field { flex-direction: column; align-items: stretch; gap: 0.3rem; }
+  .ib-fwd-label { min-width: auto; }
 }
