@@ -263,25 +263,34 @@ export default function ClientFolderPage() {
         </div>
 
         {/* ── Fees & Charges ─────────────────────────────────── */}
-        {financials && (
+        {financials && kpis && (
           <div className="cf-section">
             <div className="cf-section-header">💳 Fees & Charges</div>
             <div className="cf-fees">
               <div className="cf-fee-row">
-                <span>Admin Fee</span>
-                <span style={{ color: "#3498db" }}>{fmtUsd(Math.round(financials.admin_fees))}</span>
+                <span>📋 Audit Fee (15%)</span>
+                <span style={{ color: "#3498db" }}>{fmtUsd(Math.round(kpis.cost_per_member * 0.15 * (kpis.total_members || 1)))}</span>
               </div>
               <div className="cf-fee-row">
-                <span>Claims Processing</span>
-                <span style={{ color: "#27ae60" }}>{fmtUsd(Math.round(financials.total_revenue * 0.03))}</span>
+                <span>📝 Registration Fee</span>
+                <span style={{ color: "#27ae60" }}>${(24 * (kpis.total_members || 0)).toLocaleString()} <span style={{ fontSize: '0.75rem', color: '#667788' }}>($24/member/year)</span></span>
               </div>
               <div className="cf-fee-row">
-                <span>Stop-Loss Premium</span>
-                <span style={{ color: "#9b59b6" }}>{fmtUsd(Math.round(financials.total_revenue * 0.05))}</span>
+                <span>📅 Monthly Service Fee</span>
+                <span style={{ color: "#9b59b6" }}>${(9 * 12 * (kpis.total_members || 0)).toLocaleString()} <span style={{ fontSize: '0.75rem', color: '#667788' }}>($9/member/month)</span></span>
+              </div>
+              <div className="cf-fee-row">
+                <span>🦷 Dental Coverage (CBMS)</span>
+                <span style={{ color: "#e67e22" }}>${(9.5 * 12 * (kpis.total_members || 0)).toLocaleString()} <span style={{ fontSize: '0.75rem', color: '#667788' }}>($9.50/member/month)</span></span>
               </div>
               <div className="cf-fee-row total">
-                <span>Total Charges</span>
-                <span style={{ color: "#D4AF37" }}>{fmtUsd(Math.round(financials.total_revenue * 0.16))}</span>
+                <span>Total Annual Charges</span>
+                <span style={{ color: "#D4AF37" }}>{fmtUsd(Math.round(
+                  (kpis.cost_per_member * 0.15 * (kpis.total_members || 1)) +
+                  (24 * (kpis.total_members || 0)) +
+                  (9 * 12 * (kpis.total_members || 0)) +
+                  (9.5 * 12 * (kpis.total_members || 0))
+                ))}</span>
               </div>
             </div>
           </div>
