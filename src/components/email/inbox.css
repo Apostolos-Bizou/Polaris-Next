@@ -1,0 +1,129 @@
+/* ═══════════════════════════════════════════════════════════════
+   INBOX — Email Client View
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Loading */
+.ib-loading { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 3rem; color: #D4AF37; font-weight: 600; }
+.ib-spinner { width: 30px; height: 30px; border: 3px solid rgba(212,175,55,0.2); border-top-color: #D4AF37; border-radius: 50%; animation: ibspin 0.8s linear infinite; }
+@keyframes ibspin { to { transform: rotate(360deg); } }
+
+/* Container - 2 column layout */
+.ib-container { display: grid; grid-template-columns: 240px 1fr; gap: 0; min-height: calc(100vh - 200px); border-radius: 12px; overflow: hidden; border: 1px solid rgba(136,153,170,0.15); }
+
+/* ── Sidebar ──────────────────────────────────────── */
+.ib-sidebar { background: linear-gradient(180deg, #081420, #0a1628); padding: 1rem 0.75rem; border-right: 1px solid rgba(136,153,170,0.12); overflow-y: auto; }
+.ib-sidebar-title { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 700; color: rgba(212,175,55,0.7); text-transform: uppercase; letter-spacing: 1.5px; padding: 0.5rem 0.5rem 0.3rem; }
+.ib-sidebar-divider { height: 1px; background: rgba(136,153,170,0.1); margin: 0.75rem 0; }
+
+.ib-folder-btn { display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0.55rem 0.6rem; border: none; border-radius: 8px; background: transparent; color: #8899aa; font-size: 0.88rem; cursor: pointer; transition: all 0.15s; text-align: left; }
+.ib-folder-btn:hover { background: rgba(45,80,112,0.2); color: #b8d4e8; }
+.ib-folder-btn.active { background: rgba(212,175,55,0.12); color: #D4AF37; font-weight: 600; }
+.ib-folder-icon { font-size: 0.9rem; width: 20px; text-align: center; }
+.ib-folder-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ib-folder-badge { background: #e74c3c; color: white; font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 10px; min-width: 18px; text-align: center; }
+.ib-folder-count { color: #556677; font-size: 0.75rem; }
+.ib-folder-btn.client .ib-folder-name { font-size: 0.78rem; }
+
+/* Stats */
+.ib-stats-mini { padding: 0.5rem; }
+.ib-stat-row { display: flex; justify-content: space-between; padding: 0.3rem 0.25rem; font-size: 0.82rem; color: #667788; }
+.ib-stat-val { font-weight: 700; font-family: 'Montserrat', sans-serif; }
+.ib-stat-val.unread { color: #3498db; }
+.ib-stat-val.pending { color: #f39c12; }
+.ib-stat-val.answered { color: #2ecc71; }
+
+/* ── Main Area ────────────────────────────────────── */
+.ib-main { background: #ffffff; display: flex; flex-direction: column; }
+
+/* Toolbar */
+.ib-toolbar { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; background: #f8fafc; }
+.ib-search-box { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 200px; background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 0 0.75rem; }
+.ib-search-icon { font-size: 0.85rem; }
+.ib-search-input { flex: 1; background: none; border: none; color: #2d3748; padding: 0.55rem 0; font-size: 0.92rem; outline: none; }
+.ib-search-input::placeholder { color: #a0aec0; }
+.ib-toolbar-actions { display: flex; gap: 0.5rem; }
+.ib-sort-select { background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; color: #4a5568; padding: 0.45rem 0.6rem; font-size: 0.8rem; cursor: pointer; }
+.ib-sort-select option { background: #ffffff; color: #2d3748; }
+
+/* Results info */
+.ib-results-info { padding: 0.4rem 1rem; font-size: 0.82rem; color: #718096; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+
+/* Empty */
+.ib-empty { text-align: center; padding: 4rem 2rem; color: #a0aec0; }
+.ib-empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+
+/* ── Email List ───────────────────────────────────── */
+.ib-email-list { flex: 1; overflow-y: auto; }
+
+.ib-email-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: background 0.15s; }
+.ib-email-row:hover { background: #f0f4f8; }
+.ib-email-row.unread { background: #eef6fd; border-left: 3px solid #3498db; }
+.ib-email-row.answered { opacity: 0.75; }
+
+.ib-star-btn { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0; line-height: 1; margin-top: 2px; opacity: 0.7; }
+.ib-email-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1e3a5f, #2d5a87); display: flex; align-items: center; justify-content: center; color: #D4AF37; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+.ib-email-content { flex: 1; min-width: 0; }
+.ib-email-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem; }
+.ib-email-sender { font-size: 0.95rem; color: #4a5568; }
+.ib-email-sender.bold { font-weight: 700; color: #1a202c; }
+.ib-email-date { font-size: 0.8rem; color: #718096; white-space: nowrap; }
+.ib-email-subject { font-size: 0.95rem; color: #4a5568; margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ib-email-subject.bold { font-weight: 700; color: #1a202c; }
+.ib-email-preview { font-size: 0.85rem; color: #8899aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem; }
+.ib-email-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.ib-tag { font-size: 0.72rem; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+.ib-tag.client { background: #fef3c7; color: #92400e; }
+.ib-tag.answered { background: #d1fae5; color: #065f46; }
+.ib-tag.pending { background: #fed7aa; color: #9a3412; }
+.ib-tag.unread { background: #dbeafe; color: #1e40af; }
+
+/* ── Thread View ──────────────────────────────────── */
+.ib-thread-view { padding: 0; }
+
+.ib-thread-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; border-bottom: 1px solid rgba(136,153,170,0.1); background: rgba(10,22,40,0.5); }
+.ib-back-btn { background: none; border: 1px solid rgba(136,153,170,0.3); color: #8899aa; padding: 0.4rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+.ib-back-btn:hover { border-color: #D4AF37; color: #D4AF37; }
+.ib-thread-actions { display: flex; gap: 0.5rem; }
+.ib-icon-btn { background: rgba(45,80,112,0.2); border: 1px solid rgba(136,153,170,0.2); padding: 0.35rem 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.15s; }
+.ib-icon-btn:hover { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.1); }
+
+.ib-thread-subject { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #e8e8e8; padding: 1rem 1.25rem 0.5rem; margin: 0; }
+
+.ib-client-badge { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 1.25rem 1rem; padding: 0.5rem 1rem; background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #D4AF37; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+.ib-client-badge:hover { background: rgba(212,175,55,0.15); border-color: rgba(212,175,55,0.6); }
+
+.ib-thread-email { margin: 0 1.25rem 1.5rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.ib-thread-meta { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.ib-thread-sender { display: flex; align-items: center; gap: 0.75rem; }
+.ib-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1e3a5f, #2d5a87); display: flex; align-items: center; justify-content: center; color: #D4AF37; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; }
+.ib-sender-name { font-weight: 700; color: #1a202c; font-size: 1rem; }
+.ib-sender-email { font-size: 0.78rem; color: #718096; }
+.ib-thread-date { font-size: 0.8rem; color: #667788; }
+.ib-thread-body { padding: 1.25rem; color: #2d3748; font-size: 1rem; line-height: 1.85; background: #ffffff; }
+
+.ib-thread-status { padding: 0.75rem 1.25rem; border-top: 1px solid rgba(136,153,170,0.08); }
+.ib-status-tag { font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 12px; }
+.ib-status-tag.answered { background: rgba(46,204,113,0.15); color: #2ecc71; }
+.ib-status-tag.pending { background: rgba(243,156,18,0.15); color: #f39c12; }
+
+/* Attachments */
+.ib-attachments { padding: 0.75rem 1.25rem; border-top: 1px solid rgba(136,153,170,0.08); }
+.ib-attachments-title { font-size: 0.8rem; font-weight: 700; color: #8899aa; margin-bottom: 0.5rem; }
+.ib-attachment-item { font-size: 0.82rem; color: #b8d4e8; padding: 0.3rem 0; }
+
+/* Reply */
+.ib-reply-section { margin: 0 1.25rem 1.5rem; background: rgba(10,22,40,0.5); border: 1px solid rgba(136,153,170,0.12); border-radius: 12px; overflow: hidden; }
+.ib-reply-header { padding: 0.75rem 1rem; background: rgba(45,80,112,0.15); border-bottom: 1px solid rgba(136,153,170,0.1); font-size: 0.85rem; font-weight: 600; color: #b8d4e8; }
+.ib-reply-actions { padding: 0.75rem 1rem; display: flex; justify-content: flex-end; border-top: 1px solid rgba(136,153,170,0.08); }
+.ib-reply-send { background: linear-gradient(135deg, #2E7D32, #4CAF50); border: none; color: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+.ib-reply-send:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(46,125,50,0.4); }
+.ib-reply-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .ib-container { grid-template-columns: 1fr; }
+  .ib-sidebar { display: none; }
+  .ib-toolbar { flex-direction: column; }
+  .ib-search-box { width: 100%; }
+  .ib-thread-subject { font-size: 1.1rem; }
+}

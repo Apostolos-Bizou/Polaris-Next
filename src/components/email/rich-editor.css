@@ -1,0 +1,199 @@
+/* ═══════════════════════════════════════════════════════════════
+   RICH TEXT EDITOR — Polaris Navy/Gold
+   ═══════════════════════════════════════════════════════════════ */
+
+.re-container {
+  border: 1px solid rgba(136,153,170,0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(10,22,40,0.5);
+}
+
+/* Toolbar */
+.re-toolbar {
+  background: linear-gradient(145deg, #0d1f2d, #122a3e);
+  border-bottom: 1px solid rgba(136,153,170,0.2);
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.re-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+/* Toolbar buttons */
+.re-btn {
+  background: rgba(45,80,112,0.3);
+  border: 1px solid rgba(136,153,170,0.2);
+  color: #b8d4e8;
+  padding: 0.35rem 0.55rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+  min-width: 28px;
+  text-align: center;
+  line-height: 1;
+}
+
+.re-btn:hover {
+  background: rgba(212,175,55,0.15);
+  border-color: rgba(212,175,55,0.4);
+  color: #D4AF37;
+}
+
+.re-btn:active {
+  background: rgba(212,175,55,0.25);
+}
+
+/* Selects */
+.re-select {
+  background: rgba(10,22,40,0.8);
+  border: 1px solid rgba(136,153,170,0.25);
+  color: #b8d4e8;
+  padding: 0.3rem 0.4rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.re-select.font-family { width: 130px; }
+.re-select.font-size { width: 90px; }
+
+.re-select:focus {
+  outline: none;
+  border-color: rgba(212,175,55,0.5);
+}
+
+.re-select option {
+  background: #0a1628;
+  color: #e8e8e8;
+}
+
+/* Color pickers */
+.re-color-btn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(45,80,112,0.3);
+  border: 1px solid rgba(136,153,170,0.2);
+  border-radius: 5px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.re-color-btn:hover {
+  border-color: rgba(212,175,55,0.4);
+}
+
+.re-color-btn span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #e8e8e8;
+  line-height: 1;
+}
+
+.re-color-btn.bg span {
+  color: #D4AF37;
+}
+
+.re-color-btn input[type="color"] {
+  width: 18px;
+  height: 18px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border-radius: 3px;
+}
+
+.re-color-btn input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.re-color-btn input[type="color"]::-webkit-color-swatch {
+  border: 1px solid rgba(136,153,170,0.3);
+  border-radius: 3px;
+}
+
+/* Separator */
+.re-separator {
+  width: 1px;
+  height: 22px;
+  background: rgba(136,153,170,0.2);
+  margin: 0 0.2rem;
+}
+
+/* Editor area */
+.re-editor {
+  min-height: 280px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  color: #e0e8f0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  outline: none;
+  background: rgba(10,22,40,0.3);
+}
+
+.re-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #556677;
+  pointer-events: none;
+}
+
+.re-editor a {
+  color: #5dade2;
+  text-decoration: underline;
+}
+
+.re-editor img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+}
+
+.re-editor ul, .re-editor ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.re-editor li {
+  margin-bottom: 0.25rem;
+}
+
+.re-editor hr {
+  border: none;
+  border-top: 1px solid rgba(136,153,170,0.2);
+  margin: 1rem 0;
+}
+
+.re-editor blockquote {
+  border-left: 3px solid #D4AF37;
+  padding-left: 1rem;
+  margin: 0.5rem 0;
+  color: #8899aa;
+}
+
+/* Scrollbar */
+.re-editor::-webkit-scrollbar { width: 6px; }
+.re-editor::-webkit-scrollbar-track { background: transparent; }
+.re-editor::-webkit-scrollbar-thumb { background: rgba(136,153,170,0.3); border-radius: 3px; }
+.re-editor::-webkit-scrollbar-thumb:hover { background: rgba(136,153,170,0.5); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .re-toolbar-row { gap: 0.15rem; }
+  .re-btn { padding: 0.25rem 0.4rem; font-size: 0.75rem; min-width: 24px; }
+  .re-select.font-family { width: 100px; }
+  .re-select.font-size { width: 75px; }
+  .re-editor { min-height: 200px; padding: 0.75rem; }
+}
