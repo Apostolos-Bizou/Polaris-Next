@@ -5,6 +5,10 @@ import CreateOfferForm from '@/components/offers/create-offer-form';
 import ComparisonQuoteForm from '@/components/offers/comparison-quote-form';
 import OfferAnalytics from '@/components/offers/offer-analytics';
 
+import SendDocumentsModal from '@/components/offers/send-documents-modal';
+import { useSendDocuments } from '@/hooks/use-send-documents';
+import type { SendDocsOffer } from '@/hooks/use-send-documents';
+
 // ── Types ────────────────────────────────────────────────────────────
 interface OfferItem {
   plan_name: string;
@@ -81,6 +85,9 @@ export default function OffersPage() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'standard' | 'comparison'>('all');
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+
+  // ── Send Documents hook ──
+  const sendDocs = useSendDocuments();
   const [showCreate, setShowCreate] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -179,6 +186,33 @@ export default function OffersPage() {
   // ── View offer detail ────────────────────────────────────────────
   const openDetail = (offer: Offer) => { setSelectedOffer(offer); setShowDetail(true); setDocError(null); };
   const closeDetail = () => { setShowDetail(false); setSelectedOffer(null); setDocError(null); };
+
+  // ── Open Send Documents modal ────────────────────────────────
+  const openSendDocs = async (offerObj: any) => {
+    const isComparison = offerObj.offer_type === 'comparison' || (offerObj.offer_id && offerObj.offer_id.startsWith('CQ-'));
+    const programs: string[] = [];
+    try {
+      if (isComparison && offerObj.comparison_data) {
+        let cd = typeof offerObj.comparison_data === 'string' ? JSON.parse(offerObj.comparison_data) : offerObj.comparison_data;
+        if (Array.isArray(cd)) cd.forEach((o: any) => { const n = o.planName || o.plan_name || ''; if (n && !programs.includes(n)) programs.push(n); if (o.hasDental && !programs.includes('Dental')) programs.push('Dental'); });
+      } else if (offerObj.items) {
+        const items = typeof offerObj.items === 'string' ? JSON.parse(offerObj.items) : offerObj.items;
+        if (Array.isArray(items)) items.forEach((it: any) => { const n = it.plan_name || it.program || ''; if (n && !programs.includes(n)) programs.push(n); });
+      }
+    } catch(e) {}
+    if ((offerObj.includes_dental === true || offerObj.includes_dental === 'true') && !programs.some((p: string) => p.toLowerCase().includes('dental'))) programs.push('Dental');
+    
+    const sd: SendDocsOffer = {
+      offerId: offerObj.offer_id, clientId: offerObj.client_id,
+      clientName: (offerObj.client_name || 'Unknown').replace(/^[\s]*[🏢└\s]+/gu, '').trim(),
+      contactName: offerObj.contact_person || offerObj.contact_name || 'Unknown Contact',
+      contactEmail: offerObj.contact_email || '',
+      programs, items: offerObj.items, status: offerObj.status,
+      totalMembers: offerObj.total_members, grandTotal: offerObj.grand_total_usd,
+      isComparison, offer: offerObj,
+    };
+    sendDocs.openModal(sd);
+  };
 
   // ── Document Generation ─────────────────────────────────────────
   const generateDoc = async (type: string, offer: Offer) => {
@@ -418,6 +452,7 @@ export default function OffersPage() {
                     <td>
                       <div className="action-group">
                         <button className="action-btn view" onClick={() => openDetail(offer)} title="View Details">👁️</button>
+                        <button className="action-btn send-docs" onClick={() => openSendDocs(offer)} title="Send Documents">📨</button>
                         {offer.status === 'draft' && (
                           <button className="action-btn send" title="Send Offer">📧</button>
                         )}
@@ -646,6 +681,7 @@ export default function OffersPage() {
 
               {/* Action Buttons */}
               <div className="modal-actions">
+                <button className="modal-btn send-docs" onClick={() => { closeDetail(); openSendDocs(selectedOffer); }}>📨 Send Documents</button>
                 <button className="modal-btn generate-all" onClick={() => generateAllDocs(selectedOffer)} disabled={generatingDoc !== null}>
                   {generatingDoc === 'all' ? '⏳ Generating All...' : '📁 Generate All Documents'}
                 </button>
@@ -701,6 +737,10 @@ export default function OffersPage() {
           }}
         />
       )}
+
+      
+      {/* Send Documents Modal */}
+      <SendDocumentsModal sd={sendDocs} />
 
       <style jsx>{`
         .offers-page { max-width: 1400px; margin: 0 auto; }
@@ -913,6 +953,32 @@ export default function OffersPage() {
         @media (max-width: 480px) {
           .stats-grid { grid-template-columns: 1fr; }
           .doc-gen-grid { grid-template-columns: 1fr; }
+        }
+      
+        /* Send Documents button styles */
+        .action-btn.send-docs {
+          background: linear-gradient(135deg, #d4a843, #c49932);
+          color: #1e3a5f;
+        }
+        .action-btn.send-docs:hover {
+          box-shadow: 0 4px 15px rgba(212,168,67,0.4);
+          transform: translateY(-2px);
+        }
+        .modal-btn.send-docs {
+          background: linear-gradient(135deg, #D4AF37, #c49932);
+          color: #1e3a5f;
+          border: none;
+          padding: 0.65rem 1.25rem;
+          border-radius: 10px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        .modal-btn.send-docs:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(212,168,67,0.4);
         }
       `}</style>
     </div>
