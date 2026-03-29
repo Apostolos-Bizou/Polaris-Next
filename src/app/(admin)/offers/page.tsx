@@ -384,7 +384,7 @@ export default function OffersPage() {
                 const sc = getStatusConfig(offer.status);
                 const isComparison = offer.offer_type === 'comparison';
                 return (
-                  <tr key={offer.offer_id} className="offer-row">
+                  <tr key={offer.offer_id} className="offer-row" onClick={() => openDetail(offer)} style={{ cursor: 'pointer' }}>
                     <td>
                       <span className="offer-id">{offer.offer_id}</span>
                     </td>
