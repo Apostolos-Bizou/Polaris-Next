@@ -149,7 +149,7 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
 .sd-offer-status{padding:2px 8px;border-radius:8px;font-size:0.7rem;text-transform:uppercase}
 .sd-offer-card-bot{display:flex;justify-content:space-between;align-items:center}.sd-offer-date{color:#7aa0c0;font-size:0.75rem}.sd-offer-total{color:#fff;font-size:0.8rem}.sd-offer-members{color:#95a5a6;font-size:0.75rem;margin-top:4px}
 .sd-close-btn{background:rgba(255,255,255,0.2);border:none;color:white;width:50px;height:50px;border-radius:50%;cursor:pointer;font-size:1.8rem;transition:all 0.3s;flex-shrink:0}.sd-close-btn:hover{background:rgba(231,76,60,0.8);transform:scale(1.1)}
-.sd-body{flex:1;overflow-y:auto;padding:25px 30px;background:#3d5a80;display:flex;flex-direction:column;gap:20px}
+.sd-body{flex:1;overflow-y:auto;padding:25px 30px;background:#3d5a80;display:flex;flex-direction:column;gap:20px;min-height:0}
 .sd-two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .sd-section{background:#0d1f2d;border-radius:16px;border:1px solid rgba(45,80,112,0.35);overflow:hidden}
 .sd-section-hdr{background:linear-gradient(135deg,#1e3a5f,#2a4a6f);padding:16px 20px;display:flex;align-items:center;gap:12px}
