@@ -236,9 +236,9 @@ export default function ClientFolderPage() {
           <div className="cf-category-grid">
             {categories.map(cat => (
               <div key={cat.category} className="cf-cat-item">
-                <div className="cf-cat-value">{fmt(cat.count)}</div>
+                <div className="cf-cat-value">{fmtUsd(cat.cost)}</div>
                 <div className="cf-cat-label">{cat.category}</div>
-                <div className="cf-cat-cost">{fmtUsd(cat.cost)}</div>
+                <div className="cf-cat-cost">{fmt(cat.count)} cases</div>
               </div>
             ))}
           </div>
