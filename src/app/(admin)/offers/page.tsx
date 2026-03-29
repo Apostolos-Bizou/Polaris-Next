@@ -685,9 +685,7 @@ export default function OffersPage() {
                 <button className="modal-btn generate-all" onClick={() => generateAllDocs(selectedOffer)} disabled={generatingDoc !== null}>
                   {generatingDoc === 'all' ? '⏳ Generating All...' : '📁 Generate All Documents'}
                 </button>
-                <button className="modal-btn send" onClick={() => { /* TODO: Open Send Documents modal */ }}>
-                  📨 Send Documents
-                </button>
+
                 {!['accepted', 'signed', 'converted'].includes(selectedOffer.status.toLowerCase()) && (
                   <button className="modal-btn accept" onClick={() => { /* TODO: Accept offer flow */ }}>
                     ✅ Accept Offer
@@ -869,25 +867,28 @@ export default function OffersPage() {
         .modal-subtitle { color: rgba(255,255,255,0.7); font-size: 1rem; margin-top: 0.2rem; }
         .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .modal-close:hover { background: rgba(255,255,255,0.3); }
-        .modal-body { padding: 2rem 2.5rem; flex: 1; overflow-y: auto; overflow-x: hidden; }
+        .modal-body { padding: 2rem 2.5rem; flex: 1; overflow-y: auto; overflow-x: hidden; background: #0d1929; }
 
-        .detail-row { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .detail-row { display: flex; gap: 2rem; margin-bottom: 0; flex-wrap: wrap; padding: 1.25rem 2rem; background: rgba(13,31,45,0.5); border: 1px solid rgba(45,80,112,0.2); border-radius: 0; }
+        .detail-row:first-child { border-radius: 12px 12px 0 0; }
+        .detail-row:last-of-type { border-radius: 0 0 12px 12px; margin-bottom: 1.5rem; }
+        .detail-row + .detail-row { border-top: none; }
         .detail-item { flex: 1; min-width: 180px; }
-        .detail-label { font-size: 0.95rem; color: #667788; margin-bottom: 0.3rem; display: block; }
-        .detail-value { color: #ffffff; font-size: 1.1rem; font-weight: 600; }
+        .detail-label { font-size: 0.8rem; color: #7aa0c0; margin-bottom: 0.4rem; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-value { color: #ffffff; font-size: 1.15rem; font-weight: 600; }
         .detail-section-title {
           font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700;
           color: #D4AF37; margin: 2rem 0 1.25rem; padding-bottom: 0.75rem;
           border-bottom: 2px solid rgba(212,175,55,0.2);
         }
 
-        .financial-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+        .financial-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; }
         .fin-card {
           background: #0d1f2d; border: 1px solid rgba(212,175,55,0.25);
           border-radius: 14px; padding: 1.5rem; text-align: center;
         }
         .fin-card:hover { border-color: rgba(212,175,55,0.45); }
-        .fin-card.total { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.06); grid-column: 1 / -1; }
+        .fin-card.total { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.06); }
         .fin-label { font-size: 0.95rem; color: #7aa0c0; }
         .fin-value { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: #ffffff; margin: 0.3rem 0; }
         .fin-value.gold { color: #D4AF37; font-size: 2rem; }
@@ -938,7 +939,7 @@ export default function OffersPage() {
         @media (max-width: 1024px) {
           .stats-grid { grid-template-columns: repeat(3, 1fr); }
           .toolbar { flex-direction: column; }
-          .financial-grid { grid-template-columns: repeat(2, 1fr); }
+          .financial-grid { grid-template-columns: repeat(3, 1fr); }
           .doc-gen-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
