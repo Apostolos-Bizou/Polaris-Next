@@ -32,7 +32,7 @@
 .oa-three-col:last-child { grid-template-columns: 1fr 1fr 1fr; }
 
 /* ─── Card Base ───────────────────────────────────── */
-.oa-card { background: rgba(30,58,95,0.5); border: 1px solid rgba(212,175,55,0.25); border-radius: 16px; padding: 1.25rem; }
+.oa-card { background: rgba(13,31,45,0.85); border: 1px solid rgba(45,80,112,0.3); border-radius: 16px; padding: 1.25rem; }
 .oa-card.wide { grid-column: span 1; }
 .oa-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .oa-card-title { font-family: 'Montserrat', sans-serif; color: #D4AF37; font-size: 1.1rem; font-weight: 700; margin: 0; }
