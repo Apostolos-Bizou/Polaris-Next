@@ -196,15 +196,6 @@ export default function OffersPage() {
         </div>
       </div>
 
-      {/* Analytics Dashboard */}
-      {showAnalytics && (
-        <OfferAnalytics
-          offers={offers}
-          onFilterByStatus={(status) => { setStatusFilter(status); setShowAnalytics(false); }}
-          onClose={() => setShowAnalytics(false)}
-        />
-      )}
-
       {/* Stats Cards - hidden when analytics is open */}
       {!showAnalytics && (
       <div className="stats-grid">
@@ -236,7 +227,7 @@ export default function OffersPage() {
       </div>
       )}
 
-      {/* Toolbar */}
+      {/* Toolbar - always visible */}
       <div className="toolbar">
         <div className="search-box">
           <span className="search-icon">🔍</span>
@@ -268,6 +259,15 @@ export default function OffersPage() {
         Showing {filtered.length} of {offers.length} offers
         {statusFilter !== 'all' && <span className="filter-tag">{statusFilter}</span>}
       </div>
+
+      {/* Analytics Dashboard - after toolbar */}
+      {showAnalytics && (
+        <OfferAnalytics
+          offers={offers}
+          onFilterByStatus={(status) => { setStatusFilter(status); setShowAnalytics(false); }}
+          onClose={() => setShowAnalytics(false)}
+        />
+      )}
 
       {/* Offers Table */}
       <div className="table-container">
