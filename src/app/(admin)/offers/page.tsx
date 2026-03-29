@@ -813,7 +813,7 @@ export default function OffersPage() {
           display: flex; align-items: stretch; justify-content: stretch;
         }
         .modal-box {
-          background: #0a1628;
+          background: #0b1a2e;
           border: none; border-radius: 0;
           width: 100%; height: 100%;
           overflow: hidden; display: flex; flex-direction: column;
@@ -821,7 +821,7 @@ export default function OffersPage() {
         }
         .modal-header {
           display: flex; justify-content: space-between; align-items: center;
-          padding: 1rem 2rem;
+          padding: 1rem 2.5rem;
           background: linear-gradient(135deg, #1e3a5f, #2d5a87);
           flex-shrink: 0;
         }
@@ -829,7 +829,7 @@ export default function OffersPage() {
         .modal-subtitle { color: rgba(255,255,255,0.7); font-size: 1rem; margin-top: 0.2rem; }
         .modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .modal-close:hover { background: rgba(255,255,255,0.3); }
-        .modal-body { padding: 2rem; flex: 1; overflow-y: auto; overflow-x: hidden; background: #0a1628; }
+        .modal-body { padding: 2rem 2.5rem; flex: 1; overflow-y: auto; overflow-x: hidden; }
 
         .detail-row { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
         .detail-item { flex: 1; min-width: 180px; }
@@ -841,20 +841,21 @@ export default function OffersPage() {
           border-bottom: 2px solid rgba(212,175,55,0.2);
         }
 
-        .financial-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .financial-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
         .fin-card {
-          background: #0d1f2d; border: 1px solid rgba(45,80,112,0.25);
-          border-radius: 14px; padding: 1.25rem; text-align: center;
+          background: #0d1f2d; border: 1px solid rgba(212,175,55,0.25);
+          border-radius: 14px; padding: 1.5rem; text-align: center;
         }
-        .fin-card.total { border-color: rgba(212,175,55,0.3); background: rgba(212,175,55,0.06); grid-column: 1 / -1; }
+        .fin-card:hover { border-color: rgba(212,175,55,0.45); }
+        .fin-card.total { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.06); grid-column: 1 / -1; }
         .fin-label { font-size: 0.95rem; color: #7aa0c0; }
         .fin-value { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: #ffffff; margin: 0.3rem 0; }
         .fin-value.gold { color: #D4AF37; font-size: 2rem; }
         .fin-sub { font-size: 0.88rem; color: #667788; }
 
-        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
-        .items-table th { font-size: 0.88rem; color: #7aa0c0; text-align: left; padding: 0.75rem; border-bottom: 1px solid rgba(45,80,112,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
-        .items-table td { font-size: 1rem; color: #b8d4e8; padding: 0.75rem; border-bottom: 1px solid rgba(45,80,112,0.15); }
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; background: #0d1f2d; border: 1px solid rgba(212,175,55,0.2); border-radius: 12px; overflow: hidden; }
+        .items-table th { font-size: 0.88rem; color: #D4AF37; text-align: left; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(212,175,55,0.2); text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0,0,0,0.2); }
+        .items-table td { font-size: 1rem; color: #b8d4e8; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.15); }
 
         .modal-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid rgba(45,80,112,0.2); }
         .modal-btn {
@@ -873,9 +874,9 @@ export default function OffersPage() {
         .modal-btn.accept { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
 
         /* Document Generation Cards */
-        .doc-gen-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
-        .doc-gen-card { background: #0d1f2d; border: 1px solid rgba(45,80,112,0.3); border-radius: 14px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
-        .doc-gen-card:hover { border-color: rgba(45,80,112,0.6); transform: translateY(-2px); }
+        .doc-gen-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+        .doc-gen-card { background: #0d1f2d; border: 1px solid rgba(212,175,55,0.2); border-radius: 14px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
+        .doc-gen-card:hover { border-color: rgba(212,175,55,0.5); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
         .doc-gen-card.done { border-color: rgba(39,174,96,0.5); background: rgba(39,174,96,0.06); }
         .doc-gen-card.generating { border-color: rgba(243,156,18,0.5); background: rgba(243,156,18,0.06); }
         .doc-gen-top { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem; }
