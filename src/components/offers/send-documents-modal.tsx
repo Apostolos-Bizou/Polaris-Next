@@ -161,7 +161,7 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
 .sd-doc-item input[type="checkbox"]{width:26px;height:26px;cursor:pointer;accent-color:#4CAF50}
 .sd-doc-label{flex:1;display:flex;flex-direction:column}.sd-doc-name{color:#fff;font-weight:600;font-size:1rem}.sd-doc-desc{color:#7aa0c0;font-size:0.8rem;margin-top:2px}
 .sd-doc-badge{position:absolute;top:5px;right:5px;background:#27ae60;color:white;font-size:0.65rem;padding:2px 6px;border-radius:8px}
-.sd-prog-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sd-prog-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;overflow:visible}
 .sd-prog-item{display:flex;flex-direction:column;align-items:center;padding:14px 10px;background:rgba(10,22,40,0.8);border:2px solid rgba(45,80,112,0.35);border-radius:12px;cursor:pointer;transition:all 0.3s;text-align:center}
 .sd-prog-item:hover{border-color:#d4af37;transform:translateY(-2px)}.sd-prog-item.checked{border-color:#4CAF50;background:rgba(76,175,80,0.15)}
 .sd-prog-item.highlighted{border-color:#d4af37;background:rgba(212,175,55,0.2);box-shadow:0 0 15px rgba(212,175,55,0.3)}
