@@ -457,12 +457,12 @@ export default function OffersPage() {
                     </td>
                     <td>
                       <div className="action-group">
-                        <button className="action-btn view" onClick={() => openDetail(offer)} title="View Details">👁️</button>
-                        <button className="action-btn send-docs" onClick={() => openSendDocs(offer)} title="Send Documents">📨</button>
+                        <button className="action-btn view" onClick={(e) => { e.stopPropagation(); openDetail(offer); }} title="View Details">👁️</button>
+                        <button className="action-btn send-docs" onClick={(e) => { e.stopPropagation(); openSendDocs(offer); }} title="Send Documents">📨</button>
                         {offer.status === 'draft' && (
-                          <button className="action-btn send" title="Send Offer">📧</button>
+                          <button className="action-btn send" onClick={(e) => e.stopPropagation()} title="Send Offer">📧</button>
                         )}
-                        <button className="action-btn docs" title="Documents">📄</button>
+                        <button className="action-btn docs" onClick={(e) => e.stopPropagation()} title="Documents">📄</button>
                       </div>
                     </td>
                   </tr>
