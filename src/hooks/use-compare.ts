@@ -190,7 +190,7 @@ export function useCompare() {
     // Categories
     const categories: CategoryBreakdown[] = (catRes?.data || []).map((c: any) => ({
       category: c.category || c.name || 'Unknown',
-      count: c.count || c.claims || 0,
+      count: c.cases || c.count || c.claims || 0,
       cost: c.cost_usd || c.cost || 0,
     }));
 
