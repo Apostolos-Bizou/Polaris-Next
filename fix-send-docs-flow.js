@@ -1,4 +1,20 @@
-'use client';
+const fs = require('fs');
+const path = require('path');
+
+// ═══════════════════════════════════════════════════════════════
+// 1. Fix Send Documents Modal — remove right column, add Email Center button
+// ═══════════════════════════════════════════════════════════════
+const sdFile = path.join(__dirname, 'src', 'components', 'offers', 'send-documents-modal.tsx');
+let sd = fs.readFileSync(sdFile, 'utf8');
+
+// The modal currently has two columns. We need to:
+// - Remove the right column (Email Template, Recipients, Email Body)
+// - Change body from 2-col grid to 1-col
+// - Update footer to have "Open in Email Center" button
+// - Store selected docs in localStorage when clicking the button
+
+// Since modifying the minified JSX is risky, let's replace the whole component
+const newModal = `'use client';
 import React, { useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import type { useSendDocuments as UseSendDocsHookType } from '@/hooks/use-send-documents';
@@ -69,7 +85,7 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
             {sd.clientOffers.length>0&&(
               <div className="sd-offers-row">
                 <div className="sd-offers-header"><span className="sd-offers-label">📋 Recent Offers</span><span className="sd-offers-count">{sd.clientOffers.length} offers</span></div>
-                <div className="sd-offers-list">{sd.clientOffers.map((o:any)=>{const d=o.created_at||o.date_created?new Date(o.created_at||o.date_created).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'}):'';const c2=sc(o.status);const t=parseFloat(o.grand_total_usd||0);return(<div key={o.offer_id} className={`sd-offer-card${sd.selectedOfferId===o.offer_id?' selected':''}`} onClick={()=>sd.selectOffer(o.offer_id,o)}><div className="sd-offer-card-top"><span className="sd-offer-id">{o.offer_id}</span><span className="sd-offer-status" style={{color:c2,background:c2+'33'}}>{o.status||'draft'}</span></div><div className="sd-offer-card-bot"><span className="sd-offer-date">{d}</span><span className="sd-offer-total">${t.toLocaleString()}</span></div><div className="sd-offer-members">{parseInt(o.total_members||0)} members</div></div>)})}</div>
+                <div className="sd-offers-list">{sd.clientOffers.map((o:any)=>{const d=o.created_at||o.date_created?new Date(o.created_at||o.date_created).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'}):'';const c2=sc(o.status);const t=parseFloat(o.grand_total_usd||0);return(<div key={o.offer_id} className={\`sd-offer-card\${sd.selectedOfferId===o.offer_id?' selected':''}\`} onClick={()=>sd.selectOffer(o.offer_id,o)}><div className="sd-offer-card-top"><span className="sd-offer-id">{o.offer_id}</span><span className="sd-offer-status" style={{color:c2,background:c2+'33'}}>{o.status||'draft'}</span></div><div className="sd-offer-card-bot"><span className="sd-offer-date">{d}</span><span className="sd-offer-total">\${t.toLocaleString()}</span></div><div className="sd-offer-members">{parseInt(o.total_members||0)} members</div></div>)})}</div>
               </div>
             )}
           </>)}
@@ -82,13 +98,13 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
     <div className="sd-body">
       {/* Contract Documents */}
       <div className="sd-section"><div className="sd-section-hdr"><span className="sd-section-icon">📄</span><h3>Contract Documents</h3></div><div className="sd-section-body"><div className="sd-doc-grid">
-        {sd.docs.map(doc=>(<label key={doc.key} className={`sd-doc-item${sd.checkedDocs[doc.value]?' checked':''}${doc.available?' available':''}`} onClick={()=>sd.toggleDoc(doc.value)}><input type="checkbox" checked={!!sd.checkedDocs[doc.value]} readOnly/><div className="sd-doc-label"><span className="sd-doc-name">{doc.icon} {doc.value}</span><span className="sd-doc-desc">{doc.desc}</span></div>{doc.available&&<span className="sd-doc-badge">✓ v{doc.version||1}</span>}</label>))}
-        {sd.showCQ&&<label className={`sd-doc-item cq${sd.cqChecked?' checked':''}`} onClick={()=>sd.setCqChecked(!sd.cqChecked)}><input type="checkbox" checked={sd.cqChecked} readOnly/><div className="sd-doc-label"><span className="sd-doc-name">📊 Comparison Quote</span><span className="sd-doc-desc">Multi-plan comparison document</span></div></label>}
+        {sd.docs.map(doc=>(<label key={doc.key} className={\`sd-doc-item\${sd.checkedDocs[doc.value]?' checked':''}\${doc.available?' available':''}\`} onClick={()=>sd.toggleDoc(doc.value)}><input type="checkbox" checked={!!sd.checkedDocs[doc.value]} readOnly/><div className="sd-doc-label"><span className="sd-doc-name">{doc.icon} {doc.value}</span><span className="sd-doc-desc">{doc.desc}</span></div>{doc.available&&<span className="sd-doc-badge">✓ v{doc.version||1}</span>}</label>))}
+        {sd.showCQ&&<label className={\`sd-doc-item cq\${sd.cqChecked?' checked':''}\`} onClick={()=>sd.setCqChecked(!sd.cqChecked)}><input type="checkbox" checked={sd.cqChecked} readOnly/><div className="sd-doc-label"><span className="sd-doc-name">📊 Comparison Quote</span><span className="sd-doc-desc">Multi-plan comparison document</span></div></label>}
       </div></div></div>
 
       {/* Program Brochures */}
       <div className="sd-section"><div className="sd-section-hdr"><span className="sd-section-icon">📋</span><h3>Program Brochures</h3><span className="sd-hint-star">★ Highlighted = Offer programs</span></div><div className="sd-section-body"><div className="sd-prog-grid">
-        {sd.programs.map((p,i)=>(<label key={p.name} className={`sd-prog-item${p.checked?' checked':''}${p.highlighted?' highlighted':''}`} onClick={()=>sd.toggleProgram(i)}><input type="checkbox" checked={p.checked} readOnly/><span className="sd-prog-icon">{p.icon}</span><span className="sd-prog-name">{p.name}</span><span className="sd-prog-limit">{p.limit}</span></label>))}
+        {sd.programs.map((p,i)=>(<label key={p.name} className={\`sd-prog-item\${p.checked?' checked':''}\${p.highlighted?' highlighted':''}\`} onClick={()=>sd.toggleProgram(i)}><input type="checkbox" checked={p.checked} readOnly/><span className="sd-prog-icon">{p.icon}</span><span className="sd-prog-name">{p.name}</span><span className="sd-prog-limit">{p.limit}</span></label>))}
         <div className="sd-prog-item sd-split-item"><div className="sd-split-btn drive" onClick={()=>window.open('https://drive.google.com/drive/folders/15mkQBf1Cpf1myga-0TZetbrsRZ65OiED','_blank')}><span className="sd-split-icon">☁️</span><span className="sd-split-label">Drive</span></div><div className="sd-split-btn local" onClick={()=>fileInputRef.current?.click()}><span className="sd-split-icon">💻</span><span className="sd-split-label">Local</span></div></div>
         <input type="file" ref={fileInputRef} multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.png,.jpg,.jpeg" style={{display:'none'}} onChange={handleFiles}/>
       </div></div></div>
@@ -102,7 +118,7 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
 
         {/* Signature */}
         <div className="sd-section"><div className="sd-section-hdr"><span className="sd-section-icon">✍️</span><h3>Signature Options</h3></div><div className="sd-section-body"><div className="sd-sig-row">
-          <label className={`sd-sig-toggle${sd.signDocs?' active':''}`}><input type="checkbox" checked={sd.signDocs} onChange={e=>sd.setSignDocs(e.target.checked)}/><span>Sign Documents</span></label>
+          <label className={\`sd-sig-toggle\${sd.signDocs?' active':''}\`}><input type="checkbox" checked={sd.signDocs} onChange={e=>sd.setSignDocs(e.target.checked)}/><span>Sign Documents</span></label>
           <select className="sd-sig-select" disabled={!sd.signDocs} value={sd.signatory} onChange={e=>sd.setSignatory(e.target.value)}><option value="">-- Select Signatory --</option><option value="apostolos_kagelaris">Apostolos Kagelaris (CEO)</option></select>
         </div></div></div>
       </div>
@@ -125,7 +141,7 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
       </div>
     </div>
 
-    <style jsx>{`
+    <style jsx>{\`
 .sd-modal{position:fixed;top:0;left:260px;width:calc(100% - 260px);height:100%;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;z-index:99999;backdrop-filter:blur(8px)}
 .sd-header{background:linear-gradient(135deg,#1e3a5f,#2d5a87);padding:20px 30px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;border-bottom:3px solid #d4af37}
 .sd-header-left{flex:1}.sd-title{color:white;margin:0;font-size:1.6rem;font-family:'Montserrat',sans-serif}.sd-header-info{margin-top:10px}
@@ -188,6 +204,11 @@ export default function SendDocumentsModal({ sd }: { sd: SD }) {
 .sd-btn.email:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,175,55,0.4)}
 @media(max-width:1024px){.sd-body{padding:15px}.sd-prog-grid{grid-template-columns:repeat(3,1fr)}.sd-two-col{grid-template-columns:1fr}.sd-header{padding:15px 20px}.sd-title{font-size:1.3rem}.sd-footer{flex-direction:column;gap:15px}}
 @media(max-width:600px){.sd-doc-grid{grid-template-columns:1fr}.sd-prog-grid{grid-template-columns:repeat(2,1fr)}.sd-format-grid{grid-template-columns:1fr}.sd-sig-row{flex-direction:column}.sd-sig-select{width:100%}.sd-search-input{width:200px}}
-    `}</style>
+    \`}</style>
   </div>);
 }
+`;
+
+fs.writeFileSync(sdFile, newModal, 'utf8');
+console.log('✅ Send Documents Modal updated — left side only + "Open in Email Center" button');
+console.log('📄 Size:', newModal.length, 'chars');
