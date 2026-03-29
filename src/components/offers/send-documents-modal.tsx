@@ -419,7 +419,7 @@ export default function SendDocumentsModal() {
   border-radius: 12px; margin-top: 5px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 .sd-dropdown-item {
-  padding: 12px 18px; cursor: pointer; border-bottom: 1px solid #2d3748;
+  padding: 12px 18px; cursor: pointer; border-bottom: 1px solid #0d1f2d;
   transition: background 0.2s;
 }
 .sd-dropdown-item:hover { background: rgba(212,175,67,0.2); }
@@ -483,7 +483,7 @@ export default function SendDocumentsModal() {
 .sd-left, .sd-right { display: flex; flex-direction: column; gap: 20px; }
 
 /* ─── Sections ─── */
-.sd-section { background: #2d3748; border-radius: 16px; border: 1px solid #4a5568; overflow: hidden; }
+.sd-section { background: #0d1f2d; border-radius: 16px; border: 1px solid rgba(45,80,112,0.35); overflow: hidden; }
 .sd-section-hdr {
   background: linear-gradient(135deg, #1e3a5f, #2a4a6f);
   padding: 16px 20px; display: flex; align-items: center; gap: 12px;
@@ -497,7 +497,7 @@ export default function SendDocumentsModal() {
 .sd-doc-item {
   display: flex; align-items: center; gap: 14px;
   padding: 16px 18px; background: #1a2332;
-  border: 2px solid #4a5568; border-radius: 12px;
+  border: 2px solid rgba(45,80,112,0.35); border-radius: 12px;
   cursor: pointer; transition: all 0.3s; min-height: 60px;
   position: relative;
 }
@@ -521,7 +521,7 @@ export default function SendDocumentsModal() {
 .sd-prog-item {
   display: flex; flex-direction: column; align-items: center;
   padding: 14px 10px; background: #1a2332;
-  border: 2px solid #4a5568; border-radius: 12px;
+  border: 2px solid rgba(45,80,112,0.35); border-radius: 12px;
   cursor: pointer; transition: all 0.3s; text-align: center;
 }
 .sd-prog-item:hover { border-color: #d4af37; transform: translateY(-2px); }
@@ -566,7 +566,7 @@ export default function SendDocumentsModal() {
 .sd-sig-toggle {
   display: flex; align-items: center; gap: 12px;
   padding: 14px 20px; background: #1a2332;
-  border: 2px solid #4a5568; border-radius: 12px;
+  border: 2px solid rgba(45,80,112,0.35); border-radius: 12px;
   cursor: pointer; transition: all 0.3s;
 }
 .sd-sig-toggle.active { border-color: #9c27b0; background: rgba(156,39,176,0.15); }
@@ -574,7 +574,7 @@ export default function SendDocumentsModal() {
 .sd-sig-toggle span { color: white; font-weight: 600; }
 .sd-sig-select {
   flex: 1; padding: 14px 18px; background: #1a2332;
-  border: 2px solid #4a5568; border-radius: 12px;
+  border: 2px solid rgba(45,80,112,0.35); border-radius: 12px;
   color: white; font-size: 1rem; cursor: pointer; min-width: 250px;
 }
 .sd-sig-select:disabled { opacity: 0.5; }
@@ -591,7 +591,7 @@ export default function SendDocumentsModal() {
 
 /* Recipients */
 .sd-recipients-box {
-  background: #1a2332; border: 2px solid #4a5568;
+  background: #1a2332; border: 2px solid rgba(45,80,112,0.35);
   border-radius: 12px; padding: 16px; max-height: 200px;
   overflow-y: auto;
 }
@@ -607,11 +607,11 @@ export default function SendDocumentsModal() {
 .sd-recip-email { color: #7aa0c0; font-size: 0.85rem; }
 .sd-recip-role {
   font-size: 0.7rem; padding: 4px 10px; border-radius: 20px;
-  background: #4a5568; color: #b8d4e8;
+  background: rgba(45,80,112,0.35); color: #b8d4e8;
 }
 .sd-role-btns { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .sd-role-btn {
-  padding: 8px 16px; background: #4a5568; border: none;
+  padding: 8px 16px; background: rgba(45,80,112,0.35); border: none;
   border-radius: 20px; color: white; cursor: pointer; font-size: 0.85rem;
   transition: all 0.2s;
 }
@@ -628,12 +628,12 @@ export default function SendDocumentsModal() {
   padding: 10px; background: #1a2332; border-radius: 10px;
 }
 .sd-toolbar button {
-  padding: 8px 12px; background: #4a5568; border: none;
+  padding: 8px 12px; background: rgba(45,80,112,0.35); border: none;
   border-radius: 6px; color: white; cursor: pointer; font-size: 0.9rem;
   transition: all 0.2s;
 }
 .sd-toolbar button:hover { background: #5a6a7a; }
-.sd-toolbar-sep { width: 1px; background: #4a5568; margin: 0 5px; }
+.sd-toolbar-sep { width: 1px; background: rgba(45,80,112,0.35); margin: 0 5px; }
 .sd-reset-btn { background: #e74c3c !important; }
 .sd-reset-btn:hover { background: #c0392b !important; }
 
@@ -658,9 +658,9 @@ export default function SendDocumentsModal() {
 
 /* ─── Footer ─── */
 .sd-footer {
-  background: #2d3748; padding: 12px 20px;
+  background: #0d1f2d; padding: 12px 20px;
   display: flex; justify-content: space-between;
-  align-items: center; border-top: 1px solid #4a5568;
+  align-items: center; border-top: 1px solid rgba(45,80,112,0.35);
   flex-shrink: 0; gap: 15px;
 }
 .sd-attach-count {
@@ -687,7 +687,7 @@ export default function SendDocumentsModal() {
   display: flex; align-items: center; gap: 8px;
 }
 .sd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.sd-btn.preview { background: #4a5568; color: white; }
+.sd-btn.preview { background: rgba(45,80,112,0.35); color: white; }
 .sd-btn.preview:hover:not(:disabled) { background: #5a6578; transform: translateY(-2px); }
 .sd-btn.draft { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
 .sd-btn.draft:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(243,156,18,0.4); }

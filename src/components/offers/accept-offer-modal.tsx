@@ -57,7 +57,7 @@ export default function AcceptOfferModal({ offer, onClose, onAccepted }: Props) 
     )}</div>
     <div className="ao-ftr">{!accepted?(<><div className="ao-fi"><span className="ao-fo">{offer.offer_id}</span><span className="ao-fcn">{clientName}</span><span className="ao-ftl">{fmtUSD(offer.grand_total_usd||0)}</span></div><div className="ao-fa"><button className="ao-btn cn" onClick={onClose}>Cancel</button><button className="ao-btn ac" onClick={confirmAccept} disabled={accepting}>{accepting?'⏳ Processing...':'✅ Accept Offer'}</button></div></>):(<div className="ao-fa"><button className="ao-btn dn" onClick={onClose}>✅ Done — Close</button></div>)}</div>
     <style jsx>{`
-.ao-fs{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;z-index:99999;backdrop-filter:blur(8px)}
+.ao-fs{position:fixed;top:0;left:260px;width:calc(100% - 260px);height:100%;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;z-index:99999;backdrop-filter:blur(8px)}
 .ao-hdr{background:linear-gradient(135deg,#1e3a5f,#2d5a87);padding:20px 30px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-bottom:3px solid #27ae60}
 .ao-hdr-l{flex:1}.ao-ttl{color:white;margin:0;font-size:1.6rem;font-family:'Montserrat',sans-serif}
 .ao-badges{display:flex;align-items:center;gap:15px;margin-top:10px;flex-wrap:wrap}
@@ -66,7 +66,7 @@ export default function AcceptOfferModal({ offer, onClose, onAccepted }: Props) 
 .ao-x{background:rgba(255,255,255,0.2);border:none;color:white;width:50px;height:50px;border-radius:50%;cursor:pointer;font-size:1.8rem;transition:all 0.3s;flex-shrink:0}.ao-x:hover{background:rgba(231,76,60,0.8);transform:scale(1.1)}
 .ao-bd{flex:1;overflow-y:auto;padding:25px 30px;display:grid;grid-template-columns:1fr 1fr;gap:30px;background:#3d5a80}
 .ao-col{display:flex;flex-direction:column;gap:20px}.ao-acc-full{grid-column:1/-1}
-.ao-sec{background:#2d3748;border-radius:16px;border:1px solid #4a5568;overflow:hidden}
+.ao-sec{background:#0d1f2d;border-radius:16px;border:1px solid rgba(45,80,112,0.35);overflow:hidden}
 .ao-sh{background:linear-gradient(135deg,#1e3a5f,#2a4a6f);padding:16px 20px;display:flex;align-items:center;gap:12px}
 .ao-sh h3{color:white;margin:0;font-size:1.1rem;font-family:'Montserrat',sans-serif}.ao-si{font-size:1.4rem}.ao-sb{padding:20px}
 .ao-pr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(39,174,96,0.06);border:1px solid rgba(39,174,96,0.15);border-radius:10px;margin-bottom:8px}
@@ -92,7 +92,7 @@ export default function AcceptOfferModal({ offer, onClose, onAccepted }: Props) 
 .ao-db{background:rgba(39,174,96,0.15);color:#27ae60;font-size:0.8rem;padding:4px 10px;border-radius:8px;font-weight:600}
 .ao-dl{background:rgba(93,173,226,0.1);color:#5dade2;text-decoration:none;padding:6px 12px;border-radius:8px;font-size:0.85rem;font-weight:600;border:1px solid rgba(93,173,226,0.2);transition:all 0.2s}
 .ao-dl:hover{background:rgba(93,173,226,0.2)}.ao-dm{color:rgba(255,255,255,0.25);font-size:0.85rem}
-.ao-nt{width:100%;min-height:180px;background:#1a2332;border:2px solid #4a5568;border-radius:12px;color:white;padding:1rem;font-size:0.95rem;resize:vertical;font-family:inherit;box-sizing:border-box}
+.ao-nt{width:100%;min-height:180px;background:rgba(10,22,40,0.8);border:2px solid rgba(45,80,112,0.35);border-radius:12px;color:white;padding:1rem;font-size:0.95rem;resize:vertical;font-family:inherit;box-sizing:border-box}
 .ao-nt:focus{border-color:#27ae60;outline:none}.ao-nt::placeholder{color:rgba(255,255,255,0.3)}
 .ao-wb{background:rgba(243,156,18,0.08);border:1px solid rgba(243,156,18,0.2);border-radius:12px;padding:1rem 1.25rem;color:#f39c12;font-size:0.9rem;line-height:1.6;margin-bottom:12px}
 .ao-wb p{margin:0 0 0.5rem}.ao-wb p:last-child{margin-bottom:0}
@@ -110,7 +110,7 @@ export default function AcceptOfferModal({ offer, onClose, onAccepted }: Props) 
 .ao-ac.dr{border-color:rgba(66,133,244,0.3);background:rgba(66,133,244,0.08)}.ao-ac.dr:hover{background:rgba(66,133,244,0.15);border-color:rgba(66,133,244,0.6)}
 .ao-aci{font-size:2.5rem}.ao-acl{font-weight:700;font-size:1rem}.ao-acl.up{color:#1abc9c}.ao-acl.dr{color:#4285f4}
 .ao-ft{background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:10px 16px;font-size:0.85rem;color:#d4a843;max-width:500px;margin:0 auto}
-.ao-ftr{background:#2d3748;padding:12px 30px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #4a5568;flex-shrink:0}
+.ao-ftr{background:#0d1f2d;padding:12px 30px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(45,80,112,0.35);flex-shrink:0}
 .ao-fi{display:flex;gap:20px;align-items:center}.ao-fo{color:#d4af37;font-weight:700;font-family:monospace;font-size:0.95rem}.ao-fcn{color:white;font-weight:600}.ao-ftl{color:#27ae60;font-weight:700;font-size:1.1rem}
 .ao-fa{display:flex;gap:12px}
 .ao-btn{padding:10px 24px;border-radius:12px;cursor:pointer;font-size:0.95rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:all 0.2s}
