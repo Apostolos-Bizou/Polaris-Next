@@ -26,18 +26,18 @@
 .fud-refresh-btn:hover { background: rgba(255,255,255,0.15); }
 .fud-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
 .fud-grid-2 > .fud-section { margin-bottom: 0; }
-.fud-pipeline-scroll { overflow-x: auto; padding: 1.25rem; }
-.fud-pipeline-kanban { display: grid; grid-template-columns: repeat(6, minmax(180px, 1fr)); gap: 0.75rem; min-width: 1100px; }
-.fud-pipeline-col { background: rgba(0,0,0,0.15); border-radius: 12px; padding: 0.6rem; min-height: 160px; }
-.fud-pipeline-col-header { padding: 0.7rem 0.5rem; margin-bottom: 0.6rem; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.fud-pipeline-scroll { padding: 1.25rem; }
+.fud-pipeline-kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.fud-pipeline-col { background: rgba(0,0,0,0.15); border-radius: 12px; padding: 0.75rem; min-height: 180px; }
+.fud-pipeline-col-header { padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 10px; text-align: center; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .fud-pipeline-count { background: rgba(255,255,255,0.25); padding: 0.15rem 0.5rem; border-radius: 10px; font-size: 0.7rem; margin-left: 0.3rem; }
 .fud-pipeline-col-body { display: flex; flex-direction: column; gap: 0.5rem; max-height: 350px; overflow-y: auto; }
-.fud-pipeline-empty { text-align: center; color: rgba(255,255,255,0.35); font-size: 0.9rem; padding: 2rem 0.5rem; font-style: italic; }
+.fud-pipeline-empty { text-align: center; color: rgba(255,255,255,0.35); font-size: 1rem; padding: 2.5rem 1rem; font-style: italic; }
 .fud-pipeline-card { background: rgba(10,22,40,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.75rem; cursor: pointer; transition: all 0.2s; }
 .fud-pipeline-card:hover { border-color: rgba(212,175,55,0.35); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.fud-pipeline-card-client { font-weight: 700; font-size: 0.85rem; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fud-pipeline-card-value { color: #D4AF37; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; margin-top: 0.2rem; }
-.fud-pipeline-card-members { color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-top: 0.1rem; }
+.fud-pipeline-card-client { font-weight: 700; font-size: 1rem; color: #ffffff; }
+.fud-pipeline-card-value { color: #D4AF37; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; margin-top: 0.25rem; }
+.fud-pipeline-card-members { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-top: 0.15rem; }
 .fud-pipeline-card-id { color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 0.15rem; }
 .fud-pipeline-bars { padding: 1.25rem 1.5rem; }
 .fud-bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
