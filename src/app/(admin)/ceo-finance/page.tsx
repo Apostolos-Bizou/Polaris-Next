@@ -121,7 +121,7 @@ export default function CEOFinancePage() {
   const s = ceoData?.summary || {};
   const ct = ceoData?.claimTypes || {};
   const mt = ceoData?.memberTypes || {};
-  const topByRev = ceoData?.top_clients?.by_revenue || ceoData?.top_clients?.by_members || [];
+  const topByRev = [...(ceoData?.top_clients?.by_revenue || []), ...(ceoData?.top_clients?.by_members || [])].filter((v, i, a) => a.findIndex(t => t.client_id === v.client_id) === i);
 
   // Calculated values from API data
   const grossRevenue = s.gross_revenue || 0;
@@ -170,6 +170,77 @@ export default function CEOFinancePage() {
     });
   };
 
+  // Export PDF
+  const exportPDF = async () => {
+    const el = document.querySelector('.ceo-page');
+    if (!el) return;
+    try {
+      const { jsPDF } = await import('jspdf');
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(el as HTMLElement, { scale: 1.5, backgroundColor: '#0d1f2d', useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = (canvas.height * pdfW) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+      pdf.save('Polaris_CEO_Finance_' + selectedClientName.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf');
+    } catch(e) { console.error('PDF export error:', e); alert('PDF export requires jspdf and html2canvas packages.'); }
+  };
+
+  // Export Excel (CSV)
+  const exportExcel = () => {
+    const rows = [
+      ['Polaris Financial Services - CEO Finance Report'],
+      ['Client', selectedClientName],
+      ['Period', periodLabel],
+      [''],
+      ['FINANCIAL SUMMARY'],
+      ['Metric', 'Value'],
+      ['Gross Revenue', grossRevenue],
+      ['Total Claims Cost', totalClaimsCost],
+      ['Net Profit (EBIT)', ebit],
+      ['Cyprus Tax Liability', totalTax],
+      ['Gross Margin %', grossMarginPct],
+      ['Loss Ratio %', lossRatioPct],
+      ['Combined Ratio %', combinedRatio],
+      ['ARPM', arpm],
+      ['Total Members', totalMembers],
+      ['Total Claims', totalClaims],
+      [''],
+      ['REVENUE BREAKDOWN'],
+      ['Premium Collections', premiumRevenue],
+      ['Admin Fees', feeRevenue],
+      ['Stop-Loss Fees', stopLossFees],
+      ['Network Access Fees', networkFees],
+      ['Processing Fees', processingFees],
+      ['Total Revenue', grossRevenue],
+      [''],
+      ['EXPENSE BREAKDOWN'],
+      ['Claims Paid', totalClaimsCost * 0.92],
+      ['Ex Gratia', totalClaimsCost * 0.08],
+      ['Provider Costs', providerCosts],
+      ['Operating Expenses', operatingExp],
+      ['Bank Fees', bankFees],
+      ['Total Expenses', totalExpenses],
+      [''],
+      ['CYPRUS TAX'],
+      ['Corporate Tax (12.5%)', cit],
+      ['SDC (2.65%)', sdc],
+      ['GHS (2.9%)', ghs],
+      ['Total Tax', totalTax],
+      [''],
+      ['TOP CLIENTS'],
+      ['#', 'Client', 'Members', 'Claims', 'Claims Cost', 'Est. Revenue', 'Loss Ratio %'],
+      ...topByRev.slice(0, 15).map((c, i) => [i + 1, c.client_name, c.members, c.claims, c.claims_cost, c.estimated_revenue, c.estimated_revenue > 0 ? ((c.claims_cost / c.estimated_revenue) * 100).toFixed(1) : '0']),
+    ];
+    const csv = rows.map(r => Array.isArray(r) ? r.map(v => typeof v === 'string' && v.includes(',') ? '"' + v + '"' : v).join(',') : r).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'Polaris_CEO_Finance_' + selectedClientName.replace(/[^a-zA-Z0-9]/g, '_') + '.csv';
+    link.click();
+  };
+
   const periodLabel = selectedQuarters.length === 4 ? "Full Year " + selectedYear :
     selectedQuarters.length > 1 ? selectedQuarters.join("+") + " " + selectedYear :
     selectedQuarters[0] + " " + selectedYear;
@@ -186,6 +257,8 @@ export default function CEOFinancePage() {
           <p className="ceo-subtitle">Polaris Financial Services Ltd {"\u2022"} Tax Jurisdiction: Cyprus (12.5% CIT)</p>
         </div>
         <div className="ceo-header-right">
+          <button className="ceo-export-btn" onClick={exportPDF}>{"📄"} Export PDF</button>
+          <button className="ceo-export-btn" onClick={exportExcel}>{"📊"} Export Excel</button>
           {/* Client Dropdown */}
           <div ref={dropRef} className="ceo-client-dropdown-wrap">
             <button className="ceo-client-trigger" onClick={() => setClientDropdownOpen(!clientDropdownOpen)}>

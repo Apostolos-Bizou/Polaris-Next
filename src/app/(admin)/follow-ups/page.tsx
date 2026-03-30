@@ -232,6 +232,57 @@ export default function FollowUpsPage() {
   const closeOffer = () => { setSelId(null); setSelPreview(null); };
   const [renewContract, setRenewContract] = useState<any>(null);
 
+  // Export PDF
+  const exportPDF = async () => {
+    try {
+      const el = document.querySelector('.fud-page');
+      if (!el) return;
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+      const canvas = await html2canvas(el as HTMLElement, { scale: 1.5, backgroundColor: '#0d1f2d', useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = (canvas.height * pdfW) / canvas.width;
+      let position = 0;
+      const pageH = pdf.internal.pageSize.getHeight();
+      while (position < pdfH) {
+        if (position > 0) pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, -position, pdfW, pdfH);
+        position += pageH;
+      }
+      pdf.save('Polaris_Follow_Up_Dashboard.pdf');
+    } catch(e) { console.error('PDF error:', e); alert('PDF export requires jspdf and html2canvas packages.'); }
+  };
+
+  // Export Excel (CSV)
+  const exportExcel = () => {
+    const rows = [
+      ['Polaris Follow-Up Dashboard'],
+      ['Generated', new Date().toLocaleDateString()],
+      [''],
+      ['PIPELINE SUMMARY'],
+      ['Total Members', fu.totalMembers],
+      ['Pipeline Value', fu.totalValue],
+      ['In Progress', fu.pendingOffers],
+      ['Expiring (90d)', fu.expiringCount],
+      [''],
+      ['DETAILED VIEW'],
+      ['Client', 'Contact', 'Stage', 'Members', 'Value', 'Notes'],
+      ...fu.detailedView.map(o => [o.client_name, o.contact_name || '', o.stage, o.members, o.value, o.last_note || '']),
+      [''],
+      ['EXPIRING CONTRACTS'],
+      ['Client', 'Contract', 'Members', 'Expires', 'Days Left'],
+      ...fu.allExpiring.map(e => [e.client_name, e.contract_name, e.members, e.expires, e.days_left]),
+    ];
+    const csv = rows.map(r => Array.isArray(r) ? r.map(v => typeof v === 'string' && v.includes(',') ? '"' + v + '"' : v).join(',') : r).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'Polaris_Follow_Up_Dashboard.csv';
+    link.click();
+  };
+
   if (fu.loading) return <div className="fud-page"><div className="fud-loading">Loading Follow-up Dashboard...</div></div>;
 
   return (
