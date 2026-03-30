@@ -185,7 +185,7 @@ export default function SendDocumentsModal({ sd, onClose }: Props) {
               <div style={{
                 display: 'flex', flexDirection: 'row',
                 border: '2px dashed rgba(212,175,55,0.5)',
-                borderRadius: 10, overflow: 'hidden',
+                borderRadius: 10, overflow: 'visible',
                 background: 'linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03))',
               }}>
                 <button style={{
@@ -359,7 +359,7 @@ function Section({ icon, title, rightLabel, badge, children }: {
     <div style={{
       background: 'rgba(13,25,38,0.5)',
       border: '1px solid rgba(45,80,112,0.3)',
-      borderRadius: 14, overflow: 'hidden',
+      borderRadius: 14, overflow: 'visible',
     }}>
       <div style={{
         background: 'linear-gradient(135deg, #1e3a5f, #2a4a6f)',
