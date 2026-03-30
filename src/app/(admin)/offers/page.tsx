@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import CreateOfferForm from '@/components/offers/create-offer-form';
 import ComparisonQuoteForm from '@/components/offers/comparison-quote-form';
 import OfferAnalytics from '@/components/offers/offer-analytics';
@@ -95,6 +95,68 @@ export default function OffersPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+
+  // Handle incoming navigation from Follow-ups Dashboard
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const p = new URLSearchParams(window.location.search);
+    
+    // Open specific offer detail
+    const openOfferId = p.get('openOffer');
+    if (openOfferId) {
+      // Read offer data from localStorage (instant, no API call)
+      try {
+        const raw = localStorage.getItem('polaris_open_offer');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          localStorage.removeItem('polaris_open_offer');
+          if (parsed.offer) {
+            const o = parsed.offer;
+            const mapped = {
+              offer_id: o.offer_id || openOfferId,
+              offer_type: (o.offer_id && o.offer_id.startsWith('CQ-')) ? 'comparison' : 'standard',
+              client_id: o.client_id || '',
+              client_name: (o.client_name || '').replace(/\[.*?\]/g, '').trim(),
+              contact_person: o.contact_name || o.contact_person || '',
+              contact_email: o.contact_email || '',
+              status: o.status || 'draft',
+              created_date: o.created_date || '',
+              total_principals: Number(o.total_principals || 0),
+              total_dependents: Number(o.total_dependents || 0),
+              total_members: Number(o.members || o.total_members || 0),
+              subtotal_reg_fees: Number(o.subtotal_reg_fees || 0),
+              subtotal_fund_deposit: Number(o.subtotal_fund_deposit || 0),
+              subtotal_dental: Number(o.subtotal_dental || 0),
+              grand_total_usd: Number(o.value || o.grand_total_usd || 0),
+              includes_dental: o.includes_dental === true,
+              items: o.items || [],
+            };
+            setTimeout(() => openDetail(mapped), 100);
+          }
+        }
+      } catch(e) { console.warn('Open offer error:', e); }
+      // Also check local offers list
+      const localOffer = offers.find(o => o.offer_id === openOfferId);
+      if (localOffer) setTimeout(() => openDetail(localOffer), 100);
+      window.history.replaceState({}, '', '/offers');
+    }
+    
+    // Filter by status
+    const filterSt = p.get('filterStatus');
+    if (filterSt) {
+      const statusMap: Record<string, string> = {
+        'all': 'all',
+        'draft': 'draft',
+        'sent': 'sent',
+        'pending_signature': 'sent',
+        'followup': 'sent',
+        'accepted': 'accepted',
+        'signed': 'accepted',
+      };
+      setStatusFilter(statusMap[filterSt] || 'all');
+      window.history.replaceState({}, '', '/offers');
+    }
+  }, [offers]);
 
   // Document generation state
   const [generatingDoc, setGeneratingDoc] = useState<string | null>(null); // 'nda' | 'dpa' | 'asa' | 'proposal' | 'cq' | 'all'

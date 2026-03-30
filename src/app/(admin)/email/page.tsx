@@ -18,6 +18,7 @@ export default function EmailCenterPage() {
   const [editorHtml, setEditorHtml] = React.useState('');
   const [sendDocsAttachments, setSendDocsAttachments] = React.useState([]);
   const [sendDocsSource, setSendDocsSource] = React.useState(null);
+  const [followUpSource, setFollowUpSource] = React.useState(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -41,6 +42,37 @@ export default function EmailCenterPage() {
       window.history.replaceState({},'','/email');
     } catch(e){console.error('Handoff error:',e);}
   }, []);
+
+  // Follow-up email handoff
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const p = new URLSearchParams(window.location.search);
+    if (p.get('followUpEmail') !== 'true') return;
+    try {
+      const raw = localStorage.getItem('polaris_followup_email');
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      ec.setActiveTab('compose');
+      setFollowUpSource({ clientName: d.clientName || '', template: d.template || '' });
+      if (d.clientName) ec.setSubject('Follow-up - ' + d.clientName);
+      // Auto-select client if possible
+      const matchedClient = ec.clients.find(c => c.name === d.clientName);
+      if (matchedClient) ec.handleClientChange(matchedClient.id);
+      // Auto-select template if provided
+      if (d.template) {
+        const templateMap = {
+          'renewal_reminder': 'renewal_01',
+          'renewal_urgent': 'renewal_01',
+          'followup_nda': 'contract_01',
+          'followup_proposal': 'contract_01',
+        };
+        const mappedTemplate = templateMap[d.template] || '';
+        if (mappedTemplate) ec.handleTemplateChange(mappedTemplate);
+      }
+      localStorage.removeItem('polaris_followup_email');
+      window.history.replaceState({}, '', '/email');
+    } catch (e) { console.error('Follow-up handoff error:', e); }
+  }, [ec.clients]);
 
   // Load history + scheduled when switching tabs
   useEffect(() => {
@@ -155,6 +187,12 @@ export default function EmailCenterPage() {
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',marginBottom:12,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',borderRadius:10}}>
             <span style={{color:'#D4AF37',fontSize:'0.9rem',fontWeight:600}}>Composing for: {sendDocsSource.clientName}</span>
             <button onClick={()=>window.location.href='/offers'} style={{padding:'6px 16px',background:'linear-gradient(135deg,#1e3a5f,#2d5a87)',border:'1px solid rgba(212,175,55,0.4)',borderRadius:8,color:'#D4AF37',fontWeight:600,fontSize:'0.82rem',cursor:'pointer'}}>Back to Offers</button>
+          </div>
+        )}
+        {followUpSource && (
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',marginBottom:12,background:'rgba(33,150,243,0.1)',border:'1px solid rgba(33,150,243,0.3)',borderRadius:10}}>
+            <span style={{color:'#64B5F6',fontSize:'0.9rem',fontWeight:600}}>Follow-up email for: {followUpSource.clientName}</span>
+            <button onClick={()=>window.location.href='/follow-ups'} style={{padding:'6px 16px',background:'linear-gradient(135deg,#1e3a5f,#2d5a87)',border:'1px solid rgba(100,181,246,0.4)',borderRadius:8,color:'#64B5F6',fontWeight:600,fontSize:'0.82rem',cursor:'pointer'}}>Back to Follow-ups</button>
           </div>
         )}
         <div className="em-tab-content">

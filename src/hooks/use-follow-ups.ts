@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
-/* ─── Types ─── */
+/* --- Types --- */
 export interface PipelineOffer {
   offer_id: string;
   client_name: string;
@@ -15,6 +15,7 @@ export interface PipelineOffer {
   last_note: string;
   next_action: string;
   contact_name?: string;
+  contact_email?: string;
 }
 
 export interface ExpiringContract {
@@ -40,30 +41,59 @@ export interface QuickNote {
   type: "note" | "call" | "email" | "meeting";
 }
 
-/* ─── Stage mapping ─── */
-const STAGE_ORDER = ["draft", "sent", "followup1", "followup2", "followup3", "accepted"];
+export interface ClientItem {
+  id: string;
+  name: string;
+  client_type?: string;
+  parent_client_id?: string | null;
+}
+
+export interface GroupedClient {
+  parent: ClientItem;
+  subsidiaries: ClientItem[];
+}
+
+/* --- Clean client name (remove emoji prefixes) --- */
+function cleanName(name: string): string {
+  return (name || "")
+    .replace(/^[\s]*[\u{1F3DB}\u{1F3E2}\u2514\u2500\u{1F4C1}─└\s\uFE0F]+/gu, "")
+    .replace(/\s*\[MOTHER.*?\]/gi, "")
+    .replace(/\s*\[sub of.*?\]/gi, "")
+    .trim();
+}
+
+/* --- Stage mapping from real API status values --- */
+const STAGE_ORDER = ["draft", "sent", "pending_signature", "followup", "accepted", "signed"];
 const STAGE_LABELS: Record<string, string> = {
-  draft: "Draft", sent: "Sent", followup1: "Follow-up 1",
-  followup2: "Follow-up 2", followup3: "Follow-up 3", accepted: "Accepted",
+  draft: "Draft",
+  sent: "Sent",
+  pending_signature: "Pending Sign",
+  followup: "Follow-up",
+  accepted: "Accepted",
+  signed: "Signed/Active",
 };
 const STAGE_COLORS: Record<string, string> = {
-  draft: "#6c757d", sent: "#2196F3", followup1: "#9c27b0",
-  followup2: "#FF9800", followup3: "#f44336", accepted: "#4CAF50",
+  draft: "#6c757d",
+  sent: "#2196F3",
+  pending_signature: "#9c27b0",
+  followup: "#FF9800",
+  accepted: "#4CAF50",
+  signed: "#26A69A",
 };
 
 function normalizeStage(status: string): string {
-  const s = (status || "").toLowerCase().replace(/[\s-_]+/g, "");
-  if (s.includes("draft")) return "draft";
-  if (s.includes("sent")) return "sent";
-  if (s.includes("followup1") || s === "followup1" || s === "follow-up1") return "followup1";
-  if (s.includes("followup2") || s === "followup2") return "followup2";
-  if (s.includes("followup3") || s === "followup3") return "followup3";
-  if (s.includes("accept") || s.includes("won") || s.includes("active")) return "accepted";
-  if (s.includes("follow")) return "followup1";
+  const s = (status || "").toLowerCase().replace(/[\s-]+/g, "_");
+  if (s === "draft") return "draft";
+  if (s === "sent" || s === "awaiting_selection") return "sent";
+  if (s === "pending_signature" || s === "pending_sign") return "pending_signature";
+  if (s.includes("follow")) return "followup";
+  if (s === "accepted" || s === "converted" || s === "won") return "accepted";
+  if (s === "signed" || s === "active") return "signed";
+  if (s === "pending") return "sent";
   return "draft";
 }
 
-/* ─── Demo expiring contracts ─── */
+/* --- Demo expiring contracts --- */
 function generateExpiringContracts(): ExpiringContract[] {
   return [
     { client_name: "ELETSON", contract_name: "Gold+ Healthcare 2024", members: 2450, expires: "2026-04-15", days_left: 16 },
@@ -75,7 +105,7 @@ function generateExpiringContracts(): ExpiringContract[] {
   ];
 }
 
-/* ─── Demo notes ─── */
+/* --- Demo notes --- */
 function generateNotes(): QuickNote[] {
   return [
     { id: "N1", client: "ELETSON", text: "NDA signed, waiting for proposal review", date: "2026-03-29", type: "note" },
@@ -84,7 +114,7 @@ function generateNotes(): QuickNote[] {
   ];
 }
 
-/* ─── Hook ─── */
+/* --- Hook --- */
 export function useFollowUpDashboard() {
   const [loading, setLoading] = useState(true);
   const [pipeline, setPipeline] = useState<PipelineOffer[]>([]);
@@ -92,18 +122,38 @@ export function useFollowUpDashboard() {
   const [notes, setNotes] = useState<QuickNote[]>(generateNotes());
   const [expiringFilter, setExpiringFilter] = useState(30);
 
-  // Clients for dropdown
-  const [clients, setClients] = useState<Array<{ id: string; name: string; isParent?: boolean }>>([]);
-
-  // Quick email state
-  const [emailClient, setEmailClient] = useState("");
-  const [emailTemplate, setEmailTemplate] = useState("");
-  const [emailSubject, setEmailSubject] = useState("");
-  const [emailBody, setEmailBody] = useState("");
+  // Raw clients from API
+  const [rawClients, setRawClients] = useState<ClientItem[]>([]);
 
   // New note
   const [newNoteClient, setNewNoteClient] = useState("");
   const [newNoteText, setNewNoteText] = useState("");
+
+  // Grouped clients for dropdown
+  const groupedClients = useMemo(() => {
+    const parents = rawClients.filter((c) => !c.parent_client_id || c.client_type === "parent");
+    const subs = rawClients.filter((c) => c.parent_client_id && c.client_type !== "parent");
+
+    const groups: GroupedClient[] = [];
+    const usedSubIds = new Set<string>();
+
+    parents.forEach((p) => {
+      const children = subs.filter((s) => s.parent_client_id === p.id);
+      children.forEach((ch) => usedSubIds.add(ch.id));
+      groups.push({ parent: p, subsidiaries: children });
+    });
+
+    // Any remaining orphan subs
+    subs.filter((s) => !usedSubIds.has(s.id)).forEach((s) => {
+      groups.push({ parent: s, subsidiaries: [] });
+    });
+
+    groups.sort((a, b) => a.parent.name.localeCompare(b.parent.name));
+    return groups;
+  }, [rawClients]);
+
+  // Flat client list (for backward compat)
+  const clients = useMemo(() => rawClients.map((c) => ({ id: c.id, name: c.name })), [rawClients]);
 
   // Load data
   useEffect(() => {
@@ -115,39 +165,33 @@ export function useFollowUpDashboard() {
         const res = await fetch("/api/proxy/getActiveClients");
         const data = await res.json();
         const raw = data.data || [];
-        // Build grouped list
-        const parents: Record<string, string[]> = {};
-        const standalone: Array<{ id: string; name: string }> = [];
-        raw.forEach((c: any) => {
-          const id = c.client_id || c.id;
-          const name = c.client_name || c.name;
-          const parentId = c.parent_id || c.parent_client_id;
-          if (parentId && parentId !== id) {
-            if (!parents[parentId]) parents[parentId] = [];
-            parents[parentId].push(name);
-          }
-          standalone.push({ id, name });
-        });
-        setClients(standalone);
+        const mapped: ClientItem[] = raw.map((c: any) => ({
+          id: c.client_id || c.id,
+          name: c.client_name || c.name,
+          client_type: c.client_type || (c.parent_client_id ? "subsidiary" : "parent"),
+          parent_client_id: c.parent_id || c.parent_client_id || null,
+        }));
+        setRawClients(mapped);
       } catch (e) { console.warn("Clients:", e); }
 
-      // Load offers for pipeline
+      // Load offers for pipeline - use STATUS field, NOT stage (which is a Drive URL)
       try {
         const res = await fetch("/api/proxy/getOffers");
         const data = await res.json();
         const offers = data.data || data.offers || [];
         const mapped: PipelineOffer[] = offers.map((o: any) => ({
           offer_id: o.offer_id || o.id || "",
-          client_name: o.client_name || o.company || "",
+          client_name: cleanName(o.client_name || o.company || ""),
           client_id: o.client_id || "",
           status: o.status || "draft",
           stage: normalizeStage(o.status || "draft"),
-          members: Number(o.members || o.total_members || 0),
-          value: Number(o.value || o.annual_value || o.premium || 0),
-          created_date: o.created_date || o.date || "",
-          last_note: o.last_note || o.notes || "",
+          members: Number(o.total_members || o.members || 0),
+          value: Number(o.grand_total_usd || o.value || o.annual_value || 0),
+          created_date: o.created_date || o.offer_date || o.date || "",
+          last_note: o.notes || o.last_note || "",
           next_action: o.next_action || "",
-          contact_name: o.contact_name || "",
+          contact_name: o.contact_person || o.contact_name || "",
+          contact_email: o.contact_email || "",
         }));
         setPipeline(mapped);
       } catch (e) { console.warn("Offers:", e); }
@@ -178,18 +222,18 @@ export function useFollowUpDashboard() {
     color: STAGE_COLORS[s],
   }));
 
-  // KPIs
+  // KPIs - calculated from real offer data
   const totalMembers = pipeline.reduce((s, o) => s + o.members, 0);
   const totalValue = pipeline.reduce((s, o) => s + o.value, 0);
-  const pendingOffers = pipeline.filter((o) => o.stage !== "accepted" && o.stage !== "draft").length;
+  const pendingOffers = pipeline.filter((o) => o.stage !== "signed" && o.stage !== "draft").length;
   const expiringCount = expiring.filter((e) => e.days_left <= 90).length;
 
-  // Action items
+  // Action items - based on real pipeline data
   const actionItems: ActionItem[] = [
-    { icon: "\u26A0\uFE0F", text: "Follow-up overdue", count: pipeline.filter((o) => o.stage === "followup3").length, color: "#f44336" },
-    { icon: "\u{1F4DE}", text: "Call today", count: pipeline.filter((o) => o.stage === "followup1" || o.stage === "followup2").length, color: "#FF9800" },
-    { icon: "\u{1F4CB}", text: "Contracts expiring", count: expiring.filter((e) => e.days_left <= 30).length, color: "#e74c3c" },
-    { icon: "\u{1F4E7}", text: "Send renewal", count: expiring.filter((e) => e.days_left <= 60 && e.days_left > 30).length, color: "#2196F3" },
+    { icon: "\u26A0\uFE0F", text: "Pending signature", count: pipeline.filter((o) => o.stage === "pending_signature").length, color: "#9c27b0" },
+    { icon: "\uD83D\uDCDE", text: "Needs follow-up", count: pipeline.filter((o) => o.stage === "sent" || o.stage === "followup").length, color: "#FF9800" },
+    { icon: "\uD83D\uDCCB", text: "Contracts expiring", count: expiring.filter((e) => e.days_left <= 30).length, color: "#e74c3c" },
+    { icon: "\uD83D\uDCE7", text: "Send renewal", count: expiring.filter((e) => e.days_left <= 60 && e.days_left > 30).length, color: "#2196F3" },
   ];
 
   // Filtered expiring
@@ -224,9 +268,7 @@ export function useFollowUpDashboard() {
     expiring: filteredExpiring, expiringFilter, setExpiringFilter, allExpiring: expiring,
     detailedView,
     notes, addNote, newNoteClient, setNewNoteClient, newNoteText, setNewNoteText,
-    clients,
-    emailClient, setEmailClient, emailTemplate, setEmailTemplate,
-    emailSubject, setEmailSubject, emailBody, setEmailBody,
+    clients, groupedClients,
     STAGE_ORDER, STAGE_LABELS, STAGE_COLORS,
   };
 }

@@ -1,10 +1,110 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useFollowUpDashboard } from "@/hooks/use-follow-ups";
+import type { GroupedClient } from "@/hooks/use-follow-ups";
 import "./follow-ups.css";
 
 const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
 const fmtUsd = (n: number) => "$" + fmt(n);
+
+/* ---- Navigate to Offers and open specific offer ---- */
+function goToOffer(offerId: string) {
+  localStorage.setItem("polaris_open_offer", JSON.stringify({
+    offerId,
+    timestamp: Date.now(),
+  }));
+  window.location.href = "/offers?openOffer=" + encodeURIComponent(offerId);
+}
+
+/* ---- Navigate to Offers with status filter ---- */
+function goToOffersFiltered(status: string) {
+  window.location.href = "/offers?filterStatus=" + encodeURIComponent(status);
+}
+
+/* ---- Handoff to Email Center ---- */
+function emailHandoff(clientName: string, template?: string) {
+  const handoff = {
+    type: "followUpEmail",
+    clientName,
+    template: template || "",
+    source: "follow-ups",
+    timestamp: Date.now(),
+  };
+  localStorage.setItem("polaris_followup_email", JSON.stringify(handoff));
+  window.location.href = "/email?followUpEmail=true";
+}
+
+/* ---- Grouped Client Dropdown Component ---- */
+function GroupedClientDropdown({
+  value,
+  onChange,
+  groupedClients,
+  placeholder = "Select Client...",
+  className = "",
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  groupedClients: GroupedClient[];
+  placeholder?: string;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const filtered = groupedClients
+    .map((g) => {
+      const term = search.toLowerCase();
+      const parentMatch = g.parent.name.toLowerCase().includes(term);
+      const matchedSubs = g.subsidiaries.filter((s) => s.name.toLowerCase().includes(term));
+      if (!parentMatch && matchedSubs.length === 0) return null;
+      return { ...g, subsidiaries: parentMatch ? g.subsidiaries : matchedSubs };
+    })
+    .filter(Boolean) as GroupedClient[];
+
+  return (
+    <div ref={ref} className={`gcd-wrapper ${className}`}>
+      <button type="button" className={`gcd-trigger ${open ? "open" : ""} ${value ? "has-value" : ""}`} onClick={() => setOpen(!open)}>
+        <span className="gcd-trigger-text">{value || placeholder}</span>
+        <span className="gcd-chevron">{open ? "\u25B2" : "\u25BC"}</span>
+      </button>
+      {open && (
+        <div className="gcd-dropdown">
+          <div className="gcd-search-wrap">
+            <input className="gcd-search" placeholder="Search clients..." value={search} onChange={(e) => setSearch(e.target.value)} autoFocus />
+          </div>
+          <div className="gcd-list">
+            {filtered.length === 0 && <div className="gcd-empty">No clients found</div>}
+            {filtered.map((g) => (
+              <div key={g.parent.id} className="gcd-group">
+                <div className={`gcd-parent ${value === g.parent.name ? "selected" : ""}`} onClick={() => { onChange(g.parent.name); setOpen(false); setSearch(""); }}>
+                  <span className="gcd-parent-icon">{"\uD83C\uDFE2"}</span>
+                  <span className="gcd-parent-name">{g.parent.name}</span>
+                  {g.subsidiaries.length > 0 && <span className="gcd-sub-count">{g.subsidiaries.length}</span>}
+                </div>
+                {g.subsidiaries.map((sub) => (
+                  <div key={sub.id} className={`gcd-sub ${value === sub.name ? "selected" : ""}`} onClick={() => { onChange(sub.name); setOpen(false); setSearch(""); }}>
+                    <span className="gcd-sub-indent">{"\u2514"}</span>
+                    <span className="gcd-sub-name">{sub.name}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function FollowUpsPage() {
   const fu = useFollowUpDashboard();
@@ -17,32 +117,32 @@ export default function FollowUpsPage() {
     <div className="fud-page">
       {/* Header */}
       <div className="fud-header">
-        <h1 className="fud-title">{"\u{1F4CB}"} Follow Up Dashboard</h1>
+        <h1 className="fud-title">{"\uD83D\uDCCB"} Follow Up Dashboard</h1>
         <div className="fud-header-actions">
-          <button className="fud-export-btn">{"\u{1F4C4}"} Export PDF</button>
-          <button className="fud-export-btn">{"\u{1F4CA}"} Export Excel</button>
+          <button className="fud-export-btn">{"\uD83D\uDCC4"} Export PDF</button>
+          <button className="fud-export-btn">{"\uD83D\uDCCA"} Export Excel</button>
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards - clickable */}
       <div className="fud-kpis">
-        <div className="fud-kpi members">
-          <div className="fud-kpi-icon">{"\u{1F465}"}</div>
+        <div className="fud-kpi members clickable" onClick={() => goToOffersFiltered("all")}>
+          <div className="fud-kpi-icon">{"\uD83D\uDC65"}</div>
           <div className="fud-kpi-value">{fmt(fu.totalMembers)}</div>
           <div className="fud-kpi-label">Total Members</div>
           <span className="fud-kpi-trend up">Pipeline</span>
         </div>
-        <div className="fud-kpi revenue">
-          <div className="fud-kpi-icon">{"\u{1F4B0}"}</div>
+        <div className="fud-kpi revenue clickable" onClick={() => goToOffersFiltered("all")}>
+          <div className="fud-kpi-icon">{"\uD83D\uDCB0"}</div>
           <div className="fud-kpi-value">{fmtUsd(fu.totalValue)}</div>
-          <div className="fud-kpi-label">Annual Revenue</div>
-          <span className="fud-kpi-trend up">Potential</span>
+          <div className="fud-kpi-label">Pipeline Value</div>
+          <span className="fud-kpi-trend up">Total</span>
         </div>
-        <div className="fud-kpi pending">
-          <div className="fud-kpi-icon">{"\u{1F4DD}"}</div>
+        <div className="fud-kpi pending clickable" onClick={() => goToOffersFiltered("sent")}>
+          <div className="fud-kpi-icon">{"\uD83D\uDCDD"}</div>
           <div className="fud-kpi-value">{fu.pendingOffers}</div>
-          <div className="fud-kpi-label">Pending Offers</div>
-          <span className="fud-kpi-trend neutral">Active</span>
+          <div className="fud-kpi-label">In Progress</div>
+          <span className="fud-kpi-trend neutral">Sent/Pending/Accepted</span>
         </div>
         <div className="fud-kpi expiring">
           <div className="fud-kpi-icon">{"\u26A0\uFE0F"}</div>
@@ -55,8 +155,8 @@ export default function FollowUpsPage() {
       {/* Pipeline Kanban */}
       <div className="fud-section">
         <div className="fud-section-header">
-          <h2 className="fud-section-title">{"\u{1F4CA}"} Offers Pipeline</h2>
-          <button className="fud-refresh-btn" onClick={() => window.location.reload()}>{"\u{1F504}"} Refresh</button>
+          <h2 className="fud-section-title">{"\uD83D\uDCCA"} Offers Pipeline</h2>
+          <button className="fud-refresh-btn" onClick={() => window.location.reload()}>{"\uD83D\uDD04"} Refresh</button>
         </div>
         <div className="fud-pipeline-scroll">
           <div className="fud-pipeline-kanban">
@@ -70,8 +170,15 @@ export default function FollowUpsPage() {
                     <div className="fud-pipeline-empty">No offers</div>
                   ) : (
                     fu.pipelineByStage[stage].map((offer) => (
-                      <div key={offer.offer_id} className="fud-pipeline-card">
-                        <div className="fud-pipeline-card-client">{offer.client_name}</div>
+                      <div key={offer.offer_id} className="fud-pipeline-card" onClick={() => goToOffer(offer.offer_id, offer)}>
+                        <div className="fud-pipeline-card-top">
+                          <div className="fud-pipeline-card-client">{offer.client_name}</div>
+                          <button
+                            className="fud-card-email-btn"
+                            title="Send Email"
+                            onClick={(e) => { e.stopPropagation(); emailHandoff(offer.client_name); }}
+                          >{"\uD83D\uDCE7"}</button>
+                        </div>
                         <div className="fud-pipeline-card-value">{fmtUsd(offer.value)}</div>
                         {offer.members > 0 && <div className="fud-pipeline-card-members">{fmt(offer.members)} members</div>}
                         <div className="fud-pipeline-card-id">{offer.offer_id}</div>
@@ -90,11 +197,11 @@ export default function FollowUpsPage() {
         {/* Pipeline Bar Chart */}
         <div className="fud-section">
           <div className="fud-section-header">
-            <h2 className="fud-section-title">{"\u{1F4CA}"} Offers Pipeline</h2>
+            <h2 className="fud-section-title">{"\uD83D\uDCCA"} Offers Pipeline</h2>
           </div>
           <div className="fud-pipeline-bars">
             {fu.pipelineBars.map((bar) => (
-              <div key={bar.stage} className="fud-bar-row">
+              <div key={bar.stage} className="fud-bar-row clickable" onClick={() => goToOffersFiltered(bar.stage)}>
                 <span className="fud-bar-label">{bar.label}</span>
                 <div className="fud-bar-container">
                   <div className="fud-bar-fill" style={{ width: `${bar.pct}%`, background: `linear-gradient(90deg, ${bar.color}, ${bar.color}aa)` }} />
@@ -105,14 +212,18 @@ export default function FollowUpsPage() {
           </div>
         </div>
 
-        {/* Action Required */}
+        {/* Action Required - clickable items */}
         <div className="fud-section">
           <div className="fud-section-header">
-            <h2 className="fud-section-title">{"\u{1F514}"} Action Required</h2>
+            <h2 className="fud-section-title">{"\uD83D\uDD14"} Action Required</h2>
           </div>
           <div className="fud-action-list">
             {fu.actionItems.map((item, i) => (
-              <div key={i} className="fud-action-item">
+              <div key={i} className="fud-action-item clickable" onClick={() => {
+                if (i === 0) goToOffersFiltered("pending_signature");
+                else if (i === 1) goToOffersFiltered("sent");
+                // items 2,3 are expiring - scroll down or just stay
+              }}>
                 <span className="fud-action-icon">{item.icon}</span>
                 <span className="fud-action-text">{item.text}</span>
                 <span className="fud-action-count" style={{ color: item.color }}>{item.count}</span>
@@ -125,31 +236,33 @@ export default function FollowUpsPage() {
       {/* Detailed View Table */}
       <div className="fud-section">
         <div className="fud-section-header">
-          <h2 className="fud-section-title">{"\u{1F4CB}"} Detailed View</h2>
-          <button className="fud-refresh-btn">{"\u{1F5A8}\uFE0F"} Print</button>
+          <h2 className="fud-section-title">{"\uD83D\uDCCB"} Detailed View</h2>
+          <button className="fud-refresh-btn">{"\uD83D\uDDA8\uFE0F"} Print</button>
         </div>
         <div className="fud-table-scroll">
           <table className="fud-table">
             <thead>
               <tr>
                 <th>Client</th>
+                <th>Contact</th>
                 <th>Stage</th>
                 <th style={{ textAlign: "right" }}>Members</th>
                 <th style={{ textAlign: "right" }}>Value</th>
-                <th>Last Note</th>
-                <th>Next Action</th>
+                <th>Notes</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {fu.detailedView.length === 0 ? (
-                <tr><td colSpan={6} className="fud-table-empty">No pipeline data available</td></tr>
+                <tr><td colSpan={7} className="fud-table-empty">No pipeline data available</td></tr>
               ) : (
                 fu.detailedView.map((offer) => (
-                  <tr key={offer.offer_id}>
+                  <tr key={offer.offer_id} className="fud-tr-clickable" onClick={() => goToOffer(offer.offer_id, offer)}>
                     <td className="fud-td-client">
                       <span className="fud-td-client-name">{offer.client_name}</span>
                       <span className="fud-td-offer-id">{offer.offer_id}</span>
                     </td>
+                    <td className="fud-td-contact">{offer.contact_name || "-"}</td>
                     <td>
                       <span className="fud-stage-badge" style={{ background: `${fu.STAGE_COLORS[offer.stage]}30`, color: fu.STAGE_COLORS[offer.stage] }}>
                         {fu.STAGE_LABELS[offer.stage]}
@@ -159,7 +272,10 @@ export default function FollowUpsPage() {
                     <td style={{ textAlign: "right", color: "#D4AF37", fontWeight: 700 }}>{offer.value > 0 ? fmtUsd(offer.value) : "-"}</td>
                     <td className="fud-td-note">{offer.last_note || "-"}</td>
                     <td>
-                      <button className="fud-td-action-btn">Contact</button>
+                      <div className="fud-td-actions" onClick={(e) => e.stopPropagation()}>
+                        <button className="fud-td-action-btn" onClick={() => emailHandoff(offer.client_name)}>{"\uD83D\uDCE7"} Email</button>
+                        <button className="fud-td-action-btn view" onClick={() => goToOffer(offer.offer_id, offer)}>{"\uD83D\uDCC4"} View</button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -170,13 +286,13 @@ export default function FollowUpsPage() {
         {fu.detailedView.length > 0 && (
           <div className="fud-table-totals">
             <div className="fud-total-item">
-              <span className="fud-total-icon">{"\u{1F465}"}</span>
+              <span className="fud-total-icon">{"\uD83D\uDC65"}</span>
               <span className="fud-total-value">{fmt(fu.totalMembers)}</span>
               <span className="fud-total-label">Members</span>
             </div>
             <div className="fud-total-divider">|</div>
             <div className="fud-total-item">
-              <span className="fud-total-icon">{"\u{1F4B0}"}</span>
+              <span className="fud-total-icon">{"\uD83D\uDCB0"}</span>
               <span className="fud-total-value gold">{fmtUsd(fu.totalValue)}</span>
               <span className="fud-total-label">Pipeline Value</span>
             </div>
@@ -206,9 +322,9 @@ export default function FollowUpsPage() {
                   onClick={() => fu.setExpiringFilter(days)}
                   style={fu.expiringFilter === days ? { borderColor: colors[days as 30|60|90], color: colors[days as 30|60|90] } : {}}
                 >
-                  {days === 30 ? "\u{1F534}" : days === 60 ? "\u{1F7E0}" : "\u{1F7E1}"} {days} Days
+                  {days === 30 ? "\uD83D\uDD34" : days === 60 ? "\uD83D\uDFE0" : "\uD83D\uDFE1"} {days} Days
                   <span className="fud-exp-count">{count}</span>
-                  <span className="fud-exp-members">{"\u{1F465}"} {fmt(members)}</span>
+                  <span className="fud-exp-members">{"\uD83D\uDC65"} {fmt(members)}</span>
                 </button>
               );
             })}
@@ -233,7 +349,14 @@ export default function FollowUpsPage() {
                           {exp.days_left}d
                         </span>
                       </td>
-                      <td><button className="fud-td-action-btn">Renew</button></td>
+                      <td>
+                        <div className="fud-td-actions">
+                          <button className="fud-td-action-btn" onClick={() => emailHandoff(exp.client_name, exp.days_left <= 30 ? "renewal_urgent" : "renewal_reminder")}>
+                            {"\uD83D\uDCE7"} Email
+                          </button>
+                          <button className="fud-td-action-btn renew">Renew</button>
+                        </div>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -242,29 +365,33 @@ export default function FollowUpsPage() {
           </div>
         </div>
 
-        {/* Quick Notes & Email */}
+        {/* Quick Notes */}
         <div className="fud-section">
           <div className="fud-section-header">
-            <h2 className="fud-section-title">{"\u{1F4DD}"} Quick Notes & Activity</h2>
+            <h2 className="fud-section-title">{"\uD83D\uDCDD"} Quick Notes & Activity</h2>
           </div>
-          {/* Add note */}
           <div className="fud-note-form">
-            <select className="fud-note-select" value={fu.newNoteClient} onChange={(e) => fu.setNewNoteClient(e.target.value)}>
-              <option value="">Select Client...</option>
-              {fu.clients.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
-            </select>
+            <GroupedClientDropdown
+              value={fu.newNoteClient}
+              onChange={fu.setNewNoteClient}
+              groupedClients={fu.groupedClients}
+              placeholder="Select Client..."
+            />
             <div className="fud-note-input-row">
               <input className="fud-note-input" placeholder="Quick note..." value={fu.newNoteText} onChange={(e) => fu.setNewNoteText(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") fu.addNote(); }} />
               <button className="fud-note-add-btn" onClick={fu.addNote}>Add</button>
             </div>
           </div>
-          {/* Notes list */}
+          <div className="fud-notes-section-title">Recent Activity</div>
           <div className="fud-notes-list">
             {fu.notes.map((note) => (
               <div key={note.id} className="fud-note-item">
                 <div className="fud-note-header">
-                  <span className="fud-note-client">{note.client}</span>
+                  <span className="fud-note-client">
+                    {note.type === "email" ? "\uD83D\uDCE7" : note.type === "call" ? "\uD83D\uDCDE" : note.type === "meeting" ? "\uD83E\uDD1D" : "\uD83D\uDCDD"}{" "}
+                    {note.client}
+                  </span>
                   <span className="fud-note-date">{new Date(note.date).toLocaleDateString("en-US", { day: "2-digit", month: "short" })}</span>
                 </div>
                 <div className="fud-note-text">{note.text}</div>
