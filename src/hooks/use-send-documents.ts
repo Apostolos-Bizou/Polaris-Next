@@ -94,7 +94,7 @@ export function useSendDocuments() {
   }, []);
 
   return {
-    isOpen, open, close,
+    isOpen, open, close, openModal: open, closeModal: close, openModal: open, closeModal: close,
     offerId, clientName,
     docs,
     selectedDocs, toggleDoc,
