@@ -1,406 +1,278 @@
 "use client";
 
-import { useState } from "react";
-import { useFollowUps, FollowUpItem } from "@/hooks/use-follow-ups";
+import { useFollowUpDashboard } from "@/hooks/use-follow-ups";
 import "./follow-ups.css";
 
-/* ─── Helpers ─── */
-function daysUntil(dateStr: string): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const due = new Date(dateStr);
-  due.setHours(0, 0, 0, 0);
-  return Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-}
+const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
+const fmtUsd = (n: number) => "$" + fmt(n);
 
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-function priorityColor(p: string): string {
-  return p === "high" ? "#e74c3c" : p === "medium" ? "#f39c12" : "#27ae60";
-}
-
-function statusColor(s: string): string {
-  return s === "overdue" ? "#e74c3c" : s === "pending" ? "#f39c12" : s === "in_progress" ? "#3498db" : s === "completed" ? "#27ae60" : "#95a5a6";
-}
-
-function typeIcon(t: string): string {
-  const icons: Record<string, string> = {
-    nda: "\u{1F4C4}", proposal: "\u{1F4CB}", decision: "\u231B",
-    renewal: "\u{1F504}", meeting: "\u{1F91D}", custom: "\u{1F4DD}",
-  };
-  return icons[t] || "\u{1F4DD}";
-}
-
-function typeLabel(t: string): string {
-  const labels: Record<string, string> = {
-    nda: "NDA", proposal: "Proposal", decision: "Decision",
-    renewal: "Renewal", meeting: "Meeting", custom: "Custom",
-  };
-  return labels[t] || "Custom";
-}
-
-/* ─── Create Follow-up Modal ─── */
-function CreateModal({ fu, onClose }: { fu: ReturnType<typeof useFollowUps>; onClose: () => void }) {
-  const tpl = fu.selectedTemplate;
-  const [clientId, setClientId] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [subject, setSubject] = useState(tpl?.defaultSubject || "");
-  const [notes, setNotes] = useState(tpl?.defaultNotes || "");
-  const [priority, setPriority] = useState<FollowUpItem["priority"]>(tpl?.defaultPriority || "medium");
-  const [dueDate, setDueDate] = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + (tpl?.daysToDue || 7));
-    return d.toISOString().split("T")[0];
-  });
-  const [contactName, setContactName] = useState("");
-  const [reminder, setReminder] = useState(true);
-
-  const handleSave = () => {
-    if (!clientId || !subject) {
-      alert("Please select a client and enter a subject");
-      return;
-    }
-    fu.addFollowUp({
-      client_id: clientId,
-      client_name: clientName,
-      type: tpl?.type || "custom",
-      subject,
-      notes,
-      priority,
-      status: "pending",
-      due_date: dueDate,
-      reminder,
-      contact_name: contactName,
-    });
-  };
-
-  return (
-    <div className="fu-modal-overlay" onClick={onClose}>
-      <div className="fu-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="fu-modal-header">
-          <h2>{tpl ? `${tpl.icon} ${tpl.label}` : "\u{1F4DD} New Follow-up"}</h2>
-          <button className="fu-modal-close" onClick={onClose}>x</button>
-        </div>
-        <div className="fu-modal-body">
-          <div className="fu-form-row">
-            <div className="fu-form-group" style={{ flex: 2 }}>
-              <label>Client *</label>
-              <select
-                value={clientId}
-                onChange={(e) => {
-                  setClientId(e.target.value);
-                  const found = fu.clients.find((c) => c.id === e.target.value);
-                  if (found) setClientName(found.name);
-                }}
-              >
-                <option value="">Select client...</option>
-                {fu.clients.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="fu-form-group">
-              <label>Contact Name</label>
-              <input type="text" value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Contact person..." />
-            </div>
-          </div>
-          <div className="fu-form-group">
-            <label>Subject *</label>
-            <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Follow-up subject..." />
-          </div>
-          <div className="fu-form-group">
-            <label>Notes</label>
-            <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Details..." />
-          </div>
-          <div className="fu-form-row">
-            <div className="fu-form-group">
-              <label>Due Date</label>
-              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-            </div>
-            <div className="fu-form-group">
-              <label>Priority</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value as FollowUpItem["priority"])}>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-            </div>
-            <div className="fu-form-group">
-              <label>Reminder</label>
-              <label className="fu-toggle">
-                <input type="checkbox" checked={reminder} onChange={(e) => setReminder(e.target.checked)} />
-                <span className="fu-toggle-slider" />
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="fu-modal-footer">
-          <button className="fu-btn cancel" onClick={onClose}>Cancel</button>
-          <button className="fu-btn save" onClick={handleSave}>Create Follow-up</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Follow-up Card ─── */
-function FollowUpCard({ item, fu }: { item: FollowUpItem; fu: ReturnType<typeof useFollowUps> }) {
-  const days = daysUntil(item.due_date);
-  const isOverdue = days < 0 && item.status !== "completed";
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div className={`fu-card ${isOverdue ? "overdue" : ""} ${item.status === "completed" ? "completed" : ""}`}>
-      <div className="fu-card-main" onClick={() => setExpanded(!expanded)}>
-        <div className="fu-card-left">
-          <span className="fu-card-icon">{typeIcon(item.type)}</span>
-          <div className="fu-card-info">
-            <div className="fu-card-client">{item.client_name}</div>
-            <div className="fu-card-subject">{item.subject}</div>
-            {item.contact_name && <div className="fu-card-contact">Contact: {item.contact_name}</div>}
-          </div>
-        </div>
-        <div className="fu-card-right">
-          <span className="fu-badge type" style={{ background: `rgba(${item.type === "nda" ? "231,76,60" : item.type === "proposal" ? "52,152,219" : item.type === "renewal" ? "212,175,55" : "142,68,173"},0.2)` }}>
-            {typeLabel(item.type)}
-          </span>
-          <span className="fu-badge priority" style={{ background: `${priorityColor(item.priority)}30`, color: priorityColor(item.priority) }}>
-            {item.priority}
-          </span>
-          <span className="fu-badge status" style={{ background: `${statusColor(item.status)}25`, color: statusColor(item.status) }}>
-            {item.status === "in_progress" ? "In Progress" : item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-          </span>
-          <div className={`fu-card-due ${isOverdue ? "overdue" : days <= 3 ? "soon" : ""}`}>
-            {isOverdue ? `${Math.abs(days)}d overdue` : days === 0 ? "Today" : `${days}d left`}
-          </div>
-        </div>
-      </div>
-      {expanded && (
-        <div className="fu-card-expanded">
-          <div className="fu-card-notes">{item.notes}</div>
-          <div className="fu-card-meta">
-            <span>Created: {formatDate(item.created_date)}</span>
-            <span>Due: {formatDate(item.due_date)}</span>
-            {item.completed_date && <span>Completed: {formatDate(item.completed_date)}</span>}
-            {item.reminder && <span className="fu-reminder-badge">Reminder ON</span>}
-          </div>
-          <div className="fu-card-actions">
-            {item.status !== "completed" && (
-              <>
-                <button className="fu-action-btn complete" onClick={(e) => { e.stopPropagation(); fu.updateStatus(item.id, "completed"); }}>
-                  Mark Complete
-                </button>
-                <button className="fu-action-btn progress" onClick={(e) => { e.stopPropagation(); fu.updateStatus(item.id, "in_progress"); }}>
-                  In Progress
-                </button>
-                <button className="fu-action-btn snooze" onClick={(e) => { e.stopPropagation(); fu.snooze(item.id, 3); }}>
-                  Snooze 3d
-                </button>
-                <button className="fu-action-btn snooze" onClick={(e) => { e.stopPropagation(); fu.snooze(item.id, 7); }}>
-                  Snooze 7d
-                </button>
-              </>
-            )}
-            <button className="fu-action-btn delete" onClick={(e) => { e.stopPropagation(); if (confirm("Delete this follow-up?")) fu.deleteFollowUp(item.id); }}>
-              Delete
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── Calendar View ─── */
-function CalendarView({ fu }: { fu: ReturnType<typeof useFollowUps> }) {
-  const today = new Date();
-  const [monthOffset, setMonthOffset] = useState(0);
-  const viewDate = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDay = new Date(year, month, 1).getDay();
-  const monthName = viewDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-
-  // Group follow-ups by date
-  const byDate: Record<string, FollowUpItem[]> = {};
-  fu.allFollowUps.forEach((item) => {
-    const d = item.due_date;
-    if (!byDate[d]) byDate[d] = [];
-    byDate[d].push(item);
-  });
-
-  const cells = [];
-  for (let i = 0; i < firstDay; i++) cells.push(<div key={`e${i}`} className="fu-cal-cell empty" />);
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    const items = byDate[dateStr] || [];
-    const isToday = dateStr === today.toISOString().split("T")[0];
-    cells.push(
-      <div key={d} className={`fu-cal-cell ${isToday ? "today" : ""} ${items.length ? "has-items" : ""}`}>
-        <div className="fu-cal-day">{d}</div>
-        {items.slice(0, 3).map((item) => (
-          <div key={item.id} className={`fu-cal-item ${item.status}`} title={`${item.client_name}: ${item.subject}`}>
-            <span className="fu-cal-dot" style={{ background: priorityColor(item.priority) }} />
-            <span className="fu-cal-text">{item.client_name}</span>
-          </div>
-        ))}
-        {items.length > 3 && <div className="fu-cal-more">+{items.length - 3} more</div>}
-      </div>
-    );
-  }
-
-  return (
-    <div className="fu-calendar">
-      <div className="fu-cal-nav">
-        <button onClick={() => setMonthOffset((p) => p - 1)}>&lt;</button>
-        <h3>{monthName}</h3>
-        <button onClick={() => setMonthOffset((p) => p + 1)}>&gt;</button>
-      </div>
-      <div className="fu-cal-header">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="fu-cal-dayname">{d}</div>
-        ))}
-      </div>
-      <div className="fu-cal-grid">{cells}</div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════
-   MAIN PAGE
-   ═══════════════════════════════════════ */
 export default function FollowUpsPage() {
-  const fu = useFollowUps();
+  const fu = useFollowUpDashboard();
 
   if (fu.loading) {
-    return (
-      <div className="fu-page">
-        <div className="fu-loading">Loading follow-ups...</div>
-      </div>
-    );
+    return <div className="fud-page"><div className="fud-loading">Loading Follow-up Dashboard...</div></div>;
   }
 
   return (
-    <div className="fu-page">
+    <div className="fud-page">
       {/* Header */}
-      <div className="fu-header">
-        <div>
-          <h1 className="fu-title">{"\u{1F4CB}"} Follow-ups Management</h1>
-          <p className="fu-subtitle">Track and manage client follow-ups, reminders, and pending actions</p>
-        </div>
-        <button className="fu-new-btn" onClick={() => { fu.setSelectedTemplate(null); fu.setShowCreateModal(true); }}>
-          + New Follow-up
-        </button>
-      </div>
-
-      {/* KPI Stats */}
-      <div className="fu-stats-grid">
-        <div className="fu-stat-card">
-          <div className="fu-stat-value" style={{ color: "#3498db" }}>{fu.stats.total}</div>
-          <div className="fu-stat-label">Active</div>
-        </div>
-        <div className="fu-stat-card alert">
-          <div className="fu-stat-value" style={{ color: "#e74c3c" }}>{fu.stats.overdue}</div>
-          <div className="fu-stat-label">Overdue</div>
-        </div>
-        <div className="fu-stat-card">
-          <div className="fu-stat-value" style={{ color: "#f39c12" }}>{fu.stats.dueToday + fu.stats.dueSoon}</div>
-          <div className="fu-stat-label">Due Soon</div>
-        </div>
-        <div className="fu-stat-card">
-          <div className="fu-stat-value" style={{ color: "#e74c3c" }}>{fu.stats.highPriority}</div>
-          <div className="fu-stat-label">High Priority</div>
-        </div>
-        <div className="fu-stat-card">
-          <div className="fu-stat-value" style={{ color: "#27ae60" }}>{fu.stats.completed}</div>
-          <div className="fu-stat-label">Completed</div>
+      <div className="fud-header">
+        <h1 className="fud-title">{"\u{1F4CB}"} Follow Up Dashboard</h1>
+        <div className="fud-header-actions">
+          <button className="fud-export-btn">{"\u{1F4C4}"} Export PDF</button>
+          <button className="fud-export-btn">{"\u{1F4CA}"} Export Excel</button>
         </div>
       </div>
 
-      {/* Quick Templates */}
-      <div className="fu-section">
-        <h2 className="fu-section-title">Quick Follow-up Templates</h2>
-        <div className="fu-templates-grid">
-          {fu.templates.map((tpl) => (
-            <button
-              key={tpl.key}
-              className="fu-template-card"
-              onClick={() => { fu.setSelectedTemplate(tpl); fu.setShowCreateModal(true); }}
-            >
-              <span className="fu-template-icon">{tpl.icon}</span>
-              <span className="fu-template-label">{tpl.label}</span>
-              <span className="fu-template-days">{tpl.daysToDue}d</span>
-            </button>
-          ))}
+      {/* KPI Cards */}
+      <div className="fud-kpis">
+        <div className="fud-kpi members">
+          <div className="fud-kpi-icon">{"\u{1F465}"}</div>
+          <div className="fud-kpi-value">{fmt(fu.totalMembers)}</div>
+          <div className="fud-kpi-label">Total Members</div>
+          <span className="fud-kpi-trend up">Pipeline</span>
+        </div>
+        <div className="fud-kpi revenue">
+          <div className="fud-kpi-icon">{"\u{1F4B0}"}</div>
+          <div className="fud-kpi-value">{fmtUsd(fu.totalValue)}</div>
+          <div className="fud-kpi-label">Annual Revenue</div>
+          <span className="fud-kpi-trend up">Potential</span>
+        </div>
+        <div className="fud-kpi pending">
+          <div className="fud-kpi-icon">{"\u{1F4DD}"}</div>
+          <div className="fud-kpi-value">{fu.pendingOffers}</div>
+          <div className="fud-kpi-label">Pending Offers</div>
+          <span className="fud-kpi-trend neutral">Active</span>
+        </div>
+        <div className="fud-kpi expiring">
+          <div className="fud-kpi-icon">{"\u26A0\uFE0F"}</div>
+          <div className="fud-kpi-value">{fu.expiringCount}</div>
+          <div className="fud-kpi-label">Expiring (90 days)</div>
+          <span className="fud-kpi-trend down">Action Required</span>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="fu-tabs">
-        <button className={`fu-tab ${fu.activeTab === "queue" ? "active" : ""}`} onClick={() => { fu.setActiveTab("queue"); fu.setFilterStatus("active"); }}>
-          Queue <span className="fu-tab-badge">{fu.stats.total}</span>
-        </button>
-        <button className={`fu-tab ${fu.activeTab === "calendar" ? "active" : ""}`} onClick={() => fu.setActiveTab("calendar")}>
-          Calendar
-        </button>
-        <button className={`fu-tab ${fu.activeTab === "completed" ? "active" : ""}`} onClick={() => { fu.setActiveTab("completed"); fu.setFilterStatus("completed"); }}>
-          Completed <span className="fu-tab-badge green">{fu.stats.completed}</span>
-        </button>
+      {/* Pipeline Kanban */}
+      <div className="fud-section">
+        <div className="fud-section-header">
+          <h2 className="fud-section-title">{"\u{1F4CA}"} Offers Pipeline</h2>
+          <button className="fud-refresh-btn" onClick={() => window.location.reload()}>{"\u{1F504}"} Refresh</button>
+        </div>
+        <div className="fud-pipeline-scroll">
+          <div className="fud-pipeline-kanban">
+            {fu.STAGE_ORDER.map((stage) => (
+              <div key={stage} className={`fud-pipeline-col ${stage}`}>
+                <div className="fud-pipeline-col-header" style={{ background: `${fu.STAGE_COLORS[stage]}40`, color: fu.STAGE_COLORS[stage] }}>
+                  {fu.STAGE_LABELS[stage]} <span className="fud-pipeline-count">{fu.pipelineByStage[stage].length}</span>
+                </div>
+                <div className="fud-pipeline-col-body">
+                  {fu.pipelineByStage[stage].length === 0 ? (
+                    <div className="fud-pipeline-empty">No offers</div>
+                  ) : (
+                    fu.pipelineByStage[stage].map((offer) => (
+                      <div key={offer.offer_id} className="fud-pipeline-card">
+                        <div className="fud-pipeline-card-client">{offer.client_name}</div>
+                        <div className="fud-pipeline-card-value">{fmtUsd(offer.value)}</div>
+                        {offer.members > 0 && <div className="fud-pipeline-card-members">{fmt(offer.members)} members</div>}
+                        <div className="fud-pipeline-card-id">{offer.offer_id}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Filters (queue & completed tabs) */}
-      {fu.activeTab !== "calendar" && (
-        <div className="fu-filters">
-          <input
-            className="fu-search"
-            placeholder="Search clients, subjects..."
-            value={fu.searchTerm}
-            onChange={(e) => fu.setSearchTerm(e.target.value)}
-          />
-          <select className="fu-filter-select" value={fu.filterType} onChange={(e) => fu.setFilterType(e.target.value)}>
-            <option value="all">All Types</option>
-            <option value="nda">NDA</option>
-            <option value="proposal">Proposal</option>
-            <option value="decision">Decision</option>
-            <option value="renewal">Renewal</option>
-            <option value="meeting">Meeting</option>
-          </select>
-          <select className="fu-filter-select" value={fu.filterPriority} onChange={(e) => fu.setFilterPriority(e.target.value)}>
-            <option value="all">All Priority</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-          <select className="fu-filter-select" value={fu.sortBy} onChange={(e) => fu.setSortBy(e.target.value as "due_date" | "priority" | "client")}>
-            <option value="due_date">Sort: Due Date</option>
-            <option value="priority">Sort: Priority</option>
-            <option value="client">Sort: Client</option>
-          </select>
+      {/* Pipeline Bars + Action Required (side by side) */}
+      <div className="fud-grid-2">
+        {/* Pipeline Bar Chart */}
+        <div className="fud-section">
+          <div className="fud-section-header">
+            <h2 className="fud-section-title">{"\u{1F4CA}"} Offers Pipeline</h2>
+          </div>
+          <div className="fud-pipeline-bars">
+            {fu.pipelineBars.map((bar) => (
+              <div key={bar.stage} className="fud-bar-row">
+                <span className="fud-bar-label">{bar.label}</span>
+                <div className="fud-bar-container">
+                  <div className="fud-bar-fill" style={{ width: `${bar.pct}%`, background: `linear-gradient(90deg, ${bar.color}, ${bar.color}aa)` }} />
+                </div>
+                <span className="fud-bar-count" style={{ color: bar.color }}>{bar.count}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Content */}
-      {fu.activeTab === "calendar" ? (
-        <CalendarView fu={fu} />
-      ) : (
-        <div className="fu-list">
-          {fu.followUps.length === 0 ? (
-            <div className="fu-empty">No follow-ups found</div>
-          ) : (
-            fu.followUps.map((item) => (
-              <FollowUpCard key={item.id} item={item} fu={fu} />
-            ))
-          )}
+        {/* Action Required */}
+        <div className="fud-section">
+          <div className="fud-section-header">
+            <h2 className="fud-section-title">{"\u{1F514}"} Action Required</h2>
+          </div>
+          <div className="fud-action-list">
+            {fu.actionItems.map((item, i) => (
+              <div key={i} className="fud-action-item">
+                <span className="fud-action-icon">{item.icon}</span>
+                <span className="fud-action-text">{item.text}</span>
+                <span className="fud-action-count" style={{ color: item.color }}>{item.count}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Create Modal */}
-      {fu.showCreateModal && (
-        <CreateModal fu={fu} onClose={() => fu.setShowCreateModal(false)} />
-      )}
+      {/* Detailed View Table */}
+      <div className="fud-section">
+        <div className="fud-section-header">
+          <h2 className="fud-section-title">{"\u{1F4CB}"} Detailed View</h2>
+          <button className="fud-refresh-btn">{"\u{1F5A8}\uFE0F"} Print</button>
+        </div>
+        <div className="fud-table-scroll">
+          <table className="fud-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Stage</th>
+                <th style={{ textAlign: "right" }}>Members</th>
+                <th style={{ textAlign: "right" }}>Value</th>
+                <th>Last Note</th>
+                <th>Next Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fu.detailedView.length === 0 ? (
+                <tr><td colSpan={6} className="fud-table-empty">No pipeline data available</td></tr>
+              ) : (
+                fu.detailedView.map((offer) => (
+                  <tr key={offer.offer_id}>
+                    <td className="fud-td-client">
+                      <span className="fud-td-client-name">{offer.client_name}</span>
+                      <span className="fud-td-offer-id">{offer.offer_id}</span>
+                    </td>
+                    <td>
+                      <span className="fud-stage-badge" style={{ background: `${fu.STAGE_COLORS[offer.stage]}30`, color: fu.STAGE_COLORS[offer.stage] }}>
+                        {fu.STAGE_LABELS[offer.stage]}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: "right" }}>{offer.members > 0 ? fmt(offer.members) : "-"}</td>
+                    <td style={{ textAlign: "right", color: "#D4AF37", fontWeight: 700 }}>{offer.value > 0 ? fmtUsd(offer.value) : "-"}</td>
+                    <td className="fud-td-note">{offer.last_note || "-"}</td>
+                    <td>
+                      <button className="fud-td-action-btn">Contact</button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        {fu.detailedView.length > 0 && (
+          <div className="fud-table-totals">
+            <div className="fud-total-item">
+              <span className="fud-total-icon">{"\u{1F465}"}</span>
+              <span className="fud-total-value">{fmt(fu.totalMembers)}</span>
+              <span className="fud-total-label">Members</span>
+            </div>
+            <div className="fud-total-divider">|</div>
+            <div className="fud-total-item">
+              <span className="fud-total-icon">{"\u{1F4B0}"}</span>
+              <span className="fud-total-value gold">{fmtUsd(fu.totalValue)}</span>
+              <span className="fud-total-label">Pipeline Value</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Grid: Expiring + Quick Notes */}
+      <div className="fud-grid-2">
+        {/* Expiring Contracts */}
+        <div className="fud-section">
+          <div className="fud-section-header">
+            <h2 className="fud-section-title">{"\u23F0"} Expiring Contracts</h2>
+            <span className="fud-expiring-total">
+              Total at risk: <strong>{fmt(fu.allExpiring.reduce((s, e) => s + e.members, 0))}</strong> members
+            </span>
+          </div>
+          <div className="fud-expiring-tabs">
+            {[30, 60, 90].map((days) => {
+              const count = fu.allExpiring.filter((e) => e.days_left <= days).length;
+              const members = fu.allExpiring.filter((e) => e.days_left <= days).reduce((s, e) => s + e.members, 0);
+              const colors = { 30: "#e74c3c", 60: "#FF9800", 90: "#f39c12" };
+              return (
+                <button
+                  key={days}
+                  className={`fud-expiring-tab ${fu.expiringFilter === days ? "active" : ""}`}
+                  onClick={() => fu.setExpiringFilter(days)}
+                  style={fu.expiringFilter === days ? { borderColor: colors[days as 30|60|90], color: colors[days as 30|60|90] } : {}}
+                >
+                  {days === 30 ? "\u{1F534}" : days === 60 ? "\u{1F7E0}" : "\u{1F7E1}"} {days} Days
+                  <span className="fud-exp-count">{count}</span>
+                  <span className="fud-exp-members">{"\u{1F465}"} {fmt(members)}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="fud-expiring-list">
+            <table className="fud-table compact">
+              <thead>
+                <tr><th>Client</th><th>Contract</th><th>Members</th><th>Expires</th><th>Days</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                {fu.expiring.length === 0 ? (
+                  <tr><td colSpan={6} className="fud-table-empty">No contracts expiring in this period</td></tr>
+                ) : (
+                  fu.expiring.map((exp, i) => (
+                    <tr key={i}>
+                      <td className="fud-td-client-name">{exp.client_name}</td>
+                      <td>{exp.contract_name}</td>
+                      <td style={{ textAlign: "center" }}>{fmt(exp.members)}</td>
+                      <td>{new Date(exp.expires).toLocaleDateString("en-US", { day: "2-digit", month: "short" })}</td>
+                      <td>
+                        <span className={`fud-days-badge ${exp.days_left <= 30 ? "red" : exp.days_left <= 60 ? "orange" : "yellow"}`}>
+                          {exp.days_left}d
+                        </span>
+                      </td>
+                      <td><button className="fud-td-action-btn">Renew</button></td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Quick Notes & Email */}
+        <div className="fud-section">
+          <div className="fud-section-header">
+            <h2 className="fud-section-title">{"\u{1F4DD}"} Quick Notes & Activity</h2>
+          </div>
+          {/* Add note */}
+          <div className="fud-note-form">
+            <select className="fud-note-select" value={fu.newNoteClient} onChange={(e) => fu.setNewNoteClient(e.target.value)}>
+              <option value="">Select Client...</option>
+              {fu.clients.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </select>
+            <div className="fud-note-input-row">
+              <input className="fud-note-input" placeholder="Quick note..." value={fu.newNoteText} onChange={(e) => fu.setNewNoteText(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") fu.addNote(); }} />
+              <button className="fud-note-add-btn" onClick={fu.addNote}>Add</button>
+            </div>
+          </div>
+          {/* Notes list */}
+          <div className="fud-notes-list">
+            {fu.notes.map((note) => (
+              <div key={note.id} className="fud-note-item">
+                <div className="fud-note-header">
+                  <span className="fud-note-client">{note.client}</span>
+                  <span className="fud-note-date">{new Date(note.date).toLocaleDateString("en-US", { day: "2-digit", month: "short" })}</span>
+                </div>
+                <div className="fud-note-text">{note.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

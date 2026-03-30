@@ -3,231 +3,230 @@
 import { useState, useEffect, useCallback } from "react";
 
 /* ─── Types ─── */
-export interface FollowUpItem {
-  id: string;
-  client_id: string;
+export interface PipelineOffer {
+  offer_id: string;
   client_name: string;
-  offer_id?: string;
-  type: "nda" | "proposal" | "decision" | "renewal" | "meeting" | "custom";
-  subject: string;
-  notes: string;
-  priority: "high" | "medium" | "low";
-  status: "pending" | "in_progress" | "completed" | "overdue" | "cancelled";
-  due_date: string;
+  client_id: string;
+  status: string;
+  stage: string;
+  members: number;
+  value: number;
   created_date: string;
-  completed_date?: string;
-  reminder: boolean;
+  last_note: string;
+  next_action: string;
   contact_name?: string;
-  contact_email?: string;
 }
 
-export interface FollowUpTemplate {
-  key: string;
-  label: string;
+export interface ExpiringContract {
+  client_name: string;
+  contract_name: string;
+  members: number;
+  expires: string;
+  days_left: number;
+}
+
+export interface ActionItem {
   icon: string;
-  type: FollowUpItem["type"];
-  defaultSubject: string;
-  defaultNotes: string;
-  defaultPriority: FollowUpItem["priority"];
-  daysToDue: number;
+  text: string;
+  count: number;
+  color: string;
 }
 
-/* ─── Constants ─── */
-const TEMPLATES: FollowUpTemplate[] = [
-  {
-    key: "nda", label: "NDA Follow-up", icon: "\u{1F4C4}", type: "nda",
-    defaultSubject: "Follow-up: NDA Signed?",
-    defaultNotes: "Check if the NDA has been signed and returned. If signed, proceed to share the healthcare proposal with customized pricing.",
-    defaultPriority: "high", daysToDue: 3,
-  },
-  {
-    key: "proposal", label: "Proposal Review", icon: "\u{1F4CB}", type: "proposal",
-    defaultSubject: "Follow-up: Proposal Review",
-    defaultNotes: "Check if the client has reviewed the healthcare proposal. Offer to schedule a call to discuss questions or adjust pricing.",
-    defaultPriority: "high", daysToDue: 5,
-  },
-  {
-    key: "decision", label: "Decision Pending", icon: "\u231B", type: "decision",
-    defaultSubject: "Follow-up: Decision Pending",
-    defaultNotes: "Follow up on the client's decision regarding the healthcare program. Offer references, site visits, or alternative options.",
-    defaultPriority: "medium", daysToDue: 7,
-  },
-  {
-    key: "renewal", label: "Contract Renewal", icon: "\u{1F504}", type: "renewal",
-    defaultSubject: "Contract Renewal Discussion",
-    defaultNotes: "Initiate renewal discussion. Review current terms, usage, and propose updated pricing or enhanced coverage.",
-    defaultPriority: "high", daysToDue: 30,
-  },
-  {
-    key: "meeting", label: "Post-Meeting", icon: "\u{1F91D}", type: "meeting",
-    defaultSubject: "Thank You - Meeting Follow-up",
-    defaultNotes: "Send thank you email after meeting. Summarize key points discussed and next steps agreed upon.",
-    defaultPriority: "medium", daysToDue: 1,
-  },
-  {
-    key: "custom", label: "Custom Follow-up", icon: "\u{1F4DD}", type: "custom",
-    defaultSubject: "",
-    defaultNotes: "",
-    defaultPriority: "medium", daysToDue: 7,
-  },
-];
+export interface QuickNote {
+  id: string;
+  client: string;
+  text: string;
+  date: string;
+  type: "note" | "call" | "email" | "meeting";
+}
 
-/* ─── Demo Data ─── */
-function generateDemoFollowUps(): FollowUpItem[] {
-  const today = new Date();
-  const d = (offset: number) => {
-    const dt = new Date(today);
-    dt.setDate(dt.getDate() + offset);
-    return dt.toISOString().split("T")[0];
-  };
+/* ─── Stage mapping ─── */
+const STAGE_ORDER = ["draft", "sent", "followup1", "followup2", "followup3", "accepted"];
+const STAGE_LABELS: Record<string, string> = {
+  draft: "Draft", sent: "Sent", followup1: "Follow-up 1",
+  followup2: "Follow-up 2", followup3: "Follow-up 3", accepted: "Accepted",
+};
+const STAGE_COLORS: Record<string, string> = {
+  draft: "#6c757d", sent: "#2196F3", followup1: "#9c27b0",
+  followup2: "#FF9800", followup3: "#f44336", accepted: "#4CAF50",
+};
 
+function normalizeStage(status: string): string {
+  const s = (status || "").toLowerCase().replace(/[\s-_]+/g, "");
+  if (s.includes("draft")) return "draft";
+  if (s.includes("sent")) return "sent";
+  if (s.includes("followup1") || s === "followup1" || s === "follow-up1") return "followup1";
+  if (s.includes("followup2") || s === "followup2") return "followup2";
+  if (s.includes("followup3") || s === "followup3") return "followup3";
+  if (s.includes("accept") || s.includes("won") || s.includes("active")) return "accepted";
+  if (s.includes("follow")) return "followup1";
+  return "draft";
+}
+
+/* ─── Demo expiring contracts ─── */
+function generateExpiringContracts(): ExpiringContract[] {
   return [
-    { id: "FU-001", client_id: "CLI-001", client_name: "ELETSON", type: "nda", subject: "Follow-up: NDA Signed?", notes: "NDA sent 5 days ago, no response yet.", priority: "high", status: "overdue", due_date: d(-2), created_date: d(-7), reminder: true, contact_name: "John Papas" },
-    { id: "FU-002", client_id: "CLI-003", client_name: "DIANA SHIPPING", type: "proposal", subject: "Follow-up: Proposal Review", notes: "Proposal sent last week. Client asked for time to review.", priority: "high", status: "pending", due_date: d(1), created_date: d(-5), reminder: true, contact_name: "Maria Dimitriou" },
-    { id: "FU-003", client_id: "CLI-005", client_name: "MINERVA MARINE", type: "decision", subject: "Follow-up: Decision Pending", notes: "Awaiting board approval. Expected within 2 weeks.", priority: "medium", status: "pending", due_date: d(5), created_date: d(-3), reminder: true, contact_name: "Nikos Andreou" },
-    { id: "FU-004", client_id: "CLI-007", client_name: "STAR BULK", type: "renewal", subject: "Contract Renewal Discussion", notes: "Contract expires in 60 days. Schedule renewal meeting.", priority: "high", status: "in_progress", due_date: d(14), created_date: d(-10), reminder: true, contact_name: "Petros Makris" },
-    { id: "FU-005", client_id: "CLI-010", client_name: "EUROSEAS", type: "meeting", subject: "Post-Meeting Follow-up", notes: "Good meeting today. Client interested in Gold+ plan.", priority: "medium", status: "completed", due_date: d(-1), created_date: d(-2), completed_date: d(0), reminder: false, contact_name: "Anna Vlachou" },
-    { id: "FU-006", client_id: "CLI-002", client_name: "CENTROFIN", type: "proposal", subject: "Follow-up: Updated Proposal", notes: "Client requested adjusted pricing for dental coverage.", priority: "medium", status: "pending", due_date: d(3), created_date: d(-1), reminder: true, contact_name: "George Katsaros" },
-    { id: "FU-007", client_id: "CLI-008", client_name: "NAVIOS", type: "nda", subject: "NDA Reminder", notes: "Second follow-up. NDA sent 10 days ago.", priority: "high", status: "overdue", due_date: d(-4), created_date: d(-10), reminder: true, contact_name: "Dimitris Sofianos" },
-    { id: "FU-008", client_id: "CLI-012", client_name: "TSAKOS ENERGY", type: "decision", subject: "Program Selection Follow-up", notes: "Client comparing Gold vs Gold+ plans.", priority: "low", status: "pending", due_date: d(10), created_date: d(-2), reminder: false, contact_name: "Eleni Tsakos" },
-    { id: "FU-009", client_id: "CLI-015", client_name: "DANAOS SHIPPING", type: "renewal", subject: "Contract Renewal - Q2", notes: "Renewal meeting scheduled for next week.", priority: "high", status: "in_progress", due_date: d(7), created_date: d(-14), reminder: true, contact_name: "Ioannis Danaos" },
-    { id: "FU-010", client_id: "CLI-004", client_name: "DYNACOM", type: "meeting", subject: "Meeting Notes Follow-up", notes: "Client requested crew health statistics before deciding.", priority: "medium", status: "completed", due_date: d(-5), created_date: d(-6), completed_date: d(-4), reminder: false, contact_name: "Kostas Prokopiou" },
+    { client_name: "ELETSON", contract_name: "Gold+ Healthcare 2024", members: 2450, expires: "2026-04-15", days_left: 16 },
+    { client_name: "DIANA SHIPPING", contract_name: "Platinum Plan", members: 1800, expires: "2026-04-28", days_left: 29 },
+    { client_name: "NAVIOS", contract_name: "Gold Healthcare", members: 980, expires: "2026-05-10", days_left: 41 },
+    { client_name: "STAR BULK", contract_name: "Gold+ with Dental", members: 3200, expires: "2026-05-25", days_left: 56 },
+    { client_name: "EUROSEAS", contract_name: "Silver Plan", members: 450, expires: "2026-06-15", days_left: 77 },
+    { client_name: "TSAKOS ENERGY", contract_name: "Platinum Plan", members: 2100, expires: "2026-06-28", days_left: 90 },
+  ];
+}
+
+/* ─── Demo notes ─── */
+function generateNotes(): QuickNote[] {
+  return [
+    { id: "N1", client: "ELETSON", text: "NDA signed, waiting for proposal review", date: "2026-03-29", type: "note" },
+    { id: "N2", client: "DIANA SHIPPING", text: "Called Maria - interested in Gold+ upgrade", date: "2026-03-28", type: "call" },
+    { id: "N3", client: "MINERVA MARINE", text: "Board meeting next week, decision expected", date: "2026-03-27", type: "meeting" },
   ];
 }
 
 /* ─── Hook ─── */
-export function useFollowUps() {
-  const [followUps, setFollowUps] = useState<FollowUpItem[]>([]);
+export function useFollowUpDashboard() {
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"queue" | "calendar" | "completed">("queue");
-  const [filterPriority, setFilterPriority] = useState<string>("all");
-  const [filterType, setFilterType] = useState<string>("all");
-  const [filterStatus, setFilterStatus] = useState<string>("active");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<FollowUpTemplate | null>(null);
-  const [sortBy, setSortBy] = useState<"due_date" | "priority" | "client">("due_date");
+  const [pipeline, setPipeline] = useState<PipelineOffer[]>([]);
+  const [expiring, setExpiring] = useState<ExpiringContract[]>([]);
+  const [notes, setNotes] = useState<QuickNote[]>(generateNotes());
+  const [expiringFilter, setExpiringFilter] = useState(30);
 
   // Clients for dropdown
-  const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
+  const [clients, setClients] = useState<Array<{ id: string; name: string; isParent?: boolean }>>([]);
+
+  // Quick email state
+  const [emailClient, setEmailClient] = useState("");
+  const [emailTemplate, setEmailTemplate] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+
+  // New note
+  const [newNoteClient, setNewNoteClient] = useState("");
+  const [newNoteText, setNewNoteText] = useState("");
 
   // Load data
   useEffect(() => {
-    const loadData = async () => {
+    const load = async () => {
       setLoading(true);
+
       // Load clients
       try {
         const res = await fetch("/api/proxy/getActiveClients");
         const data = await res.json();
-        const list = (data.data || []).map((c: Record<string, string>) => ({
-          id: c.client_id || c.id,
-          name: c.client_name || c.name,
+        const raw = data.data || [];
+        // Build grouped list
+        const parents: Record<string, string[]> = {};
+        const standalone: Array<{ id: string; name: string }> = [];
+        raw.forEach((c: any) => {
+          const id = c.client_id || c.id;
+          const name = c.client_name || c.name;
+          const parentId = c.parent_id || c.parent_client_id;
+          if (parentId && parentId !== id) {
+            if (!parents[parentId]) parents[parentId] = [];
+            parents[parentId].push(name);
+          }
+          standalone.push({ id, name });
+        });
+        setClients(standalone);
+      } catch (e) { console.warn("Clients:", e); }
+
+      // Load offers for pipeline
+      try {
+        const res = await fetch("/api/proxy/getOffers");
+        const data = await res.json();
+        const offers = data.data || data.offers || [];
+        const mapped: PipelineOffer[] = offers.map((o: any) => ({
+          offer_id: o.offer_id || o.id || "",
+          client_name: o.client_name || o.company || "",
+          client_id: o.client_id || "",
+          status: o.status || "draft",
+          stage: normalizeStage(o.status || "draft"),
+          members: Number(o.members || o.total_members || 0),
+          value: Number(o.value || o.annual_value || o.premium || 0),
+          created_date: o.created_date || o.date || "",
+          last_note: o.last_note || o.notes || "",
+          next_action: o.next_action || "",
+          contact_name: o.contact_name || "",
         }));
-        setClients(list);
-      } catch (e) {
-        console.warn("Failed to load clients:", e);
-      }
-      // Load follow-ups (demo for now)
-      setFollowUps(generateDemoFollowUps());
+        setPipeline(mapped);
+      } catch (e) { console.warn("Offers:", e); }
+
+      // Expiring contracts
+      setExpiring(generateExpiringContracts());
       setLoading(false);
     };
-    loadData();
+    load();
   }, []);
 
-  // Computed: filtered and sorted
-  const filteredFollowUps = followUps.filter((fu) => {
-    if (filterStatus === "active" && (fu.status === "completed" || fu.status === "cancelled")) return false;
-    if (filterStatus === "completed" && fu.status !== "completed") return false;
-    if (filterPriority !== "all" && fu.priority !== filterPriority) return false;
-    if (filterType !== "all" && fu.type !== filterType) return false;
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      return fu.client_name.toLowerCase().includes(term) ||
-             fu.subject.toLowerCase().includes(term) ||
-             fu.notes.toLowerCase().includes(term);
-    }
-    return true;
-  }).sort((a, b) => {
-    if (sortBy === "due_date") return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-    if (sortBy === "priority") {
-      const p = { high: 0, medium: 1, low: 2 };
-      return p[a.priority] - p[b.priority];
-    }
-    return a.client_name.localeCompare(b.client_name);
+  // Pipeline by stage
+  const pipelineByStage: Record<string, PipelineOffer[]> = {};
+  STAGE_ORDER.forEach((s) => { pipelineByStage[s] = []; });
+  pipeline.forEach((o) => {
+    const st = o.stage;
+    if (pipelineByStage[st]) pipelineByStage[st].push(o);
+    else pipelineByStage.draft.push(o);
   });
 
-  // Stats
-  const stats = {
-    total: followUps.filter(f => f.status !== "completed" && f.status !== "cancelled").length,
-    overdue: followUps.filter(f => f.status === "overdue").length,
-    dueToday: followUps.filter(f => {
-      const today = new Date().toISOString().split("T")[0];
-      return f.due_date === today && f.status !== "completed";
-    }).length,
-    dueSoon: followUps.filter(f => {
-      const today = new Date();
-      const due = new Date(f.due_date);
-      const diff = (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-      return diff > 0 && diff <= 3 && f.status !== "completed";
-    }).length,
-    completed: followUps.filter(f => f.status === "completed").length,
-    highPriority: followUps.filter(f => f.priority === "high" && f.status !== "completed").length,
-  };
+  // Pipeline bar data
+  const maxCount = Math.max(...STAGE_ORDER.map((s) => pipelineByStage[s].length), 1);
+  const pipelineBars = STAGE_ORDER.map((s) => ({
+    stage: s,
+    label: STAGE_LABELS[s],
+    count: pipelineByStage[s].length,
+    pct: (pipelineByStage[s].length / maxCount) * 100,
+    color: STAGE_COLORS[s],
+  }));
 
-  // Actions
-  const addFollowUp = useCallback((item: Omit<FollowUpItem, "id" | "created_date">) => {
-    const newItem: FollowUpItem = {
-      ...item,
-      id: `FU-${String(followUps.length + 1).padStart(3, "0")}`,
-      created_date: new Date().toISOString().split("T")[0],
+  // KPIs
+  const totalMembers = pipeline.reduce((s, o) => s + o.members, 0);
+  const totalValue = pipeline.reduce((s, o) => s + o.value, 0);
+  const pendingOffers = pipeline.filter((o) => o.stage !== "accepted" && o.stage !== "draft").length;
+  const expiringCount = expiring.filter((e) => e.days_left <= 90).length;
+
+  // Action items
+  const actionItems: ActionItem[] = [
+    { icon: "\u26A0\uFE0F", text: "Follow-up overdue", count: pipeline.filter((o) => o.stage === "followup3").length, color: "#f44336" },
+    { icon: "\u{1F4DE}", text: "Call today", count: pipeline.filter((o) => o.stage === "followup1" || o.stage === "followup2").length, color: "#FF9800" },
+    { icon: "\u{1F4CB}", text: "Contracts expiring", count: expiring.filter((e) => e.days_left <= 30).length, color: "#e74c3c" },
+    { icon: "\u{1F4E7}", text: "Send renewal", count: expiring.filter((e) => e.days_left <= 60 && e.days_left > 30).length, color: "#2196F3" },
+  ];
+
+  // Filtered expiring
+  const filteredExpiring = expiring.filter((e) => e.days_left <= expiringFilter);
+
+  // Detailed view (all pipeline offers sorted by stage)
+  const detailedView = [...pipeline].sort((a, b) => {
+    const ai = STAGE_ORDER.indexOf(a.stage);
+    const bi = STAGE_ORDER.indexOf(b.stage);
+    return ai - bi;
+  });
+
+  // Add note
+  const addNote = useCallback(() => {
+    if (!newNoteClient || !newNoteText) return;
+    const note: QuickNote = {
+      id: "N" + Date.now(),
+      client: newNoteClient,
+      text: newNoteText,
+      date: new Date().toISOString().split("T")[0],
+      type: "note",
     };
-    setFollowUps((prev) => [newItem, ...prev]);
-    setShowCreateModal(false);
-  }, [followUps.length]);
-
-  const updateStatus = useCallback((id: string, status: FollowUpItem["status"]) => {
-    setFollowUps((prev) =>
-      prev.map((fu) =>
-        fu.id === id
-          ? { ...fu, status, completed_date: status === "completed" ? new Date().toISOString().split("T")[0] : fu.completed_date }
-          : fu
-      )
-    );
-  }, []);
-
-  const deleteFollowUp = useCallback((id: string) => {
-    setFollowUps((prev) => prev.filter((fu) => fu.id !== id));
-  }, []);
-
-  const snooze = useCallback((id: string, days: number) => {
-    setFollowUps((prev) =>
-      prev.map((fu) => {
-        if (fu.id !== id) return fu;
-        const newDate = new Date(fu.due_date);
-        newDate.setDate(newDate.getDate() + days);
-        return { ...fu, due_date: newDate.toISOString().split("T")[0], status: "pending" };
-      })
-    );
-  }, []);
+    setNotes((prev) => [note, ...prev]);
+    setNewNoteText("");
+  }, [newNoteClient, newNoteText]);
 
   return {
-    followUps: filteredFollowUps,
-    allFollowUps: followUps,
     loading,
-    activeTab, setActiveTab,
-    filterPriority, setFilterPriority,
-    filterType, setFilterType,
-    filterStatus, setFilterStatus,
-    searchTerm, setSearchTerm,
-    showCreateModal, setShowCreateModal,
-    selectedTemplate, setSelectedTemplate,
-    sortBy, setSortBy,
+    pipeline, pipelineByStage, pipelineBars,
+    totalMembers, totalValue, pendingOffers, expiringCount,
+    actionItems,
+    expiring: filteredExpiring, expiringFilter, setExpiringFilter, allExpiring: expiring,
+    detailedView,
+    notes, addNote, newNoteClient, setNewNoteClient, newNoteText, setNewNoteText,
     clients,
-    stats,
-    templates: TEMPLATES,
-    addFollowUp,
-    updateStatus,
-    deleteFollowUp,
-    snooze,
+    emailClient, setEmailClient, emailTemplate, setEmailTemplate,
+    emailSubject, setEmailSubject, emailBody, setEmailBody,
+    STAGE_ORDER, STAGE_LABELS, STAGE_COLORS,
   };
 }
