@@ -1,33 +1,90 @@
-/* CEO Finance Dashboard */
-.ceo-page { padding: 1.5rem 2rem;  }
+/* CEO Finance Dashboard v2 */
+.ceo-page { padding: 1.5rem 2rem; }
 .ceo-loading { text-align: center; padding: 4rem; color: rgba(184,212,232,0.6); font-size: 1.2rem; }
 
 /* Header */
 .ceo-header {
-  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;
   padding: 1.5rem 2rem;
   background: linear-gradient(145deg, #1a3a5c, #15304d);
-  border: 1px solid rgba(212,175,55,0.2);
-  border-radius: 16px;
+  border: 1px solid rgba(212,175,55,0.2); border-radius: 16px;
 }
 .ceo-title-row { display: flex; align-items: center; gap: 0.75rem; }
 .ceo-flag { font-size: 2rem; }
 .ceo-title { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 0; }
 .ceo-subtitle { color: #7aa0c0; font-size: 0.9rem; margin-top: 0.25rem; }
-.ceo-period {
+.ceo-header-right { display: flex; align-items: center; gap: 1rem; }
+
+/* Client Dropdown */
+.ceo-client-dropdown-wrap { position: relative; }
+.ceo-client-trigger {
   background: rgba(212,175,55,0.12); border: 1px solid rgba(212,175,55,0.3);
-  color: #D4AF37; padding: 0.5rem 1rem; border-radius: 10px;
-  font-weight: 600; font-size: 0.9rem;
+  color: #ffffff; padding: 0.6rem 1.2rem; border-radius: 10px;
+  font-weight: 600; font-size: 0.9rem; cursor: pointer;
+  display: flex; align-items: center; gap: 0.5rem;
+  min-width: 200px; justify-content: space-between;
+  transition: all 0.2s; font-family: inherit;
+}
+.ceo-client-trigger:hover { border-color: rgba(212,175,55,0.6); }
+.ceo-dd-arrow { font-size: 0.6rem; color: rgba(255,255,255,0.5); }
+.ceo-client-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: #0d1f2d; border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 14px; box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+  z-index: 1000; width: 380px; max-height: 450px; overflow-y: auto;
+  animation: ceoFadeIn 0.15s ease;
+}
+@keyframes ceoFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.ceo-dd-item {
+  padding: 0.55rem 1rem; cursor: pointer; font-size: 0.85rem;
+  color: rgba(255,255,255,0.8); transition: background 0.15s;
   display: flex; align-items: center; gap: 0.5rem;
 }
+.ceo-dd-item:hover { background: rgba(212,175,55,0.08); }
+.ceo-dd-item.active { background: rgba(212,175,55,0.15); border-left: 3px solid #D4AF37; color: #D4AF37; font-weight: 700; }
+.ceo-dd-item.all { font-weight: 700; color: #4CAF50; }
+.ceo-dd-item.parent { font-weight: 700; color: #ffffff; }
+.ceo-dd-item.sub { padding-left: 2rem; font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+.ceo-dd-divider {
+  padding: 0.5rem 1rem; font-size: 0.7rem; font-weight: 700; color: #D4AF37;
+  text-transform: uppercase; letter-spacing: 1px;
+  border-top: 1px solid rgba(255,255,255,0.06); margin-top: 0.25rem;
+}
+.ceo-client-dropdown::-webkit-scrollbar { width: 6px; }
+.ceo-client-dropdown::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 3px; }
 
-/* KPI Grid - 4 cards */
-.ceo-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+/* Period Selector Bar */
+.ceo-period-bar {
+  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(145deg, #1a3a5c, #15304d);
+  border: 1px solid rgba(212,175,55,0.12); border-radius: 12px;
+}
+.ceo-period-label { color: #7aa0c0; font-size: 0.9rem; font-weight: 600; }
+.ceo-q-btn {
+  padding: 0.5rem 1rem; border-radius: 10px; border: 2px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.15); color: rgba(255,255,255,0.6);
+  font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.ceo-q-btn.active { background: rgba(212,175,55,0.15); border-color: #D4AF37; color: #D4AF37; }
+.ceo-q-btn:hover { border-color: rgba(255,255,255,0.3); }
+.ceo-year-select {
+  padding: 0.5rem 0.75rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.2); color: #ffffff; font-size: 0.9rem; cursor: pointer;
+}
+.ceo-year-select option { background: #0d1f2d; color: #ffffff; }
+.ceo-period-display {
+  margin-left: auto; color: #D4AF37; font-weight: 700; font-size: 0.9rem;
+  background: rgba(212,175,55,0.12); padding: 0.4rem 1rem; border-radius: 8px;
+}
+
+/* KPI Grid */
+.ceo-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
 .ceo-kpi {
   padding: 1.5rem; text-align: center; border-radius: 14px;
   background: linear-gradient(145deg, #1a3a5c, #15304d);
-  border: 1px solid rgba(212,175,55,0.12);
-  transition: all 0.2s;
+  border: 1px solid rgba(212,175,55,0.12); transition: all 0.2s;
 }
 .ceo-kpi:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 .ceo-kpi-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
@@ -39,6 +96,10 @@
 .ceo-kpi.profit { border-color: rgba(212,175,55,0.4); background: rgba(212,175,55,0.06); }
 .ceo-kpi.profit .ceo-kpi-value { color: #D4AF37; }
 .ceo-kpi.tax .ceo-kpi-value { color: #AB47BC; }
+.ceo-kpi-trend { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; margin-top: 0.4rem; }
+.ceo-kpi-trend.up { background: rgba(76,175,80,0.2); color: #81C784; }
+.ceo-kpi-trend.down { background: rgba(244,67,54,0.2); color: #EF5350; }
+.ceo-kpi-trend.neutral { background: rgba(171,71,188,0.2); color: #CE93D8; }
 
 /* Grid layouts */
 .ceo-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.25rem; }
@@ -47,18 +108,12 @@
 /* Cards */
 .ceo-card {
   background: linear-gradient(145deg, #1a3a5c, #15304d);
-  border: 1px solid rgba(212,175,55,0.12);
-  border-radius: 14px;
-  overflow: hidden;
+  border: 1px solid rgba(212,175,55,0.12); border-radius: 14px; overflow: hidden;
 }
 .ceo-card.full { margin-bottom: 1.25rem; }
 .ceo-card-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(212,175,55,0.1);
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #D4AF37;
+  padding: 1rem 1.25rem; border-bottom: 1px solid rgba(212,175,55,0.1);
+  font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 700; color: #D4AF37;
   display: flex; align-items: center; gap: 0.5rem;
 }
 
@@ -74,11 +129,7 @@
 /* Tax Reminders */
 .ceo-tax-reminders { padding: 1rem 1.25rem; background: rgba(0,0,0,0.1); }
 .ceo-tax-reminder-title { font-size: 0.85rem; font-weight: 700; color: #FF9800; margin-bottom: 0.5rem; }
-.ceo-tax-reminder {
-  display: flex; justify-content: space-between; padding: 0.35rem 0;
-  font-size: 0.82rem; color: rgba(255,255,255,0.6);
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-}
+.ceo-tax-reminder { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.82rem; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.03); }
 .ceo-tax-reminder span:last-child { color: rgba(255,255,255,0.9); font-weight: 600; }
 
 /* Cash Flow */
@@ -86,10 +137,11 @@
 .ceo-cf-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
 .ceo-cf-label { width: 120px; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
 .ceo-cf-bar-bg { flex: 1; height: 28px; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; }
-.ceo-cf-bar { height: 100%; border-radius: 8px; transition: width 0.5s; }
+.ceo-cf-bar { height: 100%; border-radius: 8px; transition: width 0.5s; display: flex; align-items: center; }
 .ceo-cf-bar.inflow { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
 .ceo-cf-bar.outflow { background: linear-gradient(90deg, #e74c3c, #EF5350); }
 .ceo-cf-bar.net { background: linear-gradient(90deg, #D4AF37, #FFD54F); }
+.ceo-cf-pct { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.3); padding: 0 0.5rem; min-width: 40px; }
 .ceo-cf-value { width: 120px; text-align: right; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; }
 .ceo-cf-value.positive { color: #4CAF50; }
 .ceo-cf-value.negative { color: #EF5350; }
@@ -97,11 +149,7 @@
 
 /* Key Ratios */
 .ceo-ratios { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; padding: 1.25rem; }
-.ceo-ratio {
-  text-align: center; padding: 1rem; border-radius: 12px;
-  background: rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.08);
-  transition: all 0.2s;
-}
+.ceo-ratio { text-align: center; padding: 1rem; border-radius: 12px; background: rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.08); transition: all 0.2s; }
 .ceo-ratio:hover { transform: translateY(-2px); }
 .ceo-ratio.good { border-color: rgba(76,175,80,0.4); background: rgba(76,175,80,0.06); }
 .ceo-ratio.bad { border-color: rgba(239,83,80,0.4); background: rgba(239,83,80,0.06); }
@@ -114,72 +162,22 @@
 /* Top Clients Table */
 .ceo-table-scroll { overflow-x: auto; }
 .ceo-clients-table { width: 100%; border-collapse: collapse; }
-.ceo-clients-table th {
-  text-align: left; padding: 0.85rem 1.25rem; color: #D4AF37; font-weight: 600;
-  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
-  border-bottom: 2px solid rgba(212,175,55,0.2); background: rgba(212,175,55,0.05);
-}
-.ceo-clients-table td {
-  padding: 0.75rem 1.25rem; font-size: 0.9rem; color: rgba(255,255,255,0.85);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
+.ceo-clients-table th { text-align: left; padding: 0.85rem 1.25rem; color: #D4AF37; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid rgba(212,175,55,0.2); background: rgba(212,175,55,0.05); }
+.ceo-clients-table td { padding: 0.75rem 1.25rem; font-size: 0.9rem; color: rgba(255,255,255,0.85); border-bottom: 1px solid rgba(255,255,255,0.04); }
 .ceo-clients-table tr:hover td { background: rgba(212,175,55,0.04); }
 .ceo-rank { font-weight: 800; color: #D4AF37; font-family: 'Montserrat', sans-serif; }
 .ceo-client-name { font-weight: 700; color: #ffffff; }
-.ceo-lr-badge {
-  padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700;
-}
+.ceo-lr-badge { padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
 .ceo-lr-badge.good { background: rgba(76,175,80,0.15); color: #4CAF50; }
 .ceo-lr-badge.warn { background: rgba(255,152,0,0.15); color: #FF9800; }
 .ceo-lr-badge.bad { background: rgba(239,83,80,0.15); color: #EF5350; }
 
 /* CFO Notes */
 .ceo-notes { padding: 1rem 1.25rem; }
-.ceo-note {
-  padding: 0.75rem 0; font-size: 0.95rem; color: rgba(255,255,255,0.75); line-height: 1.5;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
+.ceo-notes-subheader { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; color: #D4AF37; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.15); }
+.ceo-note { padding: 0.75rem 0; font-size: 0.95rem; color: rgba(255,255,255,0.75); line-height: 1.5; border-bottom: 1px solid rgba(255,255,255,0.04); }
 .ceo-note:last-child { border-bottom: none; }
-
-
-/* KPI Trend Badges */
-.ceo-kpi-trend {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  margin-top: 0.4rem;
-}
-.ceo-kpi-trend.up { background: rgba(76,175,80,0.2); color: #81C784; }
-.ceo-kpi-trend.down { background: rgba(244,67,54,0.2); color: #EF5350; }
-.ceo-kpi-trend.neutral { background: rgba(171,71,188,0.2); color: #CE93D8; }
-
-/* Cash Flow % label inside bar */
-.ceo-cf-pct {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: rgba(255,255,255,0.9);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  padding: 0 0.5rem;
-  min-width: 40px;
-}
-
-/* CFO Notes subheader */
-.ceo-notes-subheader {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #D4AF37;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(212,175,55,0.15);
-}
 
 /* Responsive */
 @media (max-width: 1200px) { .ceo-kpi-grid { grid-template-columns: repeat(2, 1fr); } .ceo-grid-3 { grid-template-columns: 1fr; } .ceo-grid-2 { grid-template-columns: 1fr; } .ceo-ratios { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 768px) { .ceo-page { padding: 1rem; } .ceo-header { flex-direction: column; gap: 1rem; } .ceo-kpi-grid { grid-template-columns: 1fr 1fr; } .ceo-ratios { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 768px) { .ceo-page { padding: 1rem; } .ceo-header { flex-direction: column; gap: 1rem; } .ceo-kpi-grid { grid-template-columns: 1fr 1fr; } .ceo-ratios { grid-template-columns: 1fr 1fr; } .ceo-period-bar { flex-wrap: wrap; } .ceo-client-dropdown { width: 300px; } }
