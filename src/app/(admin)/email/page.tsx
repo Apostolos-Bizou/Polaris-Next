@@ -17,7 +17,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 export default function EmailCenterPage() {
   const ec = useEmailCenter();
   const [editorHtml, setEditorHtml] = React.useState('');
-  const [sendDocsAttachments, setSendDocsAttachments] = React.useState<Array<{type: string; name: string; key: string}>>([]);
+  const [sendDocsAttachments, setSendDocsAttachments] = React.useState<Array<{type: string; name: string; key: string}>>([]); const [sendDocsSource, setSendDocsSource] = React.useState<{offerId: string; clientName: string} | null>(null);
   const searchParams = useSearchParams();
 
   // ═══ Send Documents Handoff ═══
@@ -56,7 +56,7 @@ export default function EmailCenterPage() {
               atts.push({ type: 'brochure', name: progNames[p] || p, key: p });
             });
           }
-          setSendDocsAttachments(atts);
+          setSendDocsAttachments(atts); setSendDocsSource({ offerId: data.offerId || '', clientName: data.clientName || '' });
 
           // Set subject with client name
           if (data.clientName) {
@@ -182,7 +182,7 @@ export default function EmailCenterPage() {
       )}
 
       {/* ═══ COMPOSE TAB ═══ */}
-      {ec.activeTab === 'compose' && (
+      {ec.activeTab === 'compose' && (<>{sendDocsSource && (<div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',marginBottom:12,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',borderRadius:10}}><span style={{color:'#D4AF37',fontSize:'0.9rem',fontWeight:600}}>?? Composing for: {sendDocsSource.clientName}</span><button onClick={()=>{window.location.href='/offers';}} style={{padding:'6px 16px',background:'linear-gradient(135deg,#1e3a5f,#2d5a87)',border:'1px solid rgba(212,175,55,0.4)',borderRadius:8,color:'#D4AF37',fontWeight:600,fontSize:'0.82rem',cursor:'pointer'}}>< Back to Offers</button></div>)}
         <div className="em-tab-content">
           <div className="em-form-group">
             <label>📝 Select Template</label>
@@ -585,3 +585,7 @@ export default function EmailCenterPage() {
     </div>
   );
 }
+
+
+
+
