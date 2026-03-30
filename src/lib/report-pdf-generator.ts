@@ -44,6 +44,7 @@ interface CategoryItem {
 
 interface HospitalItem {
   hospital: string;
+  city: string;
   cases: number;
   cost_usd: number;
 }
@@ -157,9 +158,10 @@ async function fetchData(clientId: string, year: number, onP: ProgressCB): Promi
     const res = await fetch(`/api/proxy/getTopHospitals?year=${year}&cumulative=true&limit=10`);
     const json = await res.json();
     hospitals = (json.data || []).map((h: any) => ({
-      hospital: h.hospital || h.name || "Unknown",
-      cases: safe(h.cases || h.count),
-      cost_usd: safe(h.cost_usd || h.cost),
+      hospital: h.hospital_name || h.hospital || h.name || "Unknown",
+      city: h.city || "",
+      cases: safe(h.total_claims || h.cases || h.count),
+      cost_usd: safe(h.total_cost_php || h.cost_usd || h.cost),
     }));
   } catch (e) { console.warn("Hospitals fetch:", e); }
 
@@ -552,8 +554,8 @@ function pageCost(doc: jsPDF, data: ReportData, period: string) {
 
     // Name
     doc.setFontSize(7.5); doc.setFont("helvetica", "normal"); sc(doc, C.TXT);
-    const name = hosp.hospital.length > 42 ? hosp.hospital.substring(0, 40) + "..." : hosp.hospital;
-    doc.text(name, M + 14, ry + 9);
+    const hName = hosp.hospital.length > 35 ? hosp.hospital.substring(0, 33) + "..." : hosp.hospital;
+    doc.text(hName + (hosp.city ? " (" + hosp.city + ")" : ""), M + 14, ry + 9);
     doc.text(fmt(hosp.cases), M + 104, ry + 9);
     doc.setFont("helvetica", "bold"); sc(doc, C.GOLD);
     doc.text(fmtUsd(hosp.cost_usd), M + 129, ry + 9);
