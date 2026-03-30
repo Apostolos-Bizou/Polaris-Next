@@ -78,6 +78,7 @@ const C = {
 /* ─── Helpers ─── */
 const fmt = (n: number) => isNaN(n) ? "0" : new Intl.NumberFormat("en-US").format(Math.round(n));
 const fmtUsd = (n: number) => "$" + fmt(n);
+const fmtPhp = (n: number) => "P" + fmt(n);
 const fmtPct = (n: number) => isNaN(n) ? "0.0%" : n.toFixed(1) + "%";
 const safe = (n: number | undefined | null) => (n && isFinite(n)) ? n : 0;
 
@@ -533,7 +534,7 @@ function pageCost(doc: jsPDF, data: ReportData, period: string) {
   doc.rect(M, y + 6, CW, 5, "F");
   sc(doc, C.WHITE); doc.setFontSize(7); doc.setFont("helvetica", "bold");
   let xp = M + 4;
-  ["#", "Hospital", "Cases", "Cost (USD)"].forEach((h, i) => {
+  ["#", "Hospital", "Cases", "Cost (PHP)"].forEach((h, i) => {
     doc.text(h, xp, y + 8); xp += [12, 90, 25, 45][i];
   });
   y += 11;
@@ -558,7 +559,7 @@ function pageCost(doc: jsPDF, data: ReportData, period: string) {
     doc.text(hName + (hosp.city ? " (" + hosp.city + ")" : ""), M + 14, ry + 9);
     doc.text(fmt(hosp.cases), M + 104, ry + 9);
     doc.setFont("helvetica", "bold"); sc(doc, C.GOLD);
-    doc.text(fmtUsd(hosp.cost_usd), M + 129, ry + 9);
+    doc.text(fmtPhp(hosp.cost_usd), M + 129, ry + 9);
   });
 
   // Summary
