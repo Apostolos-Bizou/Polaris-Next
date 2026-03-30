@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 const NAV_ITEMS = [
@@ -27,6 +27,7 @@ export default function AdminLayout({
 }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const userName = session?.user?.name || "Admin";
@@ -68,7 +69,7 @@ export default function AdminLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`sidebar-link ${isActive ? "active" : ""}`}
+                className={`sidebar-link ${isActive ? "active" : ""}`} onClick={(e) => { if (pathname.startsWith(item.href)) { e.preventDefault(); router.push(item.href); router.refresh(); } }}
               >
                 <span className="sidebar-link-icon">{item.icon}</span>
                 {sidebarOpen && (
@@ -314,3 +315,4 @@ export default function AdminLayout({
     </div>
   );
 }
+
