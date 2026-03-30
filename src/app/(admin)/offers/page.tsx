@@ -80,8 +80,8 @@ const fmtUSD = (n: number) => '$' + n.toLocaleString('en-US', { minimumFractionD
 
 // ═══════════════════════════════════════════════════════════════════════
 export default function OffersPage() {
-  const [offers, setOffers] = useState<Offer[]>(DUMMY_OFFERS);
-  const [loading, setLoading] = useState(false);
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchClient, setSearchClient] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState<'all' | 'standard' | 'comparison'>('all');
@@ -158,13 +158,80 @@ export default function OffersPage() {
     }
   }, [offers]);
 
+  // Load real offers from API on mount
+  useEffect(() => {
+    let mounted = true;
+    const loadOffers = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/proxy/getOffers');
+        const data = await res.json();
+        if (!mounted) return;
+        if (data.success && data.data) {
+          const apiOffers: Offer[] = data.data.map((o: any) => ({
+            offer_id: o.offer_id || '',
+            offer_type: (o.offer_id && o.offer_id.startsWith('CQ-')) ? 'comparison' as const : 'standard' as const,
+            client_id: o.client_id || '',
+            client_name: (o.client_name || '')
+              .replace(/^[\s]*[\u{1F3DB}\u{1F3E2}\u2514\u2500\s\uFE0F]+/gu, '')
+              .replace(/\s*\[MOTHER.*?\]/gi, '')
+              .replace(/\s*\[sub of.*?\]/gi, '')
+              .trim(),
+            contact_person: o.contact_person || '',
+            contact_email: o.contact_email || '',
+            status: o.status || 'draft',
+            created_date: o.created_date || o.offer_date || '',
+            offer_date: o.offer_date || '',
+            total_principals: Number(o.total_principals || 0),
+            total_dependents: Number(o.total_dependents || 0),
+            total_members: Number(o.total_members || 0),
+            subtotal_reg_fees: Number(o.subtotal_reg_fees || 0),
+            subtotal_fund_deposit: Number(o.subtotal_fund_deposit || 0),
+            subtotal_dental: Number(o.subtotal_dental || 0),
+            grand_total_usd: Number(o.grand_total_usd || 0),
+            includes_dental: o.includes_dental === true || o.includes_dental === 'true',
+            items: (o.items || []).map((it: any) => ({
+              plan_name: it.plan_name || '',
+              principals: Number(it.principals || 0),
+              dependents: Number(it.dependents || 0),
+              reg_fee: Number(it.reg_fee_per_person || it.reg_fee || 0),
+              fund_deposit: Number(it.fund_deposit_per_person || it.fund_deposit || 0),
+              subtotal_reg: Number(it.subtotal_reg || 0),
+              subtotal_fund: Number(it.subtotal_fund || 0),
+            })),
+            gdrive_folder_url: (o.stage && o.stage.startsWith('http')) ? o.stage : '',
+          }));
+          setOffers(apiOffers);
+        }
+      } catch (e) {
+        console.warn('Failed to load offers from API:', e);
+        // Keep empty or could set DUMMY_OFFERS as fallback
+      }
+      if (mounted) setLoading(false);
+    };
+    loadOffers();
+    return () => { mounted = false; };
+  }, []);
+
   // Document generation state
   const [generatingDoc, setGeneratingDoc] = useState<string | null>(null); // 'nda' | 'dpa' | 'asa' | 'proposal' | 'cq' | 'all'
   const [generatedDocs, setGeneratedDocs] = useState<Record<string, Record<string, { fileUrl: string; fileName: string }>>>({});
   const [docError, setDocError] = useState<string | null>(null);
 
-  // Client list for the create form
-  const dummyClients = [
+  // Client list for create form - loaded from API
+  const [apiClients, setApiClients] = useState<any[]>([]);
+  useEffect(() => {
+    fetch('/api/proxy/getActiveClients').then(r => r.json()).then(data => {
+      const raw = data.data || [];
+      setApiClients(raw.map((c: any) => ({
+        client_id: c.client_id || c.id,
+        client_name: c.client_name || c.name,
+        client_type: c.client_type || (c.parent_client_id ? 'subsidiary' : 'parent'),
+        parent_client_id: c.parent_client_id || null,
+      })));
+    }).catch(e => console.warn('Clients load error:', e));
+  }, []);
+  const dummyClients = apiClients.length > 0 ? apiClients : [
     { client_id: 'CLI-2026-0001', client_name: 'DIANA SHIPPING SERVICES SA', client_type: 'parent', parent_client_id: null },
     { client_id: 'CLI-2026-0002', client_name: 'DIANA GOLD', client_type: 'subsidiary', parent_client_id: 'CLI-2026-0001' },
     { client_id: 'CLI-2026-0003', client_name: 'DIANA PLATINUM', client_type: 'subsidiary', parent_client_id: 'CLI-2026-0001' },
@@ -465,7 +532,12 @@ export default function OffersPage() {
       )}
 
       {/* Offers Table */}
-      <div className="table-container">
+      {loading && (
+        <div style={{textAlign:'center',padding:'3rem',color:'rgba(184,212,232,0.6)',fontSize:'1.1rem'}}>
+          Loading offers from API...
+        </div>
+      )}
+      <div className="table-container" style={{display: loading ? 'none' : 'block'}}>
         <div className="table-scroll">
           <table className="offers-table">
             <thead>
