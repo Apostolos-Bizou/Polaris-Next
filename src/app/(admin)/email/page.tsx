@@ -3,7 +3,6 @@
 import React from 'react';
 
 import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useEmailCenter } from '@/hooks/use-email';
 import RichEditor from '@/components/email/rich-editor';
 import InboxTab from '@/components/email/inbox-tab';
@@ -17,62 +16,31 @@ const CATEGORY_ICONS: Record<string, string> = {
 export default function EmailCenterPage() {
   const ec = useEmailCenter();
   const [editorHtml, setEditorHtml] = React.useState('');
-  const [sendDocsAttachments, setSendDocsAttachments] = React.useState<Array<{type: string; name: string; key: string}>>([]); const [sendDocsSource, setSendDocsSource] = React.useState<{offerId: string; clientName: string} | null>(null);
-  const searchParams = useSearchParams();
+  const [sendDocsAttachments, setSendDocsAttachments] = React.useState([]);
+  const [sendDocsSource, setSendDocsSource] = React.useState(null);
 
-  // ═══ Send Documents Handoff ═══
   useEffect(() => {
-    if (searchParams.get('sendDocs') === 'true') {
-      try {
-        const raw = localStorage.getItem('polaris_send_docs');
-        if (raw) {
-          const data = JSON.parse(raw);
-          // Switch to Compose tab
-          ec.setActiveTab('compose');
-
-          // Auto-select contract template
-          ec.handleTemplateChange('contract_01');
-
-          // Build attachments list
-          const atts: Array<{type: string; name: string; key: string}> = [];
-          const docNames: Record<string, string> = {
-            nda: '🔒 NDA', dpa: '🛡️ DPA', asa: '📋 ASA',
-            proposal: '💼 Proposal', comparison_quote: '📊 Comparison Quote',
-          };
-          const progNames: Record<string, string> = {
-            silver: '🥈 Silver Brochure', gold: '🥇 Gold Brochure',
-            goldplus: '🥇+ Gold+ Brochure', goldplusplus: '🥇++ Gold++ Brochure',
-            platinum: '💎 Platinum Brochure', diamond: '💠 Diamond Brochure',
-            dental: '🦷 Dental Brochure',
-          };
-
-          if (data.docs) {
-            data.docs.forEach((d: string) => {
-              atts.push({ type: 'doc', name: docNames[d] || d, key: d });
-            });
-          }
-          if (data.programs) {
-            data.programs.forEach((p: string) => {
-              atts.push({ type: 'brochure', name: progNames[p] || p, key: p });
-            });
-          }
-          setSendDocsAttachments(atts); setSendDocsSource({ offerId: data.offerId || '', clientName: data.clientName || '' });
-
-          // Set subject with client name
-          if (data.clientName) {
-            ec.setSubject(`Contract Documents - ${data.clientName}`);
-          }
-
-          // Clean up
-          localStorage.removeItem('polaris_send_docs');
-          // Remove ?sendDocs from URL without reload
-          window.history.replaceState({}, '', '/email');
-        }
-      } catch (e) {
-        console.error('Send Docs handoff error:', e);
-      }
-    }
-  }, [searchParams]);
+    if (typeof window === 'undefined') return;
+    const p = new URLSearchParams(window.location.search);
+    if (p.get('sendDocs') !== 'true') return;
+    try {
+      const raw = localStorage.getItem('polaris_send_docs');
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      ec.setActiveTab('compose');
+      ec.handleTemplateChange('contract_01');
+      const a = [];
+      const dn = {nda:'NDA',dpa:'DPA',asa:'ASA',proposal:'Proposal',comparison_quote:'Comparison Quote'};
+      const pn = {silver:'Silver',gold:'Gold',goldplus:'Gold+',goldplusplus:'Gold++',platinum:'Platinum',diamond:'Diamond',dental:'Dental'};
+      if (d.docs) d.docs.forEach(x => a.push({type:'doc',name:dn[x]||x,key:x}));
+      if (d.programs) d.programs.forEach(x => a.push({type:'brochure',name:pn[x]||x,key:x}));
+      setSendDocsAttachments(a);
+      setSendDocsSource({offerId:d.offerId||'',clientName:d.clientName||''});
+      if (d.clientName) ec.setSubject('Contract Documents - '+d.clientName);
+      localStorage.removeItem('polaris_send_docs');
+      window.history.replaceState({},'','/email');
+    } catch(e){console.error('Handoff error:',e);}
+  }, []);
 
   // Load history + scheduled when switching tabs
   useEffect(() => {
@@ -182,7 +150,13 @@ export default function EmailCenterPage() {
       )}
 
       {/* ═══ COMPOSE TAB ═══ */}
-      {ec.activeTab === 'compose' && (<>{sendDocsSource && (<div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',marginBottom:12,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',borderRadius:10}}><span style={{color:'#D4AF37',fontSize:'0.9rem',fontWeight:600}}>?? Composing for: {sendDocsSource.clientName}</span><button onClick={()=>{window.location.href='/offers';}} style={{padding:'6px 16px',background:'linear-gradient(135deg,#1e3a5f,#2d5a87)',border:'1px solid rgba(212,175,55,0.4)',borderRadius:8,color:'#D4AF37',fontWeight:600,fontSize:'0.82rem',cursor:'pointer'}}>< Back to Offers</button></div>)}
+      {ec.activeTab === 'compose' && (<>
+        {sendDocsSource && (
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',marginBottom:12,background:'rgba(212,175,55,0.1)',border:'1px solid rgba(212,175,55,0.3)',borderRadius:10}}>
+            <span style={{color:'#D4AF37',fontSize:'0.9rem',fontWeight:600}}>Composing for: {sendDocsSource.clientName}</span>
+            <button onClick={()=>window.location.href='/offers'} style={{padding:'6px 16px',background:'linear-gradient(135deg,#1e3a5f,#2d5a87)',border:'1px solid rgba(212,175,55,0.4)',borderRadius:8,color:'#D4AF37',fontWeight:600,fontSize:'0.82rem',cursor:'pointer'}}>Back to Offers</button>
+          </div>
+        )}
         <div className="em-tab-content">
           <div className="em-form-group">
             <label>📝 Select Template</label>
@@ -267,45 +241,23 @@ export default function EmailCenterPage() {
             </div>
           </div>
 
-          {/* ═══ ATTACHMENTS FROM SEND DOCUMENTS ═══ */}
-          {sendDocsAttachments.length > 0 && (
+          <div className="em-form-group">
+            {sendDocsAttachments.length > 0 && (
             <div className="em-form-group">
-              <label>📎 Attached Documents ({sendDocsAttachments.length})</label>
-              <div style={{
-                display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                gap: 8, padding: 12,
-                background: 'rgba(10,22,40,0.5)',
-                border: '1px solid rgba(45,80,112,0.4)',
-                borderRadius: 10,
-              }}>
-                {sendDocsAttachments.map((att, i) => (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    padding: '8px 12px',
-                    background: att.type === 'doc'
-                      ? 'rgba(76,175,80,0.1)' : 'rgba(33,150,243,0.1)',
-                    border: `1px solid ${att.type === 'doc'
-                      ? 'rgba(76,175,80,0.3)' : 'rgba(33,150,243,0.3)'}`,
-                    borderRadius: 8, fontSize: '0.85rem', color: '#e0e8f0',
-                  }}>
+              <label>Attached Documents ({sendDocsAttachments.length})</label>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:8,padding:12,background:'rgba(10,22,40,0.5)',border:'1px solid rgba(45,80,112,0.4)',borderRadius:10}}>
+                {sendDocsAttachments.map((att,i) => (
+                  <div key={i} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:att.type==='doc'?'rgba(76,175,80,0.1)':'rgba(33,150,243,0.1)',border:'1px solid '+(att.type==='doc'?'rgba(76,175,80,0.3)':'rgba(33,150,243,0.3)'),borderRadius:8,fontSize:'0.85rem',color:'#e0e8f0'}}>
                     <span>{att.name}</span>
-                    <button onClick={() => setSendDocsAttachments(prev => prev.filter((_, idx) => idx !== i))}
-                      style={{
-                        marginLeft: 'auto', background: 'rgba(231,76,60,0.2)',
-                        border: 'none', color: '#ef5350', borderRadius: 4,
-                        cursor: 'pointer', padding: '2px 6px', fontSize: '0.75rem',
-                      }}>✕</button>
+                    <button onClick={()=>setSendDocsAttachments(prev=>prev.filter((_,idx)=>idx!==i))} style={{marginLeft:'auto',background:'rgba(231,76,60,0.2)',border:'none',color:'#ef5350',borderRadius:4,cursor:'pointer',padding:'2px 6px',fontSize:'0.75rem'}}>x</button>
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 6, fontSize: '0.75rem', color: '#7aa0c0' }}>
-                📨 Documents from Send Documents modal • Files will be attached from Google Drive
-              </div>
+              <div style={{marginTop:6,fontSize:'0.75rem',color:'#7aa0c0'}}>Documents from Send Documents - Files from Google Drive</div>
             </div>
           )}
 
-          <div className="em-form-group">
-            <label>📝 Message Editor</label>
+          <label>📝 Message Editor</label>
             <RichEditor
               value={editorHtml || ec.previewText.replace(/\n/g, '<br/>')}
               onChange={setEditorHtml}
@@ -325,7 +277,7 @@ export default function EmailCenterPage() {
             </button>
           </div>
         </div>
-      )}
+      </>)}
 
       {/* ═══ TEMPLATES TAB ═══ */}
       {ec.activeTab === 'templates' && (
@@ -585,7 +537,3 @@ export default function EmailCenterPage() {
     </div>
   );
 }
-
-
-
-
