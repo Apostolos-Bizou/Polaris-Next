@@ -156,6 +156,24 @@ export default function OffersPage() {
       setStatusFilter(statusMap[filterSt] || 'all');
       window.history.replaceState({}, '', '/offers');
     }
+
+    // Handle renewal from Follow-ups
+    const createRenewal = p.get('createRenewal');
+    if (createRenewal === 'true') {
+      try {
+        const raw = localStorage.getItem('polaris_renewal');
+        if (raw) {
+          const renewal = JSON.parse(raw);
+          localStorage.removeItem('polaris_renewal');
+          // Pre-fill search with client name and open create form
+          if (renewal.clientName) {
+            setSearchClient(renewal.clientName);
+          }
+          setTimeout(() => setShowCreate(true), 300);
+        }
+      } catch(e) { console.warn('Renewal handoff error:', e); }
+      window.history.replaceState({}, '', '/offers');
+    }
   }, [offers]);
 
   // Load real offers from API on mount

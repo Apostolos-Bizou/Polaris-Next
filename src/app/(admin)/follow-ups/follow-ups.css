@@ -271,5 +271,332 @@
 /* ====================================================
    RESPONSIVE
    ==================================================== */
+
+/* ====================================================
+   OFFER DETAIL MODAL (inline)
+   ==================================================== */
+.fud-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 10001;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+.fud-modal-box {
+  background: #3d5a80;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-left: 240px;
+}
+.fud-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2.5rem;
+  background: linear-gradient(135deg, #1e3a5f, #2d5a87);
+  flex-shrink: 0;
+}
+.fud-modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #D4AF37;
+}
+.fud-modal-subtitle {
+  color: rgba(255,255,255,0.7);
+  font-size: 1rem;
+  margin-top: 0.2rem;
+}
+.fud-modal-close {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.fud-modal-close:hover { background: rgba(255,255,255,0.3); }
+.fud-modal-body {
+  padding: 2rem 2.5rem;
+  flex: 1;
+  overflow-y: auto;
+  background: #3d5a80;
+}
+
+/* Info Grid */
+.fud-modal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  background: rgba(13,31,45,0.7);
+  border: 1px solid rgba(45,80,112,0.3);
+  border-radius: 14px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+}
+.fud-modal-info-item {}
+.fud-modal-info-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #7aa0c0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+.fud-modal-info-value {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.fud-modal-status-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Section titles */
+.fud-modal-section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #D4AF37;
+  margin: 1.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(212,175,55,0.2);
+}
+
+/* Financial cards */
+.fud-modal-fin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.fud-modal-fin-card {
+  background: rgba(13,31,45,0.7);
+  border: 1px solid rgba(45,80,112,0.35);
+  border-radius: 14px;
+  padding: 1.5rem;
+  text-align: center;
+}
+.fud-modal-fin-card:hover { border-color: rgba(212,175,55,0.4); }
+.fud-modal-fin-label { font-size: 0.95rem; color: #7aa0c0; }
+.fud-modal-fin-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 0.3rem;
+}
+.fud-modal-fin-value.gold { color: #D4AF37; }
+
+/* 5-column financial grid */
+.fud-modal-fin-grid5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
+.fud-modal-fin-sub { font-size: 0.85rem; color: #667788; margin-top: 0.2rem; }
+.fud-modal-fin-card.total { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.08); }
+
+/* Plan table */
+.fud-modal-table-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+.fud-modal-table { width: 100%; border-collapse: collapse; background: #0d1f2d; border: 1px solid rgba(212,175,55,0.2); border-radius: 12px; overflow: hidden; }
+.fud-modal-table th { font-size: 0.85rem; color: #D4AF37; text-align: left; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(212,175,55,0.2); text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0,0,0,0.2); }
+.fud-modal-table td { font-size: 0.95rem; color: #b8d4e8; padding: 0.85rem 1rem; border-bottom: 1px solid rgba(45,80,112,0.15); }
+
+/* Document generation grid */
+.fud-modal-doc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+.fud-modal-doc-card { background: rgba(13,31,45,0.7); border: 1px solid rgba(212,175,55,0.2); border-radius: 14px; padding: 1.25rem; text-align: center; transition: all 0.2s; }
+.fud-modal-doc-card:hover { border-color: rgba(212,175,55,0.5); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.fud-modal-doc-card.done { border-color: rgba(39,174,96,0.5); background: rgba(39,174,96,0.06); }
+.fud-modal-doc-card.generating { border-color: rgba(243,156,18,0.5); background: rgba(243,156,18,0.06); }
+.fud-modal-doc-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.15rem; color: #e8e8e8; margin-bottom: 0.3rem; }
+.fud-modal-doc-desc { font-size: 0.8rem; color: #667788; margin-bottom: 1rem; }
+.fud-modal-doc-btn { width: 100%; padding: 0.65rem; border-radius: 10px; border: none; font-weight: 700; font-size: 0.9rem; cursor: pointer; color: white; font-family: 'Montserrat', sans-serif; transition: all 0.15s; }
+.fud-modal-doc-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.fud-modal-doc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.fud-modal-doc-open { display: inline-block; padding: 0.5rem 1rem; background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.3); border-radius: 10px; color: #5dade2; font-weight: 700; text-decoration: none; }
+
+/* Modal action buttons */
+.fud-modal-btn.send-docs { background: linear-gradient(135deg, #1e3a5f, #2d5a87); color: #ffffff; flex: 1; }
+.fud-modal-btn.generate { background: linear-gradient(135deg, #D4AF37, #c49932); color: #0a1628; }
+
+@media (max-width: 1024px) { .fud-modal-fin-grid5 { grid-template-columns: repeat(3, 1fr); } .fud-modal-doc-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .fud-modal-fin-grid5 { grid-template-columns: repeat(2, 1fr); } .fud-modal-doc-grid { grid-template-columns: 1fr; } }
+
+/* Notes */
+.fud-modal-notes {
+  background: rgba(13,31,45,0.5);
+  border: 1px solid rgba(45,80,112,0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+/* Action Buttons */
+.fud-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(45,80,112,0.2);
+}
+.fud-modal-btn {
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Montserrat', sans-serif;
+}
+.fud-modal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.fud-modal-btn.email {
+  background: linear-gradient(135deg, #1e3a5f, #2d5a87);
+  color: #ffffff;
+  flex: 1;
+}
+.fud-modal-btn.view {
+  background: linear-gradient(135deg, #D4AF37, #c49932);
+  color: #0a1628;
+}
+.fud-modal-btn.client {
+  background: rgba(76,175,80,0.15);
+  border: 1px solid rgba(76,175,80,0.3);
+  color: #81C784;
+}
+
+@media (max-width: 768px) {
+  .fud-modal-box { margin-left: 0; }
+  .fud-modal-info-grid { grid-template-columns: repeat(2, 1fr); }
+  .fud-modal-fin-grid { grid-template-columns: 1fr; }
+  .fud-modal-actions { flex-direction: column; }
+}
+
+
+/* ====================================================
+   RENEW MODAL
+   ==================================================== */
+.fud-renew-modal {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(145deg, #1a3a5c, #15304d);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 20px;
+  width: 480px;
+  max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  overflow: hidden;
+  animation: gcdFadeIn 0.2s ease;
+}
+.fud-renew-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(212,175,55,0.15);
+}
+.fud-renew-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #D4AF37;
+}
+.fud-renew-body { padding: 1.5rem; }
+.fud-renew-info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.fud-renew-client {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+.fud-renew-contract {
+  font-size: 0.95rem;
+  color: #7aa0c0;
+  margin-bottom: 0.75rem;
+}
+.fud-renew-details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+}
+.fud-renew-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.fud-renew-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  background: rgba(0,0,0,0.15);
+}
+.fud-renew-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+.fud-renew-btn.offer {
+  border-color: rgba(212,175,55,0.3);
+}
+.fud-renew-btn.offer:hover {
+  background: rgba(212,175,55,0.1);
+  border-color: rgba(212,175,55,0.5);
+}
+.fud-renew-btn.email {
+  border-color: rgba(33,150,243,0.3);
+}
+.fud-renew-btn.email:hover {
+  background: rgba(33,150,243,0.1);
+  border-color: rgba(33,150,243,0.5);
+}
+.fud-renew-btn-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.fud-renew-btn-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: block;
+}
+.fud-renew-btn-desc {
+  font-size: 0.8rem;
+  color: #7aa0c0;
+  display: block;
+  margin-top: 0.15rem;
+}
+
+/* ====================================================
+   RESPONSIVE (main)
+   ==================================================== */
 @media (max-width: 1200px) { .fud-kpis { grid-template-columns: repeat(2, 1fr); } .fud-grid-2 { grid-template-columns: 1fr; } .fud-pipeline-kanban { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 768px) { .fud-page { padding: 1rem; } .fud-kpis { grid-template-columns: 1fr 1fr; } .fud-header { flex-direction: column; gap: 0.75rem; } .fud-pipeline-kanban { grid-template-columns: repeat(2, 1fr); } .fud-expiring-tabs { flex-direction: column; } }
