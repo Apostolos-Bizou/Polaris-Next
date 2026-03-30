@@ -210,7 +210,7 @@ function pageCover(doc: jsPDF, cfg: ReportConfig, data: ReportData, date: string
   // Logo
   sf(doc, C.WHITE); doc.roundedRect(M, 15, 55, 22, 4, 4, "F");
   doc.setFontSize(12); doc.setFont("helvetica", "bold"); sc(doc, C.NAVY);
-  doc.text("\u2726 POLARIS", M + 8, 29);
+  doc.text("* POLARIS", M + 8, 29);
   // Title
   sc(doc, C.WHITE); doc.setFontSize(32); doc.text("Analytics Report", M, 60);
   doc.setFontSize(16); doc.setFont("helvetica", "normal"); sc(doc, C.GOLD);
@@ -258,7 +258,7 @@ function pageCover(doc: jsPDF, cfg: ReportConfig, data: ReportData, date: string
     sf(doc, C.BG); doc.roundedRect(x, y, CW / 2 - 5, 14, 3, 3, "F");
     sf(doc, C.GOLD); doc.circle(x + 7, y + 7, 3.5, "F");
     sc(doc, C.WHITE); doc.setFontSize(7); doc.setFont("helvetica", "bold");
-    doc.text("\u2713", x + 5.2, y + 9);
+    doc.text(">", x + 5.2, y + 9);
     doc.setFontSize(9); doc.setFont("helvetica", "normal"); sc(doc, C.TXT);
     doc.text(names[key], x + 15, y + 9.5);
     col++;
@@ -327,15 +327,15 @@ function pageExecutive(doc: jsPDF, data: ReportData, period: string) {
   y += 11;
 
   const rows = [
-    ["Total Members", fmt(k.total_members), k.total_members > 0 ? "\u2705 Active" : "\u26A0 No Data"],
-    ["Total Claims", fmt(k.total_claims), k.total_claims > 0 ? "\u2705 Processed" : "\u26A0 No Data"],
-    ["Total Cost (USD)", fmtUsd(k.total_cost_usd), "\u{1F4CA} Tracked"],
-    ["Cost per Member", fmtUsd(k.cost_per_member), k.cost_per_member < 100 ? "\u2705 On Target" : "\u26A0 High"],
-    ["Utilization Rate", fmtPct(k.utilization_rate), k.utilization_rate < 30 ? "\u2705 Normal" : "\u26A0 Review"],
-    ["Revenue", fmtUsd(k.approved_amount), "\u{1F4B0} Recorded"],
-    ["Inpatient Cases", fmt(k.inpatient_cases), k.inpatient_cases > 0 ? "\u{1F3E5} " + fmt(k.inpatient_cases) + " cases" : "\u2014"],
-    ["Outpatient Cases", fmt(k.outpatient_cases), k.outpatient_cases > 0 ? "\u{1F3E5} " + fmt(k.outpatient_cases) + " cases" : "\u2014"],
-    ["Categories Tracked", String(data.categories.length), data.categories.length > 0 ? "\u2705 " + data.categories.length + " types" : "\u2014"],
+    ["Total Members", fmt(k.total_members), k.total_members > 0 ? "[OK] Active" : "[!] No Data"],
+    ["Total Claims", fmt(k.total_claims), k.total_claims > 0 ? "[OK] Processed" : "[!] No Data"],
+    ["Total Cost (USD)", fmtUsd(k.total_cost_usd), ">> Tracked"],
+    ["Cost per Member", fmtUsd(k.cost_per_member), k.cost_per_member < 100 ? "[OK] On Target" : "[!] High"],
+    ["Utilization Rate", fmtPct(k.utilization_rate), k.utilization_rate < 30 ? "[OK] Normal" : "[!] Review"],
+    ["Revenue", fmtUsd(k.approved_amount), ">> Recorded"],
+    ["Inpatient Cases", fmt(k.inpatient_cases), k.inpatient_cases > 0 ? ">> " + fmt(k.inpatient_cases) + " cases" : "-"],
+    ["Outpatient Cases", fmt(k.outpatient_cases), k.outpatient_cases > 0 ? ">> " + fmt(k.outpatient_cases) + " cases" : "-"],
+    ["Categories Tracked", String(data.categories.length), data.categories.length > 0 ? "[OK] " + data.categories.length + " types" : "-"],
   ];
 
   rows.forEach((row, ri) => {
@@ -345,7 +345,7 @@ function pageExecutive(doc: jsPDF, data: ReportData, period: string) {
     row.forEach((cell, ci) => {
       doc.setFontSize(7.5);
       if (ci === 0) { doc.setFont("helvetica", "bold"); sc(doc, C.TXT); }
-      else if (ci === 2) { doc.setFont("helvetica", "normal"); sc(doc, cell.includes("\u2705") ? C.GREEN : cell.includes("\u26A0") ? C.ORANGE : C.MUTED); }
+      else if (ci === 2) { doc.setFont("helvetica", "normal"); sc(doc, cell.includes("[OK]") ? C.GREEN : cell.includes("[!]") ? C.ORANGE : C.MUTED); }
       else { doc.setFont("helvetica", "normal"); sc(doc, C.TXT); }
       doc.text(cell, x, ry + 7.5);
       x += cw[ci];
