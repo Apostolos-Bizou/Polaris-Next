@@ -1,0 +1,11 @@
+﻿const fs = require('fs');
+const f = 'src/app/(auth)/login/page.tsx';
+let c = fs.readFileSync(f, 'utf8');
+c = c.replace(/import \{ useState \} from ["']react["'];/, 'import { useState, Suspense } from "react";');
+c = c.replace(/export\s+default\s+function\s+LoginPage\s*\(\s*\)/, 'function LoginContent()');
+const lastBrace = c.lastIndexOf('}');
+c = c.substring(0, lastBrace + 1);
+c += '\n\nexport default function LoginPage() {\n  return (\n    <Suspense fallback={<div style={{background:"#0a1628",minHeight:"100vh"}} />}>\n      <LoginContent />\n    </Suspense>\n  );\n}\n';
+fs.writeFileSync(f, c, 'utf8');
+console.log('Suspense:', c.includes('Suspense'));
+console.log('LoginContent:', c.includes('function LoginContent'));

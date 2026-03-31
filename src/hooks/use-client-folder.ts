@@ -22,6 +22,9 @@ export interface ClientInfo {
   contact_capacity: string;
   authorized_signatory_name: string;
   authorized_signatory_title: string;
+  total_members: number;
+  plan_type: string;
+  country: string;
 }
 
 export interface ClientKPIs {
@@ -32,6 +35,9 @@ export interface ClientKPIs {
   inpatient_cases: number;
   outpatient_cases: number;
   exgratia_cases: number;
+  inpatient_cost: number;
+  outpatient_cost: number;
+  exgratia_cost: number;
   principal_members: number;
   dependent_members: number;
   new_enrollments: number;
@@ -53,6 +59,7 @@ export interface ClientFinancials {
   after_tax_profit: number;
   revenue_per_member: number;
   claims_per_member_cost: number;
+  total_revenue_share: number;
 }
 
 export interface CategoryBreakdown {
@@ -205,6 +212,9 @@ export function useClientFolder(clientId: string) {
         inpatient_cases: ct.inpatient || k.inpatient_cases || 0,
         outpatient_cases: ct.outpatient || k.outpatient_cases || 0,
         exgratia_cases: ct.exgratia || k.exgratia_cases || 0,
+        inpatient_cost: k.inpatient_cost || (totalCost > 0 && totalClaims > 0 ? Math.round(totalCost * ((ct.inpatient || k.inpatient_cases || 0) / totalClaims) * 100) / 100 : 0),
+        outpatient_cost: k.outpatient_cost || (totalCost > 0 && totalClaims > 0 ? Math.round(totalCost * ((ct.outpatient || k.outpatient_cases || 0) / totalClaims) * 100) / 100 : 0),
+        exgratia_cost: k.exgratia_cost || (totalCost > 0 && totalClaims > 0 ? Math.round(totalCost * ((ct.exgratia || k.exgratia_cases || 0) / totalClaims) * 100) / 100 : 0),
         principal_members: mt.principal || k.principal_members || 0,
         dependent_members: mt.dependent || k.dependent_members || 0,
         new_enrollments: k.new_enrollments || 0,
