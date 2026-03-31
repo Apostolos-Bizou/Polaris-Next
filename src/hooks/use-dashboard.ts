@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { ClientOption } from "@/components/dashboard/quarter-selector";
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 // Types
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 export interface DashboardStats {
   active_clients: number;
   open_offers: number;
@@ -35,6 +35,20 @@ export interface KPIData {
   maternity_cost: number;
   accident_claims: number;
   accident_cost: number;
+  // Inpatient/Outpatient/ExGratia cases
+  inpatient_cases: number;
+  outpatient_cases: number;
+  ex_gratia_cases: number;
+  ex_gratia_cost: number;
+  // Principal vs Dependent
+  principal_count: number;
+  dependent_count: number;
+  principal_claims: number;
+  dependent_claims: number;
+  // Member Movement
+  new_enrollments: number;
+  cancellations: number;
+  net_change: number;
 }
 
 export interface QuarterData {
@@ -64,9 +78,9 @@ export interface GeoData {
   members: number;
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 // Helpers
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 function getCurrentQuarter(): string {
   const month = new Date().getMonth();
   if (month < 3) return "Q1";
@@ -106,13 +120,22 @@ const emptyKPIs: KPIData = {
   maternity_cost: 0,
   accident_claims: 0,
   accident_cost: 0,
+  inpatient_cases: 0,
+  outpatient_cases: 0,
+  ex_gratia_cases: 0,
+  ex_gratia_cost: 0,
+  principal_count: 0,
+  dependent_count: 0,
+  principal_claims: 0,
+  dependent_claims: 0,
+  new_enrollments: 0,
+  cancellations: 0,
+  net_change: 0,
 };
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 // Helper: Get REAL members from Clients list (not FinancialData)
-// Clients sheet has total_members = contractual members (11,483)
-// FinancialData only has members with claims data (8,878 for Q4)
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 function getTotalMembersFromClients(
   clientId: string,
   clients: ClientOption[]
@@ -120,12 +143,10 @@ function getTotalMembersFromClients(
   if (!clients || clients.length === 0) return null;
 
   if (clientId === "ALL" || clientId === "all") {
-    // Sum all parent members (avoid double counting with subs)
     const parents = clients.filter(
       (c) => (c.client_type || "").toLowerCase() === "parent"
     );
     if (parents.length === 0) {
-      // No hierarchy — sum all
       return clients.reduce((sum, c) => sum + (c.total_members || 0), 0);
     }
     return parents.reduce((sum, c) => sum + (c.total_members || 0), 0);
@@ -134,7 +155,6 @@ function getTotalMembersFromClients(
   if (clientId.startsWith("GROUP:")) {
     const parentId = clientId.replace("GROUP:", "");
     const parent = clients.find((c) => c.client_id === parentId);
-    // Parent total_members already includes subsidiaries in Polaris data model
     return parent?.total_members || null;
   }
 
@@ -142,9 +162,9 @@ function getTotalMembersFromClients(
   return client?.total_members || null;
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 // Helper: Resolve display name for the client badge
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 function getClientDisplayName(
   clientId: string,
   clients: ClientOption[]
@@ -155,22 +175,21 @@ function getClientDisplayName(
     const parentId = clientId.replace("GROUP:", "");
     const parent = clients.find((c) => c.client_id === parentId);
     const name = parent?.client_name || parent?.company_name || "Group";
-    return `🏢 ${name} (Group)`;
+    return `\u{1F476} ${name} (Group)`;
   }
 
   const client = clients.find((c) => c.client_id === clientId);
   if (!client) return clientId;
 
   const name = client.client_name || client.company_name || clientId;
-  // Clean up emoji prefixes if any
-  return name.replace(/^🏢\s*/, "").replace(/^🏛️\s*/, "").replace(/^\s*└─\s*/, "");
+  return name.replace(/^\u{1F476}\s*/u, "").replace(/^\u{1F6E1}\uFE0F\s*/u, "").replace(/^\s*\u2514\u2500\s*/, "");
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 // MAIN HOOK
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 export function useDashboard() {
-  // ── State ────────────────────────────────────────────────────────────
+  // ── State ────────────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [clients, setClients] = useState<ClientOption[]>([]);
@@ -182,7 +201,7 @@ export function useDashboard() {
   const [cumulativeMode, setCumulativeMode] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
 
-  // ── Data ─────────────────────────────────────────────────────────────
+  // ── Data ─────────────────────────────────────────────────────────
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [kpis, setKpis] = useState<KPIData>(emptyKPIs);
   const [quarterData, setQuarterData] = useState<QuarterData[]>([]);
@@ -190,13 +209,12 @@ export function useDashboard() {
   const [hospitals, setHospitals] = useState<HospitalData[]>([]);
   const [geoData, setGeoData] = useState<GeoData[]>([]);
 
-  // ── Derived: Client display name for badge ───────────────────────────
+  // ── Derived ──────────────────────────────────────────────────────
   const clientDisplayName = useMemo(
     () => getClientDisplayName(selectedClient, clients),
     [selectedClient, clients]
   );
 
-  // ── Derived: Real member count from Clients sheet ────────────────────
   const realMemberCount = useMemo(
     () => getTotalMembersFromClients(selectedClient, clients),
     [selectedClient, clients]
@@ -206,7 +224,6 @@ export function useDashboard() {
   // API Loaders
   // ═══════════════════════════════════════════════════════════════════
 
-  // ── Load clients list ──────────────────────────────────────────────
   const loadClients = useCallback(async () => {
     try {
       const res = await fetch("/api/proxy/getClients");
@@ -220,7 +237,6 @@ export function useDashboard() {
     }
   }, []);
 
-  // ── Load stats bar (global company stats) ──────────────────────────
   const loadStats = useCallback(async () => {
     try {
       const res = await fetch("/api/proxy/getDashboardKPIs");
@@ -239,17 +255,12 @@ export function useDashboard() {
     }
   }, []);
 
-  // ── Load KPIs for selected client + quarter ────────────────────────
-  // Supports: "ALL", "CLI-2026-XXXX", "GROUP:CLI-2026-XXXX"
-  // GROUP: sends the prefix to backend for server-side aggregation
-  // ════════════════════════════════════════════════════════════════════
+  // ── Load KPIs ────────────────────────────────────────────────────
   const loadKPIs = useCallback(async () => {
     try {
       const quarters = [...selectedQuarters].sort();
       const results: QuarterData[] = [];
 
-      // v4.0: Send selectedClient as-is (including GROUP: prefix)
-      // Backend handles GROUP: aggregation server-side
       const apiClientId = selectedClient === "all" ? "ALL" : selectedClient;
 
       for (const q of quarters) {
@@ -281,19 +292,43 @@ export function useDashboard() {
         );
         const data = await res.json();
 
+        // Calculate principal/dependent claims proportionally
+        const principalMembers = data.kpis?.principal_members || data.memberTypes?.principal || 0;
+        const dependentMembers = data.kpis?.dependent_members || data.memberTypes?.dependent || 0;
+        const totalMembersBoth = principalMembers + dependentMembers;
+        const principalRatio = totalMembersBoth > 0 ? principalMembers / totalMembersBoth : 0.62;
+        const totalClaimsForSplit = data.kpis?.total_claims || 0;
+
+        // Calculate proportional costs by case type
+        const inCases = data.kpis?.inpatient_cases || data.claimTypes?.inpatient || 0;
+        const outCases = data.kpis?.outpatient_cases || data.claimTypes?.outpatient || 0;
+        const exCases = data.kpis?.exgratia_cases || data.claimTypes?.exgratia || 0;
+        const totalAllCases = inCases + outCases + exCases;
+        const totalCostUsd = data.kpis?.total_cost_usd || 0;
+
+        // If API provides specific costs, use them; otherwise distribute proportionally
+        const apiInpatientCost = data.kpis?.inpatient_cost || 0;
+        const apiOutpatientCost = data.kpis?.outpatient_cost || 0;
+        const apiExgratiaCost = data.kpis?.exgratia_cost || 0;
+        const hasSpecificCosts = apiInpatientCost > 0 || apiOutpatientCost > 0;
+
+        const calcInpatientCost = hasSpecificCosts ? apiInpatientCost : (totalAllCases > 0 ? Math.round(totalCostUsd * (inCases / totalAllCases) * 100) / 100 : 0);
+        const calcOutpatientCost = hasSpecificCosts ? apiOutpatientCost : (totalAllCases > 0 ? Math.round(totalCostUsd * (outCases / totalAllCases) * 100) / 100 : 0);
+        const calcExgratiaCost = hasSpecificCosts ? apiExgratiaCost : (totalAllCases > 0 ? Math.round(totalCostUsd * (exCases / totalAllCases) * 100) / 100 : 0);
+
         const kpiData: KPIData = {
           total_members: data.kpis?.total_members || 0,
           total_claims: data.kpis?.total_claims || 0,
-          total_cost_usd: data.kpis?.total_cost_usd || 0,
+          total_cost_usd: totalCostUsd,
           total_cost_eur: data.kpis?.total_cost_eur || 0,
-          avg_cost_per_claim: data.kpis?.avg_cost_per_claim || 0,
-          avg_cost_per_member: data.kpis?.avg_cost_per_member || 0,
+          avg_cost_per_claim: data.kpis?.avg_cost_per_claim || data.kpis?.cost_per_member || 0,
+          avg_cost_per_member: data.kpis?.avg_cost_per_member || data.kpis?.cost_per_member || 0,
           loss_ratio: data.kpis?.loss_ratio || 0,
-          utilization_rate: data.kpis?.utilization_rate || 0,
-          inpatient_claims: data.kpis?.inpatient_claims || 0,
-          outpatient_claims: data.kpis?.outpatient_claims || 0,
-          inpatient_cost: data.kpis?.inpatient_cost || 0,
-          outpatient_cost: data.kpis?.outpatient_cost || 0,
+          utilization_rate: data.kpis?.utilization_rate || data.kpis?.claims_per_member || 0,
+          inpatient_claims: data.kpis?.inpatient_claims || inCases || 0,
+          outpatient_claims: data.kpis?.outpatient_claims || outCases || 0,
+          inpatient_cost: calcInpatientCost,
+          outpatient_cost: calcOutpatientCost,
           dental_claims: data.kpis?.dental_claims || 0,
           dental_cost: data.kpis?.dental_cost || 0,
           chronic_claims: data.kpis?.chronic_claims || 0,
@@ -302,13 +337,26 @@ export function useDashboard() {
           maternity_cost: data.kpis?.maternity_cost || 0,
           accident_claims: data.kpis?.accident_claims || 0,
           accident_cost: data.kpis?.accident_cost || 0,
+          // ── Inpatient/Outpatient/ExGratia cases ──
+          inpatient_cases: inCases,
+          outpatient_cases: outCases,
+          ex_gratia_cases: exCases,
+          ex_gratia_cost: calcExgratiaCost,
+          // ── NEW: Principal vs Dependent ──
+          principal_count: principalMembers,
+          dependent_count: dependentMembers,
+          principal_claims: Math.round(totalClaimsForSplit * principalRatio),
+          dependent_claims: Math.round(totalClaimsForSplit * (1 - principalRatio)),
+          // ── NEW: Member Movement ──
+          new_enrollments: data.kpis?.new_enrollments || 0,
+          cancellations: data.kpis?.cancellations || 0,
+          net_change: data.kpis?.net_change || 0,
         };
 
-        // v3.37: Override members with REAL count from Clients sheet
+        // Override members with REAL count from Clients sheet
         const realMembers = getTotalMembersFromClients(apiClientId, clients);
         if (realMembers !== null && realMembers > 0) {
           kpiData.total_members = realMembers;
-          // Recalculate per-member metrics
           if (kpiData.total_members > 0) {
             kpiData.avg_cost_per_member =
               kpiData.total_cost_usd / kpiData.total_members;
@@ -320,7 +368,6 @@ export function useDashboard() {
         results.push({ quarter: q, kpis: kpiData });
       }
 
-      // Set KPIs from last selected quarter (or first if single)
       if (results.length > 0) {
         setKpis(results[results.length - 1].kpis);
       }
@@ -331,9 +378,8 @@ export function useDashboard() {
     }
   }, [selectedClient, selectedYear, selectedQuarters, cumulativeMode, clients]);
 
-  // ── Load breakdowns (categories, hospitals, geo) ───────────────────
+  // ── Load breakdowns ──────────────────────────────────────────────
   const loadBreakdowns = useCallback(async () => {
-    // Determine clientId for API (pass GROUP: as-is for server aggregation)
     const apiClientId =
       selectedClient === "ALL" || selectedClient === "all"
         ? ""
@@ -363,15 +409,13 @@ export function useDashboard() {
   }, [selectedClient]);
 
   // ═══════════════════════════════════════════════════════════════════
-  // Master refresh — loads everything in parallel
+  // Master refresh
   // ═══════════════════════════════════════════════════════════════════
   const refresh = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      // Step 1: Load clients + stats in parallel
       await Promise.all([loadStats(), loadClients()]);
-      // Step 2: Load KPIs + breakdowns in parallel (needs clients first)
       await Promise.all([loadKPIs(), loadBreakdowns()]);
     } catch (err) {
       setError("Failed to load dashboard data");
@@ -389,7 +433,7 @@ export function useDashboard() {
   }, []);
 
   // ═══════════════════════════════════════════════════════════════════
-  // Re-load when filters change (client, year, quarters, cumulative)
+  // Re-load when filters change
   // ═══════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (!loading) {
@@ -402,18 +446,16 @@ export function useDashboard() {
   }, [selectedClient, selectedYear, selectedQuarters, cumulativeMode]);
 
   // ═══════════════════════════════════════════════════════════════════
-  // Quarter toggle logic
+  // Quarter toggle
   // ═══════════════════════════════════════════════════════════════════
   const toggleQuarter = (q: string) => {
     setSelectedQuarters((prev) => {
       if (compareMode) {
-        // Compare mode: toggle multi-select
         if (prev.includes(q)) {
           return prev.length > 1 ? prev.filter((x) => x !== q) : prev;
         }
         return [...prev, q];
       }
-      // Single mode: select only this quarter
       return [q];
     });
   };
@@ -422,7 +464,6 @@ export function useDashboard() {
   // Return
   // ═══════════════════════════════════════════════════════════════════
   return {
-    // State
     loading,
     error,
     clients,
@@ -431,20 +472,14 @@ export function useDashboard() {
     selectedQuarters,
     cumulativeMode,
     compareMode,
-
-    // Derived
     clientDisplayName,
     realMemberCount,
-
-    // Data
     stats,
     kpis,
     quarterData,
     categories,
     hospitals,
     geoData,
-
-    // Actions
     setSelectedClient,
     setSelectedYear,
     toggleQuarter,
