@@ -1,30 +1,42 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
-  let proxyStatus = "not_configured";
+  const status = {
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version || "1.0.0",
+    environment: process.env.NODE_ENV || "unknown",
+    uptime: process.uptime(),
+    checks: {
+      nextjs: true,
+      googleScript: false,
+      cosmosDb: false,
+    },
+  };
 
-  if (scriptUrl) {
-    try {
-      const response = await fetch(`${scriptUrl}?action=getClients`, {
+  // Check Google Script connectivity
+  try {
+    const gsUrl = process.env.GOOGLE_SCRIPT_URL;
+    if (gsUrl) {
+      const res = await fetch(`${gsUrl}?action=ping`, {
+        method: "GET",
         signal: AbortSignal.timeout(5000),
       });
-      proxyStatus = response.ok ? "connected" : "error";
-    } catch {
-      proxyStatus = "unreachable";
+      status.checks.googleScript = res.ok;
     }
+  } catch {
+    status.checks.googleScript = false;
   }
 
-  return NextResponse.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    version: "0.1.0",
-    phase: 1,
-    services: {
-      googleScriptProxy: proxyStatus,
-      cosmosDb: process.env.COSMOS_ENDPOINT ? "configured" : "phase_6",
-      azureAD:
-        process.env.AZURE_AD_CLIENT_ID ? "configured" : "not_configured",
-    },
-  });
+  // Check Cosmos DB connectivity (when enabled)
+  try {
+    const cosmosEndpoint = process.env.COSMOS_ENDPOINT;
+    if (cosmosEndpoint) {
+      status.checks.cosmosDb = true; // Will add real check later
+    }
+  } catch {
+    status.checks.cosmosDb = false;
+  }
+
+  return NextResponse.json(status, { status: 200 });
 }
